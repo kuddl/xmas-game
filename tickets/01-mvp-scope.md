@@ -1,7 +1,7 @@
 # Ticket 01: MVP-Scope klarifizieren
 
 **Type:** Grilling (HITL)  
-**Status:** Open, Unclaimed  
+**Status:** 🔄 In Progress (Claimed)  
 **Blocks:** Alle anderen Entscheidungen hängen daran  
 
 ## Question
