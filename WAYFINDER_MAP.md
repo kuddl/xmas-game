@@ -22,19 +22,17 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 
 ## Decisions so far
 
-(Noch keine — wir chartern gerade.)
+- [**MVP-Scope klarifizieren**](tickets/01-mvp-scope.md) — 2D-Pixel-Sprite mit Lauf-Animation, einfache Blöcke auf einer Höhe, Blau-Weiße Farben mit roten Akzenten, Playing→GameOver-Flow mit UI-Platzhaltern
 
 ## Open Tickets (Frontier)
-
-**[MVP-Scope klarifizieren](tickets/01-mvp-scope.md)** — Genau definieren: Spieler-Modell, Obstacle-Arten, Game States, Visueller Style für Prototype
-
-**[Progression-Design: MVP-Phase vs Real Production](tickets/05-progression-design.md)** — Wie sieht der Übergang aus? Wann schaltet Real Production frei? Wie zeigen wir das visuell (Hintergrund, Farbe, etc.)?
 
 **[Pixel Art in Three.js: Laden & Rendern](tickets/02-pixel-art-approach.md)** — Welche Strategie: PNG-Atlas? SVG? Wie austauschbar? Kritisch: Text auf Obstacles rendern
 
 **[Hindernisse-Generator: Semi-Random-Algorithmus](tickets/04-obstacle-gen.md)** — Faire, spielbare Hindernisse ohne Chaos (nicht zu viele auf einmal, nicht zu lange leere Pausen)
 
 **[Scroll-Geschwindigkeit calibrieren](tickets/03-scroll-speed.md)** — Prototype: Spielbar fühlen, nicht zu schnell, später Difficulty-Scaling
+
+**[Progression-Design: MVP-Phase vs Real Production](tickets/05-progression-design.md)** — Wie sieht der Übergang aus? Wann schaltet Real Production frei? Wie zeigen wir das visuell?
 
 ## Not yet specified (Fog)
 
@@ -54,8 +52,8 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 
 ## [01-mvp-scope.md](tickets/01-mvp-scope.md)
 **Type:** Grilling (HITL)  
-**Status:** 🔄 In Progress (Claimed)  
-**Blocks:** Alle anderen  
+**Status:** ✅ Closed  
+**Decision:** MVP-Scope ist sharp — siehe Resolution im Ticket  
 
 ## [02-pixel-art-approach.md](tickets/02-pixel-art-approach.md)
 **Type:** Research + Grilling (AFK + HITL)  
