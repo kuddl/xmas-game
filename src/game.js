@@ -62,6 +62,10 @@ export class Game {
     };
     this.platforms.onReward = (x, y) => this.powerups.spawnReward(x, y);
     this.platforms.onCreate = (left, width, top) => this.coins.onPlatform(left, width, top);
+    // Spacing rules: no obstacles under/next to platforms, no platform over an obstacle
+    this.obstacles.isBlocked = (left, right, speed) =>
+      this.platforms.blocksObstacle(left, right, speed);
+    this.platforms.canSpawnAt = (x) => this.obstacles.rightmostEdge() < x;
     this.storyPoints = 0;
 
     const icons = {};

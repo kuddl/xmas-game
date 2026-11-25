@@ -3,10 +3,12 @@ import { GAME_CONFIG } from './config.js';
 
 const LABEL_STYLE = {
   fontFamily: '"Press Start 2P", "Courier New", monospace',
-  fontSize: 7,
-  fontWeight: 'bold',
+  fontSize: 6,
   fill: 0xb81d2c,
 };
+// Render text at high resolution so it stays crisp when the world is scaled up
+const LABEL_RESOLUTION = 4;
+const LABEL_CHAR_W = 6; // Press Start 2P is monospace: 1em per glyph
 
 function shuffled(list) {
   const bag = [...list];
@@ -30,7 +32,15 @@ export class ObstacleManager {
 
     this.obstacles = [];
     this.onGap = null; // (obstacleX, gapPx, obstacle) => void
+    this.isBlocked = null; // (left, right, scrollSpeed) => boolean — platform clearance zones
     this.reset();
+  }
+
+  /** Rightmost hitbox edge of all obstacles (platforms must spawn beyond it) */
+  rightmostEdge() {
+    let edge = -Infinity;
+    for (const obs of this.obstacles) edge = Math.max(edge, obs.x + obs.visualRight);
+    return edge;
   }
 
   reset() {
@@ -61,14 +71,21 @@ export class ObstacleManager {
     return Math.random() < GAME_CONFIG.FLYER_CHANCE ? 'flyer' : 'ground';
   }
 
-  /** Retro sign board: dark border, snow interior, red top accent */
+  /** Compact retro label board: dark border, snow interior, red top accent */
   drawSign(g, centerX, bottomY, width, height) {
     g.rect(centerX - width / 2, bottomY - height, width, height)
       .fill(0x12223a)
-      .rect(centerX - width / 2 + 2, bottomY - height + 2, width - 4, height - 4)
+      .rect(centerX - width / 2 + 1, bottomY - height + 1, width - 2, height - 2)
       .fill(0xf2f8ff)
-      .rect(centerX - width / 2 + 2, bottomY - height + 2, width - 4, 3)
+      .rect(centerX - width / 2 + 1, bottomY - height + 1, width - 2, 2)
       .fill(0xe02f40);
+  }
+
+  makeLabel(word, x, centerY) {
+    const label = new Text({ text: word, style: LABEL_STYLE, resolution: LABEL_RESOLUTION });
+    label.anchor.set(0.5);
+    label.position.set(x, centerY);
+    return label;
   }
 
   spawn(spawnX, kind = 'ground') {
@@ -90,19 +107,14 @@ export class ObstacleManager {
     block.height = GAME_CONFIG.OBSTACLE_HEIGHT;
     c.addChild(block);
 
-    const signW = Math.max(70, word.length * 7.5 + 16);
-    const signH = 20;
-    const signBottom = -GAME_CONFIG.OBSTACLE_HEIGHT - 8;
-    const sign = new Graphics()
-      .rect(-2, -GAME_CONFIG.OBSTACLE_HEIGHT - 9, 4, 11)
-      .fill(0x16243d);
+    // Label sits directly on top of the block (no flag pole); decoration only, no collision
+    const signW = word.length * LABEL_CHAR_W + 8;
+    const signH = 12;
+    const signBottom = -GAME_CONFIG.OBSTACLE_HEIGHT + 3; // rests on the snow cap
+    const sign = new Graphics();
     this.drawSign(sign, 0, signBottom, signW, signH);
     c.addChild(sign);
-
-    const label = new Text({ text: word, style: LABEL_STYLE });
-    label.anchor.set(0.5);
-    label.position.set(0, signBottom - signH / 2 + 1.5);
-    c.addChild(label);
+    c.addChild(this.makeLabel(word, 0, signBottom - signH / 2 + 1));
 
     const halfW = GAME_CONFIG.OBSTACLE_WIDTH * 0.36;
     return {
@@ -119,6 +131,7 @@ export class ObstacleManager {
         top: GAME_CONFIG.GROUND_Y - GAME_CONFIG.OBSTACLE_HEIGHT * 0.84,
         bottom: GAME_CONFIG.GROUND_Y,
       },
+      visualRight: Math.max(halfW, signW / 2),
       hitInMvp: false,
       t: 0,
     };
@@ -130,23 +143,21 @@ export class ObstacleManager {
     const c = new Container();
     c.position.set(spawnX, bottomY);
 
-    // Envelope flies left, banner trails behind it on the right
+    // Envelope flies left, a small banner trails behind it on the right
     const envW = 48;
     const envH = 32;
-    const bannerW = Math.max(64, word.length * 7.5 + 14);
-    const bannerH = 18;
-    const ropeLen = 8;
+    const bannerW = word.length * LABEL_CHAR_W + 8;
+    const bannerH = 12;
+    const ropeLen = 6;
+    const bannerCenterX = envW / 2 + ropeLen + bannerW / 2;
+    const bannerBottom = -envH * 0.3;
 
     const banner = new Graphics()
-      .rect(envW / 2 - 4, -envH * 0.55, ropeLen + 4, 2)
+      .rect(envW / 2 - 4, bannerBottom - bannerH / 2 - 1, ropeLen + 4, 2)
       .fill(0x12223a);
-    this.drawSign(banner, envW / 2 + ropeLen + bannerW / 2, -envH * 0.2, bannerW, bannerH);
+    this.drawSign(banner, bannerCenterX, bannerBottom, bannerW, bannerH);
     c.addChild(banner);
-
-    const label = new Text({ text: word, style: LABEL_STYLE });
-    label.anchor.set(0.5);
-    label.position.set(envW / 2 + ropeLen + bannerW / 2, -envH * 0.2 - bannerH / 2 + 1.5);
-    c.addChild(label);
+    c.addChild(this.makeLabel(word, bannerCenterX, bannerBottom - bannerH / 2 + 1));
 
     const envelope = new Sprite(this.assetLoader.getTexture('obstacleFlyer'));
     envelope.anchor.set(0.5, 1);
@@ -163,15 +174,22 @@ export class ObstacleManager {
       x: spawnX,
       baseY: bottomY,
       extraSpeed: GAME_CONFIG.FLYER_EXTRA_SPEED,
+      // Only the envelope collides — the banner is decoration
       hit: {
         left: -envW * 0.4,
-        right: envW / 2 + ropeLen + bannerW - 4,
+        right: envW * 0.4,
         top: bottomY - envH * 0.8,
-        bottom: bottomY - 2, // envelope art has 2 empty rows (4px) at the bottom
+        bottom: bottomY - 4, // envelope art has 2 empty rows (4px) at the bottom
       },
+      visualRight: envW / 2 + ropeLen + bannerW,
       hitInMvp: false,
       t: Math.random() * 6,
     };
+  }
+
+  /** Approximate horizontal extent (incl. labels) used for spawn spacing */
+  static extentFor(kind) {
+    return kind === 'flyer' ? { left: -24, right: 110 } : { left: -36, right: 36 };
   }
 
   update(dt, scrollSpeed, { viewWidth, inProduction, distanceMeters }) {
@@ -187,7 +205,7 @@ export class ObstacleManager {
         obs.envelope.scale.y = obs.envBaseScaleY * (1 + Math.sin(obs.t * 18) * 0.06);
       }
 
-      if (obs.x + obs.hit.right < -60) {
+      if (obs.x + obs.visualRight < -60) {
         obs.container.destroy({ children: true });
         this.obstacles.splice(i, 1);
       }
@@ -197,6 +215,11 @@ export class ObstacleManager {
     if (this.spawnTimer <= 0) {
       const spawnX = viewWidth + 90;
       const kind = this.chooseKind(distanceMeters);
+      const ext = ObstacleManager.extentFor(kind);
+      if (this.isBlocked?.(spawnX + ext.left, spawnX + ext.right, scrollSpeed)) {
+        this.spawnTimer = 0.1; // under / next to a platform: wait until the zone has passed
+        return;
+      }
       const spawned = this.spawn(spawnX, kind);
 
       const prodFactor = inProduction

@@ -16,6 +16,7 @@ export class PlatformManager {
     this.platforms = [];
     this.onReward = null; // (x, y) => void — spawn a reward on the top level
     this.onCreate = null; // (left, width, top) => void — decorate a new platform
+    this.canSpawnAt = null; // (startX) => boolean — false while an obstacle is in the way
     this.reset();
   }
 
@@ -98,6 +99,18 @@ export class PlatformManager {
     );
   }
 
+  /**
+   * True if an obstacle spanning [left, right] would sit under a platform,
+   * too close before it, or inside the run-out after it.
+   */
+  blocksObstacle(left, right, scrollSpeed) {
+    const before = GAME_CONFIG.PLATFORM_CLEARANCE_BEFORE;
+    const after = GAME_CONFIG.PLATFORM_CLEARANCE_AFTER_TIME * scrollSpeed;
+    return this.platforms.some(
+      (p) => right > p.left - before && left < p.left + p.width + after
+    );
+  }
+
   update(dt, scrollSpeed, viewWidth) {
     for (let i = this.platforms.length - 1; i >= 0; i--) {
       const p = this.platforms[i];
@@ -111,7 +124,12 @@ export class PlatformManager {
 
     this.timer -= dt;
     if (this.timer <= 0) {
-      this.spawnPattern(viewWidth + 60);
+      const startX = viewWidth + 60;
+      if (this.canSpawnAt && !this.canSpawnAt(startX - GAME_CONFIG.PLATFORM_CLEARANCE_BEFORE)) {
+        this.timer = 0.2; // an obstacle is still in the way; retry shortly
+        return;
+      }
+      this.spawnPattern(startX);
       this.timer =
         GAME_CONFIG.PLATFORM_MIN_INTERVAL +
         Math.random() *

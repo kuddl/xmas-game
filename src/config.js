@@ -49,7 +49,7 @@ export const GAME_CONFIG = {
   PLATFORM_DROP_TIME: 0.22, // seconds platforms are ignored after pressing ↓ on one
   FLYER_START_METERS: 60, // flying obstacles appear after this distance
   FLYER_CHANCE: 0.35,
-  FLYER_BOTTOM_ABOVE_GROUND: 34, // ducked player (~22px) fits below, standing (~39px) does not
+  FLYER_BOTTOM_ABOVE_GROUND: 30, // envelope bottom; ducked player (~22px) fits below, standing (~39px) does not
   FLYER_EXTRA_SPEED: 45, // flyers move a bit faster than the world
   FLYER_BUZZWORDS: ['MEETING', 'SCOPE CREEP', 'ASAP', 'KPI', 'REPLY ALL'],
 
@@ -62,6 +62,8 @@ export const GAME_CONFIG = {
   PLATFORM_MIN_WIDTH: 192,
   PLATFORM_MAX_WIDTH: 320,
   PLATFORM_STAIR_CHANCE: 0.5, // chance a level-3 platform is stacked on top
+  PLATFORM_CLEARANCE_BEFORE: 70, // px kept free of obstacles before a platform starts
+  PLATFORM_CLEARANCE_AFTER_TIME: 1.2, // seconds of run-out kept free after a platform ends
 
   // Story Points (gold coins)
   COIN_SIZE: 24, // 12x12 sprite @ 2x

@@ -46,7 +46,7 @@ export class CoinManager {
   arcOver(x) {
     const ground = GAME_CONFIG.GROUND_Y;
     [-56, -28, 0, 28, 56].forEach((dx, i) => {
-      const lift = 64 + 32 * (1 - (dx / 72) ** 2);
+      const lift = 50 + 32 * (1 - (dx / 72) ** 2);
       this.add(x + dx, ground - lift, i);
     });
   }
