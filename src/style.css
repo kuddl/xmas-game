@@ -359,3 +359,109 @@ body {
   margin-bottom: 22px;
   text-align: left;
 }
+
+/* Version badge on main screen */
+.version-badge {
+  position: fixed;
+  bottom: 8px;
+  right: 10px;
+  font-size: 8px;
+  color: rgba(242, 248, 255, 0.55);
+  text-decoration: none;
+  background: rgba(12, 31, 58, 0.75);
+  padding: 4px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(108, 184, 240, 0.25);
+  z-index: 1000;
+  transition: all 0.2s ease;
+}
+
+.version-badge:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: rgba(12, 31, 58, 0.95);
+}
+
+/* Info Route Styles */
+.info-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: radial-gradient(circle at center, var(--ice-mid) 0%, var(--ice-dark) 85%);
+}
+
+.info-card {
+  max-width: 540px;
+  width: 100%;
+  background: #081529;
+  border: 4px solid var(--ice-light);
+  box-shadow: 0 0 24px rgba(108, 184, 240, 0.35);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.info-title {
+  margin: 0 0 8px;
+  font-size: clamp(20px, 3.5vw, 26px);
+  color: var(--snow);
+  text-shadow: 3px 3px 0 var(--red-dark);
+}
+
+.info-subtitle {
+  font-size: 10px;
+  color: var(--gold);
+  margin-bottom: 28px;
+  letter-spacing: 1px;
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(12, 31, 58, 0.85);
+  border: 2px solid var(--ice-mid);
+  padding: 18px 16px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 9px;
+  border-bottom: 1px dashed rgba(108, 184, 240, 0.25);
+  padding-bottom: 10px;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-label {
+  color: var(--ice-light);
+  font-size: 8px;
+  opacity: 0.8;
+}
+
+.info-value {
+  color: var(--snow);
+  font-size: 10px;
+  word-break: break-all;
+}
+
+.info-value.accent {
+  color: var(--gold);
+  font-size: 12px;
+}
+
+.info-back-btn {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 11px;
+  padding: 14px 20px;
+}
+
