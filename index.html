@@ -31,6 +31,10 @@
               <span class="label">HI</span>
               <span id="hud-highscore" class="value accent">0000m</span>
             </div>
+            <div class="stat-row">
+              <span class="label sp-label"><span class="sp-coin"></span>SP</span>
+              <span id="hud-sp" class="value sp-value">000</span>
+            </div>
           </div>
 
           <div class="hud-panel hud-phase">
@@ -57,6 +61,7 @@
             <span>[SPACE] JUMP</span>
             <span>[↓] DUCK / DROP</span>
             <span>[← / →] PACE</span>
+            <span>[ESC] PAUSE</span>
           </div>
         </div>
       </div>
@@ -98,6 +103,10 @@
               <span>RUN TIME</span>
               <span id="go-time" class="score-num">00:00</span>
             </div>
+            <div class="score-line">
+              <span>STORY POINTS</span>
+              <span id="go-sp" class="score-num sp-value">000</span>
+            </div>
           </div>
 
           <div class="go-leaderboard">
@@ -106,6 +115,15 @@
           </div>
 
           <button id="btn-restart" class="pixel-btn">PRESS SPACE TO RESTART</button>
+        </div>
+      </div>
+
+      <!-- Pause Overlay (light, so the scene stays visible for screenshots) -->
+      <div id="pause-screen" class="pause-overlay hidden">
+        <div class="pause-card">
+          <div class="pause-title">PAUSED</div>
+          <div class="pause-hint">PRESS ESC TO RESUME</div>
+          <button id="btn-resume" class="pixel-btn pause-btn">RESUME</button>
         </div>
       </div>
     </div>

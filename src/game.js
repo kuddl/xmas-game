@@ -6,6 +6,7 @@ import { ObstacleManager } from './obstacle.js';
 import { PowerUpManager } from './powerups.js';
 import { EffectsManager } from './effects.js';
 import { PlatformManager } from './platforms.js';
+import { CoinManager } from './coins.js';
 import { UIManager } from './ui.js';
 
 export class Game {
@@ -54,9 +55,14 @@ export class Game {
     this.powerups = new PowerUpManager(this.assetLoader, this.worldContainer);
     this.effects = new EffectsManager(this.assetLoader, this.worldContainer);
     this.platforms = new PlatformManager(this.assetLoader, this.worldContainer);
-    this.obstacles.onGap = (x, gapPx) =>
+    this.coins = new CoinManager(this.assetLoader, this.worldContainer);
+    this.obstacles.onGap = (x, gapPx, obstacle) => {
       this.powerups.onObstacleGap(x, gapPx, (px) => this.platforms.coversX(px));
+      this.coins.onObstacle(obstacle, gapPx);
+    };
     this.platforms.onReward = (x, y) => this.powerups.spawnReward(x, y);
+    this.platforms.onCreate = (left, width, top) => this.coins.onPlatform(left, width, top);
+    this.storyPoints = 0;
 
     const icons = {};
     for (const [type, def] of Object.entries(GAME_CONFIG.POWERUPS)) {
@@ -90,6 +96,11 @@ export class Game {
 
   bindEvents() {
     window.addEventListener('keydown', (e) => {
+      if (e.code === 'Escape' || e.code === 'KeyP') {
+        e.preventDefault();
+        if (!e.repeat) this.togglePause();
+        return;
+      }
       if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
         e.preventDefault();
         if (this.state === 'START' || this.state === 'GAME_OVER') {
@@ -130,6 +141,32 @@ export class Game {
 
     this.ui.btnStart.addEventListener('click', () => this.startRun());
     this.ui.btnRestart.addEventListener('click', () => this.startRun());
+    this.ui.btnResume.addEventListener('click', () => this.setPaused(false));
+
+    // Auto-pause when the tab or window loses focus (prevents stuck keys and unfair deaths)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) this.setPaused(true);
+    });
+    window.addEventListener('blur', () => this.setPaused(true));
+  }
+
+  togglePause() {
+    this.setPaused(this.state === 'PLAYING');
+  }
+
+  setPaused(paused) {
+    if (paused && this.state === 'PLAYING') {
+      this.state = 'PAUSED';
+    } else if (!paused && this.state === 'PAUSED') {
+      this.state = 'PLAYING';
+    } else {
+      return;
+    }
+    // Release held keys so nothing is stuck after resuming
+    this.keys.left = false;
+    this.keys.right = false;
+    this.keys.down = false;
+    this.ui.showPause(paused);
   }
 
   startRun() {
@@ -140,6 +177,8 @@ export class Game {
     this.obstacles.reset();
     this.powerups.reset();
     this.platforms.reset();
+    this.coins.reset();
+    this.storyPoints = 0;
     this.effects.clear();
     this.ui.clearPowerUps();
     this.shakeTime = 0;
@@ -161,6 +200,7 @@ export class Game {
       score: this.distanceMeters,
       elapsedTime: this.elapsedTime,
       causeWord,
+      storyPoints: this.storyPoints,
     });
   }
 
@@ -195,6 +235,7 @@ export class Game {
   }
 
   update(ticker) {
+    if (this.state === 'PAUSED') return; // scene stays rendered, nothing moves
     const dt = Math.min(0.05, ticker.deltaMS / 1000);
     this.effects.update(dt);
 
@@ -257,6 +298,7 @@ export class Game {
       distanceMeters: this.distanceMeters,
     });
     this.platforms.update(dt, scrollSpeed, this.viewWidth);
+    this.coins.update(dt, scrollSpeed);
 
     this.powerups.update(dt, scrollSpeed);
 
@@ -271,6 +313,14 @@ export class Game {
     }
 
     this.updatePowerUpVisuals(dt);
+
+    // Collect Story Points
+    const coinsHit = this.coins.collect(hitbox);
+    if (coinsHit.length > 0) {
+      this.storyPoints += coinsHit.length;
+      for (const c of coinsHit) this.effects.burst(c.x, c.y, 0xf5b82e, 6, 90);
+      this.ui.updateStoryPoints(this.storyPoints);
+    }
 
     const hitObstacle = this.obstacles.checkCollision(hitbox);
     if (hitObstacle) {

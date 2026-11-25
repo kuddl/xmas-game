@@ -15,6 +15,7 @@ export class PlatformManager {
 
     this.platforms = [];
     this.onReward = null; // (x, y) => void — spawn a reward on the top level
+    this.onCreate = null; // (left, width, top) => void — decorate a new platform
     this.reset();
   }
 
@@ -78,6 +79,7 @@ export class PlatformManager {
 
     this.container.addChild(c);
     this.platforms.push({ container: c, left, width, top, levelIndex });
+    this.onCreate?.(left, width, top);
   }
 
   /** Plain geometry for player physics: [{ left, right, top }] */

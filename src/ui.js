@@ -32,6 +32,11 @@ export class UIManager {
 
     this.btnStart = document.getElementById('btn-start');
     this.btnRestart = document.getElementById('btn-restart');
+    this.btnResume = document.getElementById('btn-resume');
+    this.pauseScreen = document.getElementById('pause-screen');
+    this.hudSp = document.getElementById('hud-sp');
+    this.goSp = document.getElementById('go-sp');
+    this.lastSp = 0;
 
     this.toastTimeout = null;
     this.leaderboard = this.loadLeaderboard();
@@ -115,18 +120,44 @@ export class UIManager {
     this.gameOverScreen.classList.add('hidden');
     this.hud.classList.remove('hidden');
     this.mvpToast.classList.add('hidden');
+    this.pauseScreen.classList.add('hidden');
+    this.lastSp = 0;
+    this.hudSp.textContent = this.formatSp(0);
   }
 
-  showGameOver({ score, elapsedTime, causeWord }) {
+  showGameOver({ score, elapsedTime, causeWord, storyPoints = 0 }) {
     const highScore = this.saveScore(score);
     this.canvasContainer.classList.add('blurred');
     this.hud.classList.add('hidden');
+    this.pauseScreen.classList.add('hidden');
     this.gameOverScreen.classList.remove('hidden');
 
     this.goCause.textContent = `STOPPED BY: ${causeWord}`;
     this.goScore.textContent = this.formatMeters(score);
     this.goHighScore.textContent = this.formatMeters(highScore);
     this.goTime.textContent = this.formatTime(elapsedTime);
+    this.goSp.textContent = this.formatSp(storyPoints);
+  }
+
+  formatSp(value) {
+    return String(value).padStart(3, '0');
+  }
+
+  updateStoryPoints(value) {
+    if (value === this.lastSp) return;
+    const increased = value > this.lastSp;
+    this.lastSp = value;
+    this.hudSp.textContent = this.formatSp(value);
+    if (increased) {
+      // restart the bump animation
+      this.hudSp.classList.remove('sp-bump');
+      void this.hudSp.offsetWidth;
+      this.hudSp.classList.add('sp-bump');
+    }
+  }
+
+  showPause(paused) {
+    this.pauseScreen.classList.toggle('hidden', !paused);
   }
 
   updateHUD({ distanceMeters, elapsedTime, inProduction }) {

@@ -586,7 +586,41 @@ function createCanvas(width, height) {
   c.save('platform-tile.png');
 }
 
-// 12. Write spritesheet.json config
+// 12. STORY POINT COIN (4 spin frames x 12x12 = 48x12)
+{
+  const K = '#7a4a00'; // outline
+  const L = '#ffe27a'; // light edge
+  const Y = '#f5b82e'; // gold
+  const O = '#d18815'; // shade / inner ring
+  const W = '#ffffff'; // highlight
+  const widths = [1, 0.62, 0.2, 0.62];
+  const c = createCanvas(48, 12);
+  widths.forEach((w, frame) => {
+    const rx = Math.max(1.1, 5.6 * w);
+    const ry = 5.6;
+    for (let y = 0; y < 12; y++) {
+      for (let x = 0; x < 12; x++) {
+        const dx = (x + 0.5 - 6) / rx;
+        const dy = (y + 0.5 - 6) / ry;
+        const d = dx * dx + dy * dy;
+        if (d > 1) continue;
+        let col = Y;
+        if (d > 0.68) col = K;
+        else if (w > 0.5 && d > 0.28 && d < 0.44) col = O; // embossed inner ring
+        else if (dx < -0.35) col = L;
+        else if (dx > 0.4) col = O;
+        c.set(frame * 12 + x, y, col);
+      }
+    }
+    if (w === 1) {
+      c.set(frame * 12 + 3, 3, W);
+      c.set(frame * 12 + 4, 2, W);
+    }
+  });
+  c.save('coin.png');
+}
+
+// 13. Write spritesheet.json config
 const spritesheet = {
   version: '1.0.0',
   pixelArt: true,
@@ -651,6 +685,15 @@ const spritesheet = {
       path: '/assets/sprites/platform-tile.png',
       width: 16,
       height: 8,
+    },
+    coin: {
+      path: '/assets/sprites/coin.png',
+      frameWidth: 12,
+      frameHeight: 12,
+      frames: 4,
+      animations: {
+        spin: { frames: [0, 1, 2, 3], fps: 8 },
+      },
     },
   },
 };

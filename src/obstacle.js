@@ -29,7 +29,7 @@ export class ObstacleManager {
     parentContainer.addChild(this.container);
 
     this.obstacles = [];
-    this.onGap = null; // (obstacleX, gapPx) => void
+    this.onGap = null; // (obstacleX, gapPx, obstacle) => void
     this.reset();
   }
 
@@ -197,7 +197,7 @@ export class ObstacleManager {
     if (this.spawnTimer <= 0) {
       const spawnX = viewWidth + 90;
       const kind = this.chooseKind(distanceMeters);
-      this.spawn(spawnX, kind);
+      const spawned = this.spawn(spawnX, kind);
 
       const prodFactor = inProduction
         ? Math.max(0.75, 1 - (distanceMeters - GAME_CONFIG.MVP_DISTANCE_METERS) / 2500)
@@ -207,7 +207,7 @@ export class ObstacleManager {
       // Flyers are long: give the player a beat to stand up again
       const flyerBonus = kind === 'flyer' ? 0.35 : 0;
       this.spawnTimer = minGap + flyerBonus + Math.random() * (maxGap - minGap);
-      this.onGap?.(spawnX, this.spawnTimer * scrollSpeed);
+      this.onGap?.(spawnX, this.spawnTimer * scrollSpeed, spawned);
     }
   }
 

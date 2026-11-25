@@ -80,6 +80,23 @@
       "path": "/assets/sprites/platform-tile.png",
       "width": 16,
       "height": 8
+    },
+    "coin": {
+      "path": "/assets/sprites/coin.png",
+      "frameWidth": 12,
+      "frameHeight": 12,
+      "frames": 4,
+      "animations": {
+        "spin": {
+          "frames": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "fps": 8
+        }
+      }
     }
   }
 }

@@ -29,6 +29,7 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 - [**Power-Ups mit Firmen-Logos**](tickets/07-powerups.md) — Merkle-Logo = Breakthrough (durch Blöcke brechen), Arc-Logo = Double Jump; je 5 s, Aura + Funken an der Figur, HUD-Balken unten links
 - [**Ducken & fliegende Hindernisse**](tickets/08-ducking.md) — ↓ = ducken (Boden) / durchfallen (Plattform) / schneller fallen (Luft); geflügelte Meeting-Invites mit Buzzword-Banner ab 60 m
 - [**Ebenen (Plattformen zum Hochspringen)**](tickets/09-platform-levels.md) — One-Way-Eisplattformen auf Ebene 2 (72 px) und 3 (144 px), Treppen-Muster, Power-Up als Belohnung oben
+- [**Pause & Story Points**](tickets/10-pause-story-points.md) — ESC/P pausiert (Auto-Pause bei Tab-Wechsel); Goldmünzen als Bögen, Duck-Reihen und Plattform-Reihen, Zähler im HUD und auf dem Game-Over-Screen
 
 ## Open Tickets (Frontier)
 
@@ -38,6 +39,7 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 
 ## Not yet specified (Fog)
 
+- **Highscore-Formel mit Story Points**: Wie werden SP mit der Distanz verrechnet (Faktor? Zeitbonus?), und wie werden sie im Leaderboard gespeichert und angezeigt?
 - **Obstacle-Text-Rendering**: Wie rendern wir die Business-Buzzwords auf den Blöcken? Custom Canvas-Textur? Text-Mesh in Three.js? Muss das austauschbar sein?
 - **Collectibles/Power-Ups Visuell**: Wie sehen die Firma-Logos aus? Sind das separate Sprites, die eingesammelt werden? Welche Power-Ups genau? (Invincibility? Higher Jump? Both?)
 - **Leben-System für Real Production**: Ein Leben, oder mehrere? Game Over sofort, oder Health-Bar? Respawning?

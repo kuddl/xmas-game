@@ -63,6 +63,16 @@ export const GAME_CONFIG = {
   PLATFORM_MAX_WIDTH: 320,
   PLATFORM_STAIR_CHANCE: 0.5, // chance a level-3 platform is stacked on top
 
+  // Story Points (gold coins)
+  COIN_SIZE: 24, // 12x12 sprite @ 2x
+  COIN_SPACING: 28,
+  COIN_PICKUP_RADIUS: 11,
+  COIN_ARC_CHANCE: 0.5, // arc of coins over a ground block (shows the jump path)
+  COIN_UNDER_FLYER_CHANCE: 0.7, // low row under a flyer (rewards ducking)
+  COIN_GAP_ROW_CHANCE: 0.35, // ground row inside a wide gap
+  COIN_PLATFORM_ROW_CHANCE: 0.8, // row along the top of a platform
+  COIN_ROW_HEIGHT: 16, // coin center above the walking surface
+
   // Power-Ups (brand logos as collectibles)
   POWERUP_SIZE: 32, // 16x16 sprite @ 2x
   POWERUP_HEIGHT_ABOVE_GROUND: 74, // reachable only by jumping
