@@ -38,20 +38,34 @@ export class PowerUpManager {
   }
 
   /** Called by the obstacle manager after it spawns a block and schedules the next gap */
-  onObstacleGap(obstacleX, gapPx) {
+  onObstacleGap(obstacleX, gapPx, isBlocked = () => false) {
     if (this.cooldown > 0 || this.pickups.length > 0) return;
     if (gapPx < GAME_CONFIG.POWERUP_MIN_GAP_PX) return;
-    this.spawn(obstacleX + gapPx * 0.5, this.nextType());
+    const x = obstacleX + gapPx * 0.5;
+    if (isBlocked(x)) return; // don't bury pickups inside a platform
+    this.spawn(x, this.nextType());
+    this.resetCooldown();
+  }
+
+  /** Reward pickup on the highest platform level */
+  spawnReward(x, y) {
+    if (this.pickups.length > 0) return;
+    this.spawn(x, this.nextType(), y);
+    this.resetCooldown();
+  }
+
+  resetCooldown() {
     this.cooldown =
       GAME_CONFIG.POWERUP_MIN_INTERVAL +
       Math.random() *
         (GAME_CONFIG.POWERUP_MAX_INTERVAL - GAME_CONFIG.POWERUP_MIN_INTERVAL);
   }
 
-  spawn(x, type) {
+  spawn(x, type, y = null) {
     const def = GAME_CONFIG.POWERUPS[type];
     const size = GAME_CONFIG.POWERUP_SIZE;
-    const baseY = GAME_CONFIG.GROUND_Y - GAME_CONFIG.POWERUP_HEIGHT_ABOVE_GROUND;
+    const baseY =
+      y ?? GAME_CONFIG.GROUND_Y - GAME_CONFIG.POWERUP_HEIGHT_ABOVE_GROUND;
 
     const c = new Container();
     c.position.set(x, baseY);

@@ -193,11 +193,32 @@ function createCanvas(width, height) {
     '................',
   ];
 
-  const c = createCanvas(64, 16);
+  // Frame 4: Duck pose (crouched low, gift tucked in)
+  const frame4 = [
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................',
+    '...KKKKK........',
+    '..KRRRRRK.......',
+    '.KRRRRRWWK......',
+    '.KDDDDDDDK.KKKK.',
+    '..KSSSSSKKKYYRYK',
+    '..KSSESSKRKYYRYK',
+    '.KRRRRRRRRKRRRRK',
+    '.KRRDRRRRRKYYRYK',
+    '.KWWWWWWWWKKKKK.',
+    'KTTKKBBBBKKTTK..',
+  ];
+
+  const c = createCanvas(80, 16);
   c.drawGrid(0, 0, frame0, palette);
   c.drawGrid(16, 0, frame1, palette);
   c.drawGrid(32, 0, frame2, palette);
   c.drawGrid(48, 0, frame3, palette);
+  c.drawGrid(64, 0, frame4, palette);
   c.save('player.png');
 }
 
@@ -508,7 +529,64 @@ function createCanvas(width, height) {
   c.save('sparkle.png');
 }
 
-// 10. Write spritesheet.json config
+// 10. FLYING OBSTACLE (24x16) — winged "meeting invite" envelope
+{
+  const palette = {
+    K: '#12223a', // outline
+    W: '#f2f8ff', // envelope paper
+    R: '#e02f40', // red flap lines
+    G: '#a9d3f5', // icy wings
+    Y: '#f5b82e', // gold seal
+  };
+  const grid = [
+    '......KKKKKKKKKKKK......',
+    '..KK.KWWWWWWWWWWWWK.KK..',
+    '.KGGKKWRWWWWWWWWRWKKGGK.',
+    'KGGGGKWWRWWWWWWRWWKGGGGK',
+    'KGGGGKWWWRWWWWRWWWKGGGGK',
+    '.KGGGKWWWWRWWRWWWWKGGGK.',
+    '..KKKKWWWWWRRWWWWWKKKK..',
+    '.....KWWWWWWWWWWWWK.....',
+    '.....KWWWWWWWWWWWWK.....',
+    '.....KWWWWWWYYWWWWK.....',
+    '.....KWWWWWYYYYWWWK.....',
+    '.....KWWWWWWYYWWWWK.....',
+    '.....KWWWWWWWWWWWWK.....',
+    '......KKKKKKKKKKKK......',
+    '........................',
+    '........................',
+  ];
+  const c = createCanvas(24, 16);
+  c.drawGrid(0, 0, grid, palette);
+  c.save('obstacle-flyer.png');
+}
+
+// 11. PLATFORM TILE (16x8) — seamless snowy ice ledge
+{
+  const palette = {
+    W: '#ffffff',
+    S: '#d7eeff',
+    H: '#e8f4ff',
+    I: '#90c8f0',
+    M: '#4f91cc',
+    K: '#1a3a63',
+  };
+  const grid = [
+    'WWWWWWWWWWWWWWWW',
+    'WWWSWWWWWWWSWWWW',
+    'SSSSSSSSSSSSSSSS',
+    'IIIHIIIIIIIHIIII',
+    'IIIIIIIIIIIIIIII',
+    'MMMMMIMMMMMMMIMM',
+    'MMMMMMMMMMMMMMMM',
+    'KKKKKKKKKKKKKKKK',
+  ];
+  const c = createCanvas(16, 8);
+  c.drawGrid(0, 0, grid, palette);
+  c.save('platform-tile.png');
+}
+
+// 12. Write spritesheet.json config
 const spritesheet = {
   version: '1.0.0',
   pixelArt: true,
@@ -517,10 +595,11 @@ const spritesheet = {
       path: '/assets/sprites/player.png',
       frameWidth: 16,
       frameHeight: 16,
-      frames: 4,
+      frames: 5,
       animations: {
         run: { frames: [0, 1, 2, 1], fps: 10 },
         jump: { frames: [3], fps: 1 },
+        duck: { frames: [4], fps: 1 },
       },
     },
     obstacle: {
@@ -562,6 +641,16 @@ const spritesheet = {
       path: '/assets/sprites/sparkle.png',
       width: 5,
       height: 5,
+    },
+    obstacleFlyer: {
+      path: '/assets/sprites/obstacle-flyer.png',
+      width: 24,
+      height: 16,
+    },
+    platform: {
+      path: '/assets/sprites/platform-tile.png',
+      width: 16,
+      height: 8,
     },
   },
 };

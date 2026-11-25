@@ -44,6 +44,25 @@ export const GAME_CONFIG = {
   // Local leaderboard storage key
   LEADERBOARD_KEY: 'xmas_game_local_leaderboard_v1',
 
+  // Ducking & flying obstacles (Ticket 08)
+  FAST_FALL_MULTIPLIER: 1.9, // gravity boost while holding ↓ in the air
+  PLATFORM_DROP_TIME: 0.22, // seconds platforms are ignored after pressing ↓ on one
+  FLYER_START_METERS: 60, // flying obstacles appear after this distance
+  FLYER_CHANCE: 0.35,
+  FLYER_BOTTOM_ABOVE_GROUND: 34, // ducked player (~22px) fits below, standing (~39px) does not
+  FLYER_EXTRA_SPEED: 45, // flyers move a bit faster than the world
+  FLYER_BUZZWORDS: ['MEETING', 'SCOPE CREEP', 'ASAP', 'KPI', 'REPLY ALL'],
+
+  // Elevated platforms = Ebene 2 & 3 (Ticket 09)
+  PLATFORM_LEVELS: [72, 144], // platform top height above ground for level 2 and 3
+  PLATFORM_HEIGHT: 16, // 16x8 tile @ 2x
+  PLATFORM_FIRST_DELAY: 6,
+  PLATFORM_MIN_INTERVAL: 6,
+  PLATFORM_MAX_INTERVAL: 11,
+  PLATFORM_MIN_WIDTH: 192,
+  PLATFORM_MAX_WIDTH: 320,
+  PLATFORM_STAIR_CHANCE: 0.5, // chance a level-3 platform is stacked on top
+
   // Power-Ups (brand logos as collectibles)
   POWERUP_SIZE: 32, // 16x16 sprite @ 2x
   POWERUP_HEIGHT_ABOVE_GROUND: 74, // reachable only by jumping

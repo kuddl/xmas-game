@@ -6,7 +6,7 @@
       "path": "/assets/sprites/player.png",
       "frameWidth": 16,
       "frameHeight": 16,
-      "frames": 4,
+      "frames": 5,
       "animations": {
         "run": {
           "frames": [
@@ -20,6 +20,12 @@
         "jump": {
           "frames": [
             3
+          ],
+          "fps": 1
+        },
+        "duck": {
+          "frames": [
+            4
           ],
           "fps": 1
         }
@@ -64,6 +70,16 @@
       "path": "/assets/sprites/sparkle.png",
       "width": 5,
       "height": 5
+    },
+    "obstacleFlyer": {
+      "path": "/assets/sprites/obstacle-flyer.png",
+      "width": 24,
+      "height": 16
+    },
+    "platform": {
+      "path": "/assets/sprites/platform-tile.png",
+      "width": 16,
+      "height": 8
     }
   }
 }

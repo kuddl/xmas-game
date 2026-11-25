@@ -5,6 +5,7 @@ import { Player } from './player.js';
 import { ObstacleManager } from './obstacle.js';
 import { PowerUpManager } from './powerups.js';
 import { EffectsManager } from './effects.js';
+import { PlatformManager } from './platforms.js';
 import { UIManager } from './ui.js';
 
 export class Game {
@@ -19,6 +20,7 @@ export class Game {
     this.keys = {
       left: false,
       right: false,
+      down: false,
     };
 
     this.app = null;
@@ -51,7 +53,10 @@ export class Game {
     this.obstacles = new ObstacleManager(this.assetLoader, this.worldContainer);
     this.powerups = new PowerUpManager(this.assetLoader, this.worldContainer);
     this.effects = new EffectsManager(this.assetLoader, this.worldContainer);
-    this.obstacles.onGap = (x, gapPx) => this.powerups.onObstacleGap(x, gapPx);
+    this.platforms = new PlatformManager(this.assetLoader, this.worldContainer);
+    this.obstacles.onGap = (x, gapPx) =>
+      this.powerups.onObstacleGap(x, gapPx, (px) => this.platforms.coversX(px));
+    this.platforms.onReward = (x, y) => this.powerups.spawnReward(x, y);
 
     const icons = {};
     for (const [type, def] of Object.entries(GAME_CONFIG.POWERUPS)) {
@@ -99,6 +104,10 @@ export class Game {
       if (e.code === 'ArrowRight' || e.code === 'KeyD') {
         this.keys.right = true;
       }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+        e.preventDefault();
+        this.keys.down = true;
+      }
     });
 
     window.addEventListener('keyup', (e) => {
@@ -107,6 +116,9 @@ export class Game {
       }
       if (e.code === 'ArrowRight' || e.code === 'KeyD') {
         this.keys.right = false;
+      }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+        this.keys.down = false;
       }
     });
 
@@ -127,6 +139,7 @@ export class Game {
     this.player.reset();
     this.obstacles.reset();
     this.powerups.reset();
+    this.platforms.reset();
     this.effects.clear();
     this.ui.clearPowerUps();
     this.shakeTime = 0;
@@ -224,6 +237,8 @@ export class Game {
       speedMultiplier,
       isPlaying: true,
       canAirJump: this.powerups.isActive('doubleJump'),
+      downHeld: this.keys.down,
+      platforms: this.platforms.getSurfaces(),
     });
 
     if (this.player.justAirJumped) {
@@ -241,6 +256,7 @@ export class Game {
       inProduction,
       distanceMeters: this.distanceMeters,
     });
+    this.platforms.update(dt, scrollSpeed, this.viewWidth);
 
     this.powerups.update(dt, scrollSpeed);
 
