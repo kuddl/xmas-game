@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHRISTMAS GAME — Corporate Winter Run</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="game-shell">
+      <div id="canvas-container" class="blurred"></div>
+
+      <!-- Playing HUD -->
+      <div id="hud" class="hidden">
+        <div class="hud-top">
+          <div class="hud-panel hud-stats">
+            <div class="stat-row">
+              <span class="label">DIST</span>
+              <span id="hud-score" class="value">0000m</span>
+            </div>
+            <div class="stat-row">
+              <span class="label">TIME</span>
+              <span id="hud-time" class="value">00:00</span>
+            </div>
+            <div class="stat-row">
+              <span class="label">HI</span>
+              <span id="hud-highscore" class="value accent">0000m</span>
+            </div>
+          </div>
+
+          <div class="hud-panel hud-phase">
+            <div class="phase-header">
+              <span id="phase-badge" class="badge badge-mvp">MVP PHASE (SAFE)</span>
+              <span id="phase-progress-label" class="phase-sub">250m TO PROD</span>
+            </div>
+            <div class="progress-track">
+              <div id="phase-progress-fill" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="hud-panel hud-leaderboard">
+            <div class="lb-title">TOP 3 RUNNERS</div>
+            <ol id="hud-leaderboard-list" class="lb-list"></ol>
+          </div>
+        </div>
+
+        <div id="mvp-toast" class="mvp-toast hidden">MVP SAFE — NO PROBLEM!</div>
+
+        <div class="hud-controls-hint">
+          <span>[SPACE] JUMP</span>
+          <span>[← / →] PACE</span>
+        </div>
+      </div>
+
+      <!-- Start Screen Overlay -->
+      <div id="start-screen" class="overlay">
+        <div class="title-card">
+          <div class="kicker">CORPORATE WINTER EDITION</div>
+          <h1 class="pixel-title">CHRISTMAS<br />GAME</h1>
+          <p class="subtitle">
+            Dodging Deadlines, TCO &amp; Scope Creep<br />
+            on the road to Real Production
+          </p>
+          <button id="btn-start" class="pixel-btn">PRESS SPACE TO START</button>
+          <div class="controls-legend">
+            <span><strong>SPACE</strong> Jump</span>
+            <span><strong>← / →</strong> Slow / Boost</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over Overlay (80s Console Style) -->
+      <div id="gameover-screen" class="overlay hidden">
+        <div class="gameover-card">
+          <h2 class="gameover-title">GAME OVER</h2>
+          <div id="gameover-cause" class="gameover-cause">HIT BY: DEADLINE</div>
+
+          <div class="score-board">
+            <div class="score-line">
+              <span>CURRENT SCORE</span>
+              <span id="go-score" class="score-num">0000m</span>
+            </div>
+            <div class="score-line">
+              <span>HIGH SCORE</span>
+              <span id="go-highscore" class="score-num accent">0000m</span>
+            </div>
+            <div class="score-line">
+              <span>RUN TIME</span>
+              <span id="go-time" class="score-num">00:00</span>
+            </div>
+          </div>
+
+          <div class="go-leaderboard">
+            <div class="lb-title">LOCAL HIGHSCORES</div>
+            <ol id="go-leaderboard-list" class="lb-list"></ol>
+          </div>
+
+          <button id="btn-restart" class="pixel-btn">PRESS SPACE TO RESTART</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

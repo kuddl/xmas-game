@@ -1,0 +1,54 @@
+{
+  "version": "1.0.0",
+  "pixelArt": true,
+  "sprites": {
+    "player": {
+      "path": "/assets/sprites/player.png",
+      "frameWidth": 16,
+      "frameHeight": 16,
+      "frames": 4,
+      "animations": {
+        "run": {
+          "frames": [
+            0,
+            1,
+            2,
+            1
+          ],
+          "fps": 10
+        },
+        "jump": {
+          "frames": [
+            3
+          ],
+          "fps": 1
+        }
+      }
+    },
+    "obstacle": {
+      "path": "/assets/sprites/obstacle-block.png",
+      "width": 24,
+      "height": 24
+    },
+    "ground": {
+      "path": "/assets/sprites/ground-tile.png",
+      "width": 64,
+      "height": 32
+    },
+    "bgMountainsFar": {
+      "path": "/assets/sprites/bg-mountains-far.png",
+      "width": 256,
+      "height": 128
+    },
+    "bgMountainsMid": {
+      "path": "/assets/sprites/bg-mountains-mid.png",
+      "width": 256,
+      "height": 128
+    },
+    "bgTreesNear": {
+      "path": "/assets/sprites/bg-trees-near.png",
+      "width": 256,
+      "height": 64
+    }
+  }
+}
