@@ -23,16 +23,15 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 ## Decisions so far
 
 - [**MVP-Scope klarifizieren**](tickets/01-mvp-scope.md) — 2D-Pixel-Sprite mit Lauf-Animation, einfache Blöcke auf einer Höhe, Blau-Weiße Farben mit roten Akzenten
-- [**Pixel Art in Three.js: Laden & Rendern**](tickets/02-pixel-art-approach.md) — PlaneGeometry + NearestFilter für crisp Pixels, spritesheet.json Config für Designer-Austausch, Text-Mesh für dynamische Buzzwords
-- [**Start & Game Over Screen Design**](tickets/06-ui-screens-design.md) — Start: Blurred Szenerie + großer "Christmas Game"-Titel. Game Over: 80er-Konsolen-Style Scores. MVP→Production: Linie im Hintergrund, später Farbshift
+- [**Pixel Art in Three.js: Laden & Rendern**](tickets/02-pixel-art-approach.md) — PlaneGeometry + NearestFilter für crisp Pixels, spritesheet.json Config für Designer-Austausch, Text-Mesh für Buzzwords
+- [**Start & Game Over Screen Design**](tickets/06-ui-screens-design.md) — Start: Blurred Szenerie + "Christmas Game"-Titel. Game Over: 80er-Konsolen-Scores
+- [**Progression-Design: MVP-Phase vs Real Production**](tickets/05-progression-design.md) — MVP-Phase: erste 200-300 Units (25-40 Sekunden), dann Production mit 1 Leben Game Over. Kompletter Score von Anfang bis Ende
 
 ## Open Tickets (Frontier)
 
 **[Hindernisse-Generator: Semi-Random-Algorithmus](tickets/04-obstacle-gen.md)** — Faire, spielbare Hindernisse ohne Chaos (nicht zu viele auf einmal, nicht zu lange leere Pausen)
 
 **[Scroll-Geschwindigkeit calibrieren](tickets/03-scroll-speed.md)** — Prototype: Spielbar fühlen, nicht zu schnell, später Difficulty-Scaling
-
-**[Progression-Design: MVP-Phase vs Real Production](tickets/05-progression-design.md)** — Wie sieht der Übergang aus? Wann schaltet Real Production frei? Wie zeigen wir das visuell?
 
 ## Not yet specified (Fog)
 
@@ -72,8 +71,8 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 
 ## [05-progression-design.md](tickets/05-progression-design.md)
 **Type:** Grilling (HITL)  
-**Status:** Open, Unclaimed  
-**Blocked by:** MVP-Scope
+**Status:** ✅ Closed  
+**Decision:** MVP-Phase (200-300 Units), 1 Leben in Production, kompletter Score
 
 ## [06-ui-screens-design.md](tickets/06-ui-screens-design.md)
 **Type:** Grilling (HITL)  
