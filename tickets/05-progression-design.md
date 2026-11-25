@@ -1,7 +1,7 @@
 # Ticket 05: Progression-Design: MVP-Phase vs Real Production
 
 **Type:** Grilling (HITL)  
-**Status:** Open, Unclaimed  
+**Status:** 🔄 In Progress (Claimed)  
 **Blocked by:** MVP-Scope  
 
 ## Question
@@ -10,12 +10,16 @@ Wie und wann wechselt das Spiel von der **MVP-Phase** (sicher, keine Konsequenze
 
 Konkret:
 - **Screen-Count**: Wie viele Screens / wie weit Distanz dauert die MVP-Phase? (du hast "erste 2-3 Screens" erwähnt)
-- **Visueller Übergang**: Wie zeigen wir dem Spieler, dass sich die Welt ändert? (Hintergrund wechselt von "MVP" zu "Production"? Farbmodus wechselt? Musik/Sound?)
-- **Game-Over-Verhalten**: Im MVP: Spieler kann crashen, es ist okay. In Production: Echte Konsequenzen (Game Over, Lives verloren, etc.)
+- **Visueller Übergang**: Wie zeigen wir dem Spieler, dass sich die Welt ändert?
+- **Game-Over-Verhalten**: Im MVP: Spieler kann crashen, es ist okay. In Production: Echte Konsequenzen
 - **Score/Leaderboard**: Zählen MVP-Screens in den Score? Oder nur Production-Screens?
 
-Diese Entscheidung formt das **Pacing** und das **Gefühl** des Spiels fundamental.
+## Partial Resolution (MVP-Level)
 
-## Notes
+**Visueller Übergang:** Siehe Ticket 06 — eine **horizontale Linie** im Hintergrund markiert den Übergang von MVP zu Production. Später (Backlog): Farbfilter-Wechsel (hellblau → dunkles blau).
 
-Das hängt mit MVP-Scope zusammen (welche Game States brauchen wir?) und mit Obstacle-Generator (wie baut sich Schwierigkeit auf?). Gehört zur lore des Spiels: "Am Anfang ist man im MVP (sicher), dann geht man in Production (echt)."
+**Noch offen für tiefere Grilling:**
+- Distanz/Distanz-Count für Übergang? (z.B. nach 500m, oder nach 10 Obstacles?)
+- Game-Over-Verhalten: Was passiert genau, wenn wir in Real Production crashen?
+- Lives-System: Ein Leben, oder mehrere?
+- Score-Zählung: Zählen MVP-Meters mit, oder nur Production?

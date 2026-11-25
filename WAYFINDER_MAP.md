@@ -22,11 +22,11 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 
 ## Decisions so far
 
-- [**MVP-Scope klarifizieren**](tickets/01-mvp-scope.md) — 2D-Pixel-Sprite mit Lauf-Animation, einfache Blöcke auf einer Höhe, Blau-Weiße Farben mit roten Akzenten, Playing→GameOver-Flow mit UI-Platzhaltern
+- [**MVP-Scope klarifizieren**](tickets/01-mvp-scope.md) — 2D-Pixel-Sprite mit Lauf-Animation, einfache Blöcke auf einer Höhe, Blau-Weiße Farben mit roten Akzenten
+- [**Pixel Art in Three.js: Laden & Rendern**](tickets/02-pixel-art-approach.md) — PlaneGeometry + NearestFilter für crisp Pixels, spritesheet.json Config für Designer-Austausch, Text-Mesh für dynamische Buzzwords
+- [**Start & Game Over Screen Design**](tickets/06-ui-screens-design.md) — Start: Blurred Szenerie + großer "Christmas Game"-Titel. Game Over: 80er-Konsolen-Style Scores. MVP→Production: Linie im Hintergrund, später Farbshift
 
 ## Open Tickets (Frontier)
-
-**[Pixel Art in Three.js: Laden & Rendern](tickets/02-pixel-art-approach.md)** — Welche Strategie: PNG-Atlas? SVG? Wie austauschbar? Kritisch: Text auf Obstacles rendern
 
 **[Hindernisse-Generator: Semi-Random-Algorithmus](tickets/04-obstacle-gen.md)** — Faire, spielbare Hindernisse ohne Chaos (nicht zu viele auf einmal, nicht zu lange leere Pausen)
 
@@ -57,8 +57,8 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 
 ## [02-pixel-art-approach.md](tickets/02-pixel-art-approach.md)
 **Type:** Research + Grilling (AFK + HITL)  
-**Status:** Open, Unclaimed  
-**Blocks:** Prototype-Build  
+**Status:** ✅ Closed  
+**Decision:** Asset-Pipeline definiert — PlaneGeometry + NearestFilter, spritesheet.json Config, Text-Mesh für Buzzwords  
 
 ## [03-scroll-speed.md](tickets/03-scroll-speed.md)
 **Type:** Prototype (HITL)  
@@ -74,3 +74,8 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 **Type:** Grilling (HITL)  
 **Status:** Open, Unclaimed  
 **Blocked by:** MVP-Scope
+
+## [06-ui-screens-design.md](tickets/06-ui-screens-design.md)
+**Type:** Grilling (HITL)  
+**Status:** ✅ Closed  
+**Decision:** Start-Screen & Game Over-Screen + MVP→Production-Linie definiert
