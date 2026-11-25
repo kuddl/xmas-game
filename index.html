@@ -2,7 +2,12 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <title>CHRISTMAS GAME — Corporate Winter Run</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -57,13 +62,18 @@
 
         <div class="hud-bottom">
           <div id="powerup-bar" class="powerup-bar"></div>
-          <div class="hud-controls-hint">
+          <div class="hud-controls-hint txt-key">
             <span>[SPACE] JUMP</span>
             <span>[↓] DUCK / DROP</span>
             <span>[← / →] PACE</span>
             <span>[ESC] PAUSE</span>
           </div>
         </div>
+
+        <!-- Touch: pause button + zone hints (left half = duck, right half = jump) -->
+        <button id="btn-pause" class="pause-fab" aria-label="Pause">II</button>
+        <div class="touch-zone touch-zone-left txt-touch"><span>&darr;</span> HOLD = DUCK</div>
+        <div class="touch-zone touch-zone-right txt-touch">TAP = JUMP <span>&uarr;</span></div>
       </div>
 
       <!-- Start Screen Overlay -->
@@ -75,18 +85,28 @@
             Dodging Deadlines, TCO &amp; Scope Creep<br />
             on the road to Real Production
           </p>
-          <button id="btn-start" class="pixel-btn">PRESS SPACE TO START</button>
+          <button id="btn-start" class="pixel-btn"><span class="txt-key">PRESS SPACE</span><span class="txt-touch">TAP HERE</span> TO START</button>
           <label class="tutorial-toggle">
             <input type="checkbox" id="chk-tutorial" />
             <span class="pixel-check" aria-hidden="true"></span>
             <span>START WITH TUTORIAL</span>
           </label>
-          <div class="controls-legend">
+          <div class="controls-legend txt-key">
             <span><strong>SPACE</strong> Jump</span>
             <span><strong>↓</strong> Duck</span>
             <span><strong>← / →</strong> Slow / Boost</span>
           </div>
+          <div class="controls-legend txt-touch">
+            <span><strong>TAP RIGHT</strong> Jump</span>
+            <span><strong>HOLD LEFT</strong> Duck</span>
+          </div>
         </div>
+      </div>
+
+      <!-- Phones in portrait: the view ahead would be far too short -->
+      <div id="rotate-hint" class="rotate-hint">
+        <div class="rotate-icon">&#8635;</div>
+        <div>PLEASE TURN YOUR PHONE<br />TO LANDSCAPE</div>
       </div>
 
       <!-- Game Over Overlay (80s Console Style) -->
@@ -119,7 +139,7 @@
             <ol id="go-leaderboard-list" class="lb-list"></ol>
           </div>
 
-          <button id="btn-restart" class="pixel-btn">PRESS SPACE TO RESTART</button>
+          <button id="btn-restart" class="pixel-btn"><span class="txt-key">PRESS SPACE</span><span class="txt-touch">TAP HERE</span> TO RESTART</button>
         </div>
       </div>
 
@@ -127,7 +147,7 @@
       <div id="pause-screen" class="pause-overlay hidden">
         <div class="pause-card">
           <div class="pause-title">PAUSED</div>
-          <div class="pause-hint">PRESS ESC TO RESUME</div>
+          <div class="pause-hint"><span class="txt-key">PRESS ESC TO RESUME</span><span class="txt-touch">TAP RESUME TO GO ON</span></div>
           <button id="btn-resume" class="pixel-btn pause-btn">RESUME</button>
         </div>
       </div>
@@ -143,7 +163,7 @@
             <div id="tut-title" class="tut-title"></div>
           </div>
           <div id="tut-text" class="tut-text"></div>
-          <div class="tut-continue">&#9654; PRESS SPACE TO CONTINUE</div>
+          <div class="tut-continue">&#9654; <span class="txt-key">PRESS SPACE</span><span class="txt-touch">TAP</span> TO CONTINUE</div>
         </div>
       </div>
     </div>

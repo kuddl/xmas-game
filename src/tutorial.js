@@ -1,7 +1,7 @@
 import { GAME_CONFIG } from './config.js';
 
 const STORAGE_KEY = 'xmas_game_tutorial_done_v1';
-const CONTINUE_LOCK_MS = 400; // ignore SPACE right after a card opens (no accidental skips)
+const CONTINUE_LOCK_MS = 400; // ignore SPACE/taps right after a card opens (no accidental skips)
 const SPOT_LEAD_PX = 250; // freeze once the target is this far ahead of the player
 
 /**
@@ -66,7 +66,8 @@ export class TutorialDirector {
         card: {
           icon: 'obstacle',
           title: 'BUZZWORD BLOCKS',
-          text: 'DEADLINE, TCO, SCOPE &amp; friends block your way.<br>Press <b>SPACE</b> to jump over them.',
+          text: (k) =>
+            `DEADLINE, TCO, SCOPE &amp; friends block your way.<br>${k('Press <b>SPACE</b>', 'Tap the <b>right side</b>')} to jump over them.`,
         },
       },
       {
@@ -99,7 +100,8 @@ export class TutorialDirector {
         card: {
           icon: 'obstacleFlyer',
           title: 'FLYING INVITES',
-          text: 'Meeting invites fly in at head height.<br>Hold <b>&darr;</b> to duck under them.',
+          text: (k) =>
+            `Meeting invites fly in at head height.<br>${k('Hold <b>&darr;</b>', 'Hold the <b>left side</b>')} to duck under them.`,
         },
       },
       {
@@ -118,7 +120,8 @@ export class TutorialDirector {
         card: {
           icon: 'platform',
           title: 'ICE PLATFORMS',
-          text: 'Jump up through ice ledges to run on<br>level 2 and 3 &mdash; safe from blocks up there.<br>Press <b>&darr;</b> to drop back down.',
+          text: (k) =>
+            `Jump up through ice ledges to run on<br>level 2 and 3 &mdash; safe from blocks up there.<br>${k('Press <b>&darr;</b>', 'Tap the <b>left side</b>')} to drop back down.`,
         },
       },
       {
@@ -254,7 +257,8 @@ export class TutorialDirector {
     const text =
       type === 'breakthrough'
         ? `For <b>${def.duration} seconds</b> you smash right<br>through every block and invite.`
-        : `For <b>${def.duration} seconds</b>: press <b>SPACE</b> again<br>in mid-air to jump a second time.`;
+        : (k) =>
+            `For <b>${def.duration} seconds</b>: ${k('press <b>SPACE</b>', 'tap <b>right</b>')} again<br>in mid-air to jump a second time.`;
     this.open({
       icon: def.sprite,
       title: def.label,
@@ -269,8 +273,11 @@ export class TutorialDirector {
   open(card) {
     this.card = { ...card, openedAt: performance.now() };
     const scale = this.game.worldContainer.scale.x;
+    // Texts can depend on the input mode: k(keyboardWording, touchWording)
+    const k = (key, touch) => (this.game.isTouch ? touch : key);
     this.game.ui.showSpotlight({
       ...card,
+      text: typeof card.text === 'function' ? card.text(k) : card.text,
       screenX: card.target.x() * scale,
       screenY: card.target.y() * scale,
       screenR: card.target.r * scale * 0.5,

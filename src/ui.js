@@ -33,6 +33,7 @@ export class UIManager {
     this.btnStart = document.getElementById('btn-start');
     this.btnRestart = document.getElementById('btn-restart');
     this.btnResume = document.getElementById('btn-resume');
+    this.btnPause = document.getElementById('btn-pause');
     this.pauseScreen = document.getElementById('pause-screen');
     this.hudSp = document.getElementById('hud-sp');
     this.goSp = document.getElementById('go-sp');
@@ -285,6 +286,11 @@ export class UIManager {
     return this.chkTutorial.checked;
   }
 
+  /** Touch mode swaps every keyboard hint for its tap/hold counterpart (CSS: body.touch) */
+  setTouchMode(isTouch) {
+    document.body.classList.toggle('touch', isTouch);
+  }
+
   set tutorialChecked(value) {
     this.chkTutorial.checked = value;
   }
@@ -323,17 +329,20 @@ export class UIManager {
 
     ov.classList.remove('hidden');
 
-    // Place the card beside the spotlight, inside the viewport
+    // Place the card on the side of the spotlight with more room; shrink it on small screens
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const cardW = this.tutCard.offsetWidth;
+    const gap = 20;
+    const roomRight = vw - (screenX + ringR + gap) - 12;
+    const roomLeft = screenX - ringR - gap - 12;
+    const placeRight = roomRight >= roomLeft;
+    const cardW = Math.max(240, Math.min(460, placeRight ? roomRight : roomLeft));
+    this.tutCard.style.width = `${cardW}px`;
     const cardH = this.tutCard.offsetHeight;
-    const gap = 24;
-    let left = screenX + ringR + gap;
-    if (left + cardW > vw - 16) left = screenX - ringR - gap - cardW;
-    left = Math.max(16, Math.min(vw - cardW - 16, left));
-    let top = screenY - cardH / 2 - 40;
-    top = Math.max(110, Math.min(vh - cardH - 60, top));
+    let left = placeRight ? screenX + ringR + gap : screenX - ringR - gap - cardW;
+    left = Math.max(12, Math.min(vw - cardW - 12, left));
+    let top = screenY - cardH / 2 - 30;
+    top = Math.max(Math.min(110, vh * 0.2), Math.min(vh - cardH - 12, top));
     this.tutCard.style.left = `${left}px`;
     this.tutCard.style.top = `${top}px`;
   }

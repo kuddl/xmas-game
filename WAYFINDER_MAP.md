@@ -31,6 +31,7 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 - [**Ebenen (Plattformen zum Hochspringen)**](tickets/09-platform-levels.md) — One-Way-Eisplattformen auf Ebene 2 (72 px) und 3 (144 px), Treppen-Muster, Power-Up als Belohnung oben; keine Hindernisse darunter, 1,2 s Auslauf danach
 - [**Pause & Story Points**](tickets/10-pause-story-points.md) — ESC/P pausiert (Auto-Pause bei Tab-Wechsel); Goldmünzen als Bögen, Duck-Reihen und Plattform-Reihen, Zähler im HUD und auf dem Game-Over-Screen
 - [**MVP-Tutorial (Spotlight-Momente)**](tickets/11-mvp-tutorial.md) — Feste MVP-Strecke mit 7 Spotlight-Karten + Karte beim Fangen eines Power-Ups; weiter mit SPACE; im Browser gespeichert, Checkbox „START WITH TUTORIAL“ auf dem Startscreen
+- [**Mobile-Steuerung**](tickets/12-mobile-controls.md) — Linke Hälfte halten = ducken/durchfallen, rechte Hälfte tippen = springen; Touch-Hinweise, Pause-Button, Texte wechseln auf „TAP“, Hochformat-Hinweis mit Auto-Pause, Kompakt-Layout
 
 ## Open Tickets (Frontier)
 

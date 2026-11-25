@@ -24,6 +24,8 @@ export class Game {
       right: false,
       down: false,
     };
+    this.duckPointers = new Set(); // active touches holding the left (duck) zone
+    this.isTouch = null;
 
     this.app = null;
     this.worldContainer = null;
@@ -113,7 +115,16 @@ export class Game {
   }
 
   bindEvents() {
+    // Start in touch mode on phones/tablets; any key press switches back to keyboard wording
+    this.setTouchMode(window.matchMedia('(hover: none) and (pointer: coarse)').matches);
+    // Same query as the CSS rotate hint: turning the phone to portrait pauses the run
+    this.portraitQuery = window.matchMedia('(orientation: portrait) and (max-width: 820px)');
+    this.portraitQuery.addEventListener('change', (e) => {
+      if (e.matches && this.isTouch) this.setPaused(true);
+    });
+
     window.addEventListener('keydown', (e) => {
+      this.setTouchMode(false);
       if (e.code === 'Escape' || e.code === 'KeyP') {
         e.preventDefault();
         if (!e.repeat) this.togglePause();
@@ -153,11 +164,12 @@ export class Game {
       }
     });
 
-    this.app.canvas.addEventListener('pointerdown', () => {
-      if (this.state === 'PLAYING') {
-        this.player.queueJump();
-      }
-    });
+    this.app.canvas.addEventListener('pointerdown', (e) => this.onPointerDown(e));
+    window.addEventListener('pointerup', (e) => this.onPointerUp(e));
+    window.addEventListener('pointercancel', (e) => this.onPointerUp(e));
+    // Long-press would open the context menu on mobile
+    this.app.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    this.ui.btnPause.addEventListener('click', () => this.togglePause());
 
     this.ui.btnStart.addEventListener('click', () => this.startRun());
     this.ui.btnRestart.addEventListener('click', () => this.startRun());
@@ -179,6 +191,36 @@ export class Game {
     this.keys.left = false;
     this.keys.right = false;
     this.keys.down = false;
+    this.duckPointers.clear();
+  }
+
+  /**
+   * Touch: hold the LEFT half = duck / drop / fast-fall, tap the RIGHT half = jump.
+   * Mouse: a click anywhere jumps.
+   */
+  onPointerDown(e) {
+    if (e.pointerType === 'touch') this.setTouchMode(true);
+    if (this.state !== 'PLAYING') return;
+
+    if (e.pointerType === 'touch' && e.clientX < window.innerWidth / 2) {
+      this.duckPointers.add(e.pointerId);
+      this.keys.down = true;
+    } else {
+      this.player.queueJump();
+    }
+  }
+
+  onPointerUp(e) {
+    if (this.duckPointers.delete(e.pointerId) && this.duckPointers.size === 0) {
+      this.keys.down = false;
+    }
+  }
+
+  /** Switches all on-screen hints between keyboard and touch wording */
+  setTouchMode(isTouch) {
+    if (this.isTouch === isTouch) return;
+    this.isTouch = isTouch;
+    this.ui.setTouchMode(isTouch);
   }
 
   /** Freeze the game for a tutorial spotlight card */
