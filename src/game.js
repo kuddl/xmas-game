@@ -7,6 +7,7 @@ import { PowerUpManager } from './powerups.js';
 import { EffectsManager } from './effects.js';
 import { PlatformManager } from './platforms.js';
 import { CoinManager } from './coins.js';
+import { TutorialDirector } from './tutorial.js';
 import { UIManager } from './ui.js';
 
 export class Game {
@@ -61,7 +62,10 @@ export class Game {
       this.coins.onObstacle(obstacle, gapPx);
     };
     this.platforms.onReward = (x, y) => this.powerups.spawnReward(x, y);
-    this.platforms.onCreate = (left, width, top) => this.coins.onPlatform(left, width, top);
+    this.platforms.onCreate = (left, width, top) =>
+      this.tutorial?.active
+        ? this.coins.rowOnPlatform(left, width, top) // scripted track: always show coins
+        : this.coins.onPlatform(left, width, top);
     // Spacing rules: no obstacles under/next to platforms, no platform over an obstacle
     this.obstacles.isBlocked = (left, right, speed) =>
       this.platforms.blocksObstacle(left, right, speed);
@@ -73,6 +77,16 @@ export class Game {
       icons[type] = this.assetLoader.getSpriteMeta(def.sprite)?.path;
     }
     this.ui.setPowerUpIcons(icons);
+
+    // Tutorial: on by default until it has been completed once in this browser
+    this.tutorial = new TutorialDirector(this);
+    const spriteIcons = {};
+    for (const key of ['obstacle', 'coin', 'obstacleFlyer', 'platform', 'powerupMerkle', 'powerupArc']) {
+      const meta = this.assetLoader.getSpriteMeta(key);
+      if (meta) spriteIcons[key] = { path: meta.path, frames: meta.frames || 0 };
+    }
+    this.ui.setSpriteIcons(spriteIcons);
+    this.ui.tutorialChecked = !TutorialDirector.isDone();
 
     this.shakeTime = 0;
     this.auraEmitAccumulator = 0;
@@ -107,7 +121,9 @@ export class Game {
       }
       if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
         e.preventDefault();
-        if (this.state === 'START' || this.state === 'GAME_OVER') {
+        if (this.state === 'INTRO') {
+          this.continueTutorial();
+        } else if (this.state === 'START' || this.state === 'GAME_OVER') {
           this.startRun();
         } else if (this.state === 'PLAYING' && !e.repeat) {
           this.player.queueJump();
@@ -146,6 +162,7 @@ export class Game {
     this.ui.btnStart.addEventListener('click', () => this.startRun());
     this.ui.btnRestart.addEventListener('click', () => this.startRun());
     this.ui.btnResume.addEventListener('click', () => this.setPaused(false));
+    this.ui.tutOverlay.addEventListener('pointerdown', () => this.continueTutorial());
 
     // Auto-pause when the tab or window loses focus (prevents stuck keys and unfair deaths)
     document.addEventListener('visibilitychange', () => {
@@ -156,6 +173,27 @@ export class Game {
 
   togglePause() {
     this.setPaused(this.state === 'PLAYING');
+  }
+
+  releaseKeys() {
+    this.keys.left = false;
+    this.keys.right = false;
+    this.keys.down = false;
+  }
+
+  /** Freeze the game for a tutorial spotlight card */
+  enterIntro() {
+    this.state = 'INTRO';
+    this.releaseKeys();
+  }
+
+  continueTutorial() {
+    if (this.state !== 'INTRO') return;
+    if (!this.tutorial.tryContinue()) return;
+    this.state = 'PLAYING';
+    this.releaseKeys();
+    // Finished once: next start defaults to no tutorial
+    if (!this.tutorial.active) this.ui.tutorialChecked = false;
   }
 
   setPaused(paused) {
@@ -183,6 +221,12 @@ export class Game {
     this.platforms.reset();
     this.coins.reset();
     this.storyPoints = 0;
+    this.ui.hideSpotlight();
+    if (this.ui.tutorialChecked) {
+      this.tutorial.start();
+    } else {
+      this.tutorial.stop();
+    }
     this.effects.clear();
     this.ui.clearPowerUps();
     this.shakeTime = 0;
@@ -197,6 +241,7 @@ export class Game {
 
   triggerGameOver(causeWord) {
     this.state = 'GAME_OVER';
+    this.tutorial.stop();
     this.player.setPowerVisual(null);
     this.ui.clearPowerUps();
     this.worldContainer.position.set(0, 0);
@@ -239,7 +284,7 @@ export class Game {
   }
 
   update(ticker) {
-    if (this.state === 'PAUSED') return; // scene stays rendered, nothing moves
+    if (this.state === 'PAUSED' || this.state === 'INTRO') return; // scene stays rendered, nothing moves
     const dt = Math.min(0.05, ticker.deltaMS / 1000);
     this.effects.update(dt);
 
@@ -304,6 +349,12 @@ export class Game {
     this.platforms.update(dt, scrollSpeed, this.viewWidth);
     this.coins.update(dt, scrollSpeed);
 
+    // Scripted MVP onboarding: spawn elements and freeze for spotlight cards
+    if (this.tutorial.update(this.distanceMeters)) {
+      this.enterIntro();
+      return;
+    }
+
     this.powerups.update(dt, scrollSpeed);
 
     // Collect power-ups
@@ -314,6 +365,10 @@ export class Game {
       this.powerups.activate(collected.type);
       this.effects.burst(collected.x, collected.y, def.color, 24, 190);
       this.ui.showToast(`${def.label}! ${def.hint}`, def.cssColor);
+      if (this.tutorial.onPowerUpCollected(collected.type)) {
+        this.enterIntro();
+        return;
+      }
     }
 
     this.updatePowerUpVisuals(dt);

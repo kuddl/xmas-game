@@ -81,6 +81,7 @@ export class PlatformManager {
     this.container.addChild(c);
     this.platforms.push({ container: c, left, width, top, levelIndex });
     this.onCreate?.(left, width, top);
+    return this.platforms[this.platforms.length - 1];
   }
 
   /** Plain geometry for player physics: [{ left, right, top }] */

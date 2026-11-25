@@ -614,3 +614,145 @@ body {
   padding: 10px 16px;
   animation: none;
 }
+
+/* Start screen: tutorial checkbox */
+.tutorial-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 9px;
+  color: var(--snow);
+  cursor: pointer;
+}
+
+.tutorial-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pixel-check {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--snow);
+  background: #0a1628;
+  box-shadow: 2px 2px 0 #071224;
+  position: relative;
+}
+
+.tutorial-toggle input:checked + .pixel-check::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: var(--gold);
+}
+
+.tutorial-toggle input:focus-visible + .pixel-check {
+  outline: 2px dashed var(--gold);
+  outline-offset: 2px;
+}
+
+/* Tutorial spotlight */
+.tutorial-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  --spot-x: 50%;
+  --spot-y: 50%;
+  --spot-r: 80px;
+  background: radial-gradient(
+    circle at var(--spot-x) var(--spot-y),
+    transparent var(--spot-r),
+    rgba(4, 14, 75, 0.6) calc(var(--spot-r) + 8px)
+  );
+  animation: tutFade 0.18s ease-out;
+}
+
+@keyframes tutFade {
+  from {
+    opacity: 0;
+  }
+}
+
+.tut-ring {
+  position: absolute;
+  border: 4px dashed var(--gold);
+  border-radius: 50%;
+  animation: tutPulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes tutPulse {
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.tut-card {
+  --tut-accent: var(--gold);
+  position: absolute;
+  width: min(460px, calc(100vw - 40px));
+  background: rgba(4, 14, 75, 0.95);
+  border: 4px solid var(--snow);
+  box-shadow: 6px 6px 0 #071122;
+  padding: 16px 20px;
+  color: var(--snow);
+}
+
+.tut-step {
+  font-size: 8px;
+  color: var(--ice-light);
+  margin-bottom: 10px;
+}
+
+.tut-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.tut-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  image-rendering: pixelated;
+}
+
+.tut-icon:empty[style=''] {
+  display: none;
+}
+
+.tut-badge {
+  font-size: 9px;
+  padding: 6px 8px;
+  border: 2px solid var(--snow);
+  background: var(--red);
+}
+
+.tut-title {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--tut-accent);
+}
+
+.tut-text {
+  font-size: 9px;
+  line-height: 2;
+  margin-bottom: 14px;
+}
+
+.tut-text b {
+  color: var(--gold);
+  font-weight: normal;
+}
+
+.tut-continue {
+  font-size: 9px;
+  color: var(--gold);
+  animation: blinkBtn 1.2s infinite;
+}

@@ -28,8 +28,9 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 - [**Progression-Design: MVP-Phase vs Real Production**](tickets/05-progression-design.md) — MVP-Phase: erste 200-300 Units (25-40 Sekunden), dann Production mit 1 Leben Game Over. Kompletter Score von Anfang bis Ende
 - [**Power-Ups mit Firmen-Logos**](tickets/07-powerups.md) — Merkle-Logo = Breakthrough (durch Blöcke brechen), Arc-Logo = Double Jump; je 5 s, Aura + Funken an der Figur, HUD-Balken unten links
 - [**Ducken & fliegende Hindernisse**](tickets/08-ducking.md) — ↓ = ducken (Boden) / durchfallen (Plattform) / schneller fallen (Luft); geflügelte Meeting-Invites mit Buzzword-Banner ab 60 m
-- [**Ebenen (Plattformen zum Hochspringen)**](tickets/09-platform-levels.md) — One-Way-Eisplattformen auf Ebene 2 (72 px) und 3 (144 px), Treppen-Muster, Power-Up als Belohnung oben
+- [**Ebenen (Plattformen zum Hochspringen)**](tickets/09-platform-levels.md) — One-Way-Eisplattformen auf Ebene 2 (72 px) und 3 (144 px), Treppen-Muster, Power-Up als Belohnung oben; keine Hindernisse darunter, 1,2 s Auslauf danach
 - [**Pause & Story Points**](tickets/10-pause-story-points.md) — ESC/P pausiert (Auto-Pause bei Tab-Wechsel); Goldmünzen als Bögen, Duck-Reihen und Plattform-Reihen, Zähler im HUD und auf dem Game-Over-Screen
+- [**MVP-Tutorial (Spotlight-Momente)**](tickets/11-mvp-tutorial.md) — Feste MVP-Strecke mit 7 Spotlight-Karten + Karte beim Fangen eines Power-Ups; weiter mit SPACE; im Browser gespeichert, Checkbox „START WITH TUTORIAL“ auf dem Startscreen
 
 ## Open Tickets (Frontier)
 

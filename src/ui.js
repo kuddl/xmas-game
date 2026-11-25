@@ -38,6 +38,19 @@ export class UIManager {
     this.goSp = document.getElementById('go-sp');
     this.lastSp = 0;
 
+    this.chkTutorial = document.getElementById('chk-tutorial');
+    this.tutOverlay = document.getElementById('tutorial-overlay');
+    this.tutRing = document.getElementById('tut-ring');
+    this.tutCard = document.getElementById('tut-card');
+    this.tutStep = document.getElementById('tut-step');
+    this.tutIcon = document.getElementById('tut-icon');
+    this.tutBadge = document.getElementById('tut-badge');
+    this.tutTitle = document.getElementById('tut-title');
+    this.tutText = document.getElementById('tut-text');
+    this.spriteIcons = {};
+    // A clicked checkbox keeps focus and would toggle on SPACE: hand focus back to the game
+    this.chkTutorial.addEventListener('change', () => this.chkTutorial.blur());
+
     this.toastTimeout = null;
     this.leaderboard = this.loadLeaderboard();
     this.renderLeaderboard();
@@ -261,5 +274,71 @@ export class UIManager {
   /** type -> icon URL (resolved from spritesheet.json so designers can swap assets) */
   setPowerUpIcons(icons) {
     this.powerupIcons = icons;
+  }
+
+  /** sprite key -> { path, frames } from spritesheet.json (tutorial card icons) */
+  setSpriteIcons(icons) {
+    this.spriteIcons = icons;
+  }
+
+  get tutorialChecked() {
+    return this.chkTutorial.checked;
+  }
+
+  set tutorialChecked(value) {
+    this.chkTutorial.checked = value;
+  }
+
+  showSpotlight({ screenX, screenY, screenR, step, title, text, icon, badge, accent }) {
+    const ov = this.tutOverlay;
+    ov.style.setProperty('--spot-x', `${screenX}px`);
+    ov.style.setProperty('--spot-y', `${screenY}px`);
+    ov.style.setProperty('--spot-r', `${screenR}px`);
+
+    const ringR = screenR + 6;
+    Object.assign(this.tutRing.style, {
+      left: `${screenX - ringR}px`,
+      top: `${screenY - ringR}px`,
+      width: `${ringR * 2}px`,
+      height: `${ringR * 2}px`,
+    });
+
+    this.tutStep.textContent = step || '';
+    this.tutTitle.textContent = title || '';
+    this.tutText.innerHTML = text || '';
+    this.tutCard.style.setProperty('--tut-accent', accent || 'var(--gold)');
+
+    const meta = icon ? this.spriteIcons[icon] : null;
+    if (meta) {
+      this.tutIcon.style.display = '';
+      this.tutIcon.style.backgroundImage = `url('${meta.path}')`;
+      // Sprite sheets: show only the first frame
+      this.tutIcon.style.backgroundSize = meta.frames ? `${meta.frames * 100}% 100%` : 'contain';
+      this.tutIcon.style.backgroundPosition = meta.frames ? '0 0' : 'center';
+    } else {
+      this.tutIcon.style.display = 'none';
+    }
+    this.tutBadge.classList.toggle('hidden', !badge);
+    this.tutBadge.textContent = badge || '';
+
+    ov.classList.remove('hidden');
+
+    // Place the card beside the spotlight, inside the viewport
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const cardW = this.tutCard.offsetWidth;
+    const cardH = this.tutCard.offsetHeight;
+    const gap = 24;
+    let left = screenX + ringR + gap;
+    if (left + cardW > vw - 16) left = screenX - ringR - gap - cardW;
+    left = Math.max(16, Math.min(vw - cardW - 16, left));
+    let top = screenY - cardH / 2 - 40;
+    top = Math.max(110, Math.min(vh - cardH - 60, top));
+    this.tutCard.style.left = `${left}px`;
+    this.tutCard.style.top = `${top}px`;
+  }
+
+  hideSpotlight() {
+    this.tutOverlay.classList.add('hidden');
   }
 }

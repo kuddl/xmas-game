@@ -88,16 +88,17 @@ export class ObstacleManager {
     return label;
   }
 
-  spawn(spawnX, kind = 'ground') {
-    const obs = kind === 'flyer' ? this.buildFlyer(spawnX) : this.buildGround(spawnX);
+  spawn(spawnX, kind = 'ground', word = null) {
+    const obs =
+      kind === 'flyer' ? this.buildFlyer(spawnX, word) : this.buildGround(spawnX, word);
     this.container.addChild(obs.container);
     this.obstacles.push(obs);
     this.lastKind = kind;
     return obs;
   }
 
-  buildGround(spawnX) {
-    const word = this.nextWord('ground');
+  buildGround(spawnX, fixedWord = null) {
+    const word = fixedWord || this.nextWord('ground');
     const c = new Container();
     c.position.set(spawnX, GAME_CONFIG.GROUND_Y);
 
@@ -137,8 +138,8 @@ export class ObstacleManager {
     };
   }
 
-  buildFlyer(spawnX) {
-    const word = this.nextWord('flyer');
+  buildFlyer(spawnX, fixedWord = null) {
+    const word = fixedWord || this.nextWord('flyer');
     const bottomY = GAME_CONFIG.GROUND_Y - GAME_CONFIG.FLYER_BOTTOM_ABOVE_GROUND;
     const c = new Container();
     c.position.set(spawnX, bottomY);

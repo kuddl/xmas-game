@@ -76,6 +76,11 @@
             on the road to Real Production
           </p>
           <button id="btn-start" class="pixel-btn">PRESS SPACE TO START</button>
+          <label class="tutorial-toggle">
+            <input type="checkbox" id="chk-tutorial" />
+            <span class="pixel-check" aria-hidden="true"></span>
+            <span>START WITH TUTORIAL</span>
+          </label>
           <div class="controls-legend">
             <span><strong>SPACE</strong> Jump</span>
             <span><strong>↓</strong> Duck</span>
@@ -124,6 +129,21 @@
           <div class="pause-title">PAUSED</div>
           <div class="pause-hint">PRESS ESC TO RESUME</div>
           <button id="btn-resume" class="pixel-btn pause-btn">RESUME</button>
+        </div>
+      </div>
+
+      <!-- Tutorial spotlight: dims the scene, rings the new element, explains it -->
+      <div id="tutorial-overlay" class="tutorial-overlay hidden">
+        <div id="tut-ring" class="tut-ring"></div>
+        <div id="tut-card" class="tut-card">
+          <div id="tut-step" class="tut-step"></div>
+          <div class="tut-head">
+            <div id="tut-icon" class="tut-icon"></div>
+            <div id="tut-badge" class="tut-badge hidden"></div>
+            <div id="tut-title" class="tut-title"></div>
+          </div>
+          <div id="tut-text" class="tut-text"></div>
+          <div class="tut-continue">&#9654; PRESS SPACE TO CONTINUE</div>
         </div>
       </div>
     </div>

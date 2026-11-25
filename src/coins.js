@@ -39,15 +39,17 @@ export class CoinManager {
     sprite.visible = true;
     sprite.position.set(x, y);
     this.container.addChild(sprite);
-    this.coins.push({ sprite, x, y, phase });
+    const coin = { sprite, x, y, phase };
+    this.coins.push(coin);
+    return coin;
   }
 
   /** Coin arc above a ground block, tracing the jump path (kept above the buzzword sign) */
   arcOver(x) {
     const ground = GAME_CONFIG.GROUND_Y;
-    [-56, -28, 0, 28, 56].forEach((dx, i) => {
+    return [-56, -28, 0, 28, 56].map((dx, i) => {
       const lift = 50 + 32 * (1 - (dx / 72) ** 2);
-      this.add(x + dx, ground - lift, i);
+      return this.add(x + dx, ground - lift, i);
     });
   }
 

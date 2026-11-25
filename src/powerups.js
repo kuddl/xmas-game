@@ -84,7 +84,9 @@ export class PowerUpManager {
     c.addChild(icon);
 
     this.container.addChild(c);
-    this.pickups.push({ type, container: c, glow, icon, x, baseY, t: Math.random() * 6 });
+    const pickup = { type, container: c, glow, icon, x, baseY, t: Math.random() * 6 };
+    this.pickups.push(pickup);
+    return pickup;
   }
 
   isActive(type) {

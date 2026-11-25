@@ -26,6 +26,11 @@ Wie funktionieren eine zweite und dritte Ebene, auf die man springen und auf der
 - `src/platforms.js`: Spawning, Oberflächen für die Physik
 - `src/player.js`: Landung auf Plattformen, Durchfallen, Schatten auf der Fläche unter der Figur
 
+### Nachtrag: Abstandsregeln (nach Playtest)
+- **Keine Hindernisse unter Plattformen** (weder Blöcke noch Flieger)
+- **70 px frei vor** einer Plattform, **1,2 s Auslauf frei nach** einer Plattform (wächst mit dem Tempo)
+- Plattformen erscheinen erst, wenn vorne kein Hindernis mehr im Weg steht
+- Damit ist auch das Problem mit verdeckten Schildern erledigt
+
 ### Offen / später
 - Hindernisse auch **auf** Plattformen
-- Schilder von Bodenblöcken werden von Plattformen verdeckt, wenn beide übereinander liegen
