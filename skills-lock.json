@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "skills": {
+    "pixijs": {
+      "source": "pixijs/pixijs-skills",
+      "commit": "93784384269b1d8677fb2ae166c81d750cba4281",
+      "sourceType": "github",
+      "skillPath": "skills/pixijs/SKILL.md",
+      "computedHash": "07c27f721df5b1ddf896548054022ded991da53d4e796b9c8c73c2221e6ac11e"
+    },
+    "pixijs-3d": {
+      "source": "pixijs/pixijs-skills",
+      "commit": "93784384269b1d8677fb2ae166c81d750cba4281",
+      "sourceType": "github",
+      "skillPath": "skills/pixijs-3d/SKILL.md",
+      "computedHash": "e0c34b9a3d0258726dae2919b061dde079c3a6b20d0fc92c68b3d42e0179c27c"
+    }
+  }
+}

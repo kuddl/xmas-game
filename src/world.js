@@ -1,16 +1,29 @@
-import * as THREE from 'three';
+import {
+  Container,
+  FillGradient,
+  Graphics,
+  Sprite,
+  Text,
+  Texture,
+  TilingSprite,
+} from 'pixi.js';
 import { GAME_CONFIG } from './config.js';
 
 export class World {
-  constructor(assetLoader, scene) {
+  constructor(assetLoader, parentContainer, initialViewWidth) {
     this.assetLoader = assetLoader;
-    this.scene = scene;
-    this.group = new THREE.Group();
-    this.scene.add(this.group);
+    this.viewWidth = initialViewWidth;
 
-    this.layers = [];
-    this.snowParticles = null;
-    this.productionLineGroup = null;
+    this.bgContainer = new Container();
+    this.bgContainer.zIndex = 0;
+    parentContainer.addChild(this.bgContainer);
+
+    this.fgContainer = new Container();
+    this.fgContainer.zIndex = 30;
+    parentContainer.addChild(this.fgContainer);
+
+    this.parallaxLayers = [];
+    this.snowflakes = [];
 
     this.buildSky();
     this.buildParallaxLayers();
@@ -20,199 +33,176 @@ export class World {
   }
 
   buildSky() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 4;
-    canvas.height = 128;
-    const ctx = canvas.getContext('2d');
-    const grad = ctx.createLinearGradient(0, 0, 0, 128);
-    grad.addColorStop(0, '#3a8ad6');
-    grad.addColorStop(0.45, '#7bc4f7');
-    grad.addColorStop(0.85, '#c7e8ff');
-    grad.addColorStop(1, '#eaf6ff');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 4, 128);
+    this.skyGradient = new FillGradient({
+      type: 'linear',
+      start: { x: 0, y: 0 },
+      end: { x: 0, y: 1 },
+      colorStops: [
+        { offset: 0, color: '#3a8ad6' },
+        { offset: 0.45, color: '#7bc4f7' },
+        { offset: 0.85, color: '#c7e8ff' },
+        { offset: 1, color: '#eaf6ff' },
+      ],
+    });
 
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    const geo = new THREE.PlaneGeometry(50, GAME_CONFIG.WORLD_HEIGHT + 2);
-    const mat = new THREE.MeshBasicMaterial({ map: tex });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.z = -10;
-    this.group.add(mesh);
+    this.sky = new Graphics()
+      .rect(0, 0, this.viewWidth, GAME_CONFIG.VIRTUAL_HEIGHT)
+      .fill(this.skyGradient);
+    this.bgContainer.addChild(this.sky);
   }
 
   buildParallaxLayers() {
-    const layerDefs = [
+    const defs = [
       {
         key: 'bgMountainsFar',
-        width: 48,
-        height: 9.0,
-        y: GAME_CONFIG.GROUND_Y + 4.3,
-        z: -6,
-        repeatX: 2.5,
-        parallax: 0.012,
+        scale: 2,
+        bottomY: GAME_CONFIG.GROUND_Y + 4,
+        parallax: 0.14,
       },
       {
         key: 'bgMountainsMid',
-        width: 48,
-        height: 7.4,
-        y: GAME_CONFIG.GROUND_Y + 3.5,
-        z: -4,
-        repeatX: 2.8,
-        parallax: 0.025,
+        scale: 1.75,
+        bottomY: GAME_CONFIG.GROUND_Y + 4,
+        parallax: 0.3,
       },
       {
         key: 'bgTreesNear',
-        width: 48,
-        height: 3.6,
-        y: GAME_CONFIG.GROUND_Y + 1.75,
-        z: -2,
-        repeatX: 3.5,
-        parallax: 0.055,
+        scale: 1.85,
+        bottomY: GAME_CONFIG.GROUND_Y + 2,
+        parallax: 0.62,
       },
     ];
 
-    for (const def of layerDefs) {
-      const tex = this.assetLoader.getTexture(def.key).clone();
-      tex.needsUpdate = true;
-      tex.magFilter = THREE.NearestFilter;
-      tex.minFilter = THREE.NearestFilter;
-      tex.generateMipmaps = false;
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.ClampToEdgeWrapping;
-      tex.repeat.set(def.repeatX, 1);
-
-      const geo = new THREE.PlaneGeometry(def.width, def.height);
-      const mat = new THREE.MeshBasicMaterial({
-        map: tex,
-        transparent: true,
-        alphaTest: 0.05,
+    for (const def of defs) {
+      const texture = this.assetLoader.getTexture(def.key);
+      const layerHeight = texture.height * def.scale;
+      const tiling = new TilingSprite({
+        texture,
+        width: this.viewWidth,
+        height: layerHeight,
       });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(0, def.y, def.z);
-      this.group.add(mesh);
+      tiling.tileScale.set(def.scale, def.scale);
+      tiling.position.set(0, def.bottomY - layerHeight);
+      this.bgContainer.addChild(tiling);
 
-      this.layers.push({ tex, parallax: def.parallax });
+      this.parallaxLayers.push({ sprite: tiling, parallax: def.parallax });
     }
   }
 
   buildGround() {
-    const groundHeight = 3.2;
-    const groundWidth = 48;
-    const tex = this.assetLoader.getTexture('ground').clone();
-    tex.needsUpdate = true;
-    tex.magFilter = THREE.NearestFilter;
-    tex.minFilter = THREE.NearestFilter;
-    tex.generateMipmaps = false;
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.wrapT = THREE.ClampToEdgeWrapping;
-    tex.repeat.set(12, 1);
+    const texture = this.assetLoader.getTexture('ground');
+    const groundHeight = GAME_CONFIG.VIRTUAL_HEIGHT - GAME_CONFIG.GROUND_Y;
+    const scale = Math.ceil(groundHeight / texture.height);
 
-    const geo = new THREE.PlaneGeometry(groundWidth, groundHeight);
-    const mat = new THREE.MeshBasicMaterial({ map: tex });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(0, GAME_CONFIG.GROUND_Y - groundHeight * 0.5, 0.5);
-    this.group.add(mesh);
-
-    this.groundLayer = {
-      tex,
-      repeatPerUnit: 12 / groundWidth,
-    };
+    this.ground = new TilingSprite({
+      texture,
+      width: this.viewWidth,
+      height: groundHeight + 8,
+    });
+    this.ground.tileScale.set(scale, scale);
+    this.ground.position.set(0, GAME_CONFIG.GROUND_Y);
+    this.bgContainer.addChild(this.ground);
   }
 
   buildProductionLine() {
-    this.productionLineGroup = new THREE.Group();
+    this.productionLine = new Container();
 
-    // Vertical red/white milestone line spanning the sky down to ground
-    const lineGeo = new THREE.PlaneGeometry(0.14, GAME_CONFIG.WORLD_HEIGHT);
-    const lineMat = new THREE.MeshBasicMaterial({
-      color: 0xe02f40,
-      transparent: true,
-      opacity: 0.85,
+    const line = new Graphics()
+      .rect(-2, 0, 4, GAME_CONFIG.GROUND_Y)
+      .fill({ color: 0xe02f40, alpha: 0.85 });
+    this.productionLine.addChild(line);
+
+    const bannerW = 142;
+    const bannerH = 26;
+    const bannerY = 72;
+
+    const bannerBg = new Graphics()
+      .rect(-bannerW / 2, bannerY, bannerW, bannerH)
+      .fill(0x12223a)
+      .rect(-bannerW / 2 + 2, bannerY + 2, bannerW - 4, bannerH - 4)
+      .fill(0xf2f8ff)
+      .rect(-bannerW / 2 + 4, bannerY + 4, bannerW - 8, bannerH - 8)
+      .fill(0xe02f40);
+    this.productionLine.addChild(bannerBg);
+
+    const bannerText = new Text({
+      text: 'REAL PRODUCTION',
+      style: {
+        fontFamily: '"Press Start 2P", "Courier New", monospace',
+        fontSize: 7.5,
+        fontWeight: 'bold',
+        fill: 0xffffff,
+      },
     });
-    const lineMesh = new THREE.Mesh(lineGeo, lineMat);
-    lineMesh.position.y = 0.5;
-    lineMesh.position.z = 0.2;
+    bannerText.anchor.set(0.5, 0.5);
+    bannerText.position.set(0, bannerY + bannerH / 2 + 0.5);
+    this.productionLine.addChild(bannerText);
 
-    // Banner at top of line
-    const bannerTex = this.assetLoader.createProductionBannerTexture();
-    const bannerGeo = new THREE.PlaneGeometry(4.2, 1.05);
-    const bannerMat = new THREE.MeshBasicMaterial({
-      map: bannerTex,
-      transparent: true,
-    });
-    const bannerMesh = new THREE.Mesh(bannerGeo, bannerMat);
-    bannerMesh.position.y = GAME_CONFIG.GROUND_Y + 6.8;
-    bannerMesh.position.z = 0.3;
-
-    this.productionLineGroup.add(lineMesh);
-    this.productionLineGroup.add(bannerMesh);
-    this.group.add(this.productionLineGroup);
+    this.bgContainer.addChild(this.productionLine);
   }
 
   buildSnowfall() {
-    const count = 140;
-    const positions = new Float32Array(count * 3);
-    this.snowVelocities = new Float32Array(count * 2);
-
+    const count = 90;
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 34;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * (GAME_CONFIG.WORLD_HEIGHT + 2);
-      positions[i * 3 + 2] = 3 + Math.random();
+      const size = Math.random() < 0.65 ? 2 : 3;
+      const flake = new Sprite(Texture.WHITE);
+      flake.width = size;
+      flake.height = size;
+      flake.alpha = 0.6 + Math.random() * 0.35;
+      flake.position.set(
+        Math.random() * (this.viewWidth + 100),
+        Math.random() * GAME_CONFIG.VIRTUAL_HEIGHT
+      );
+      this.fgContainer.addChild(flake);
 
-      this.snowVelocities[i * 2] = -0.8 - Math.random() * 1.4; // wind X
-      this.snowVelocities[i * 2 + 1] = -1.2 - Math.random() * 1.8; // fall Y
+      this.snowflakes.push({
+        sprite: flake,
+        vx: -18 - Math.random() * 28,
+        vy: 30 + Math.random() * 48,
+      });
     }
-
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-    const mat = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: 5,
-      sizeAttenuation: false,
-      transparent: true,
-      opacity: 0.85,
-    });
-
-    this.snowParticles = new THREE.Points(geo, mat);
-    this.group.add(this.snowParticles);
   }
 
-  update(dt, scrollSpeed, { distance = 0, playerX = GAME_CONFIG.PLAYER_BASE_X } = {}) {
-    // Scroll parallax backgrounds
-    for (const layer of this.layers) {
-      layer.tex.offset.x = (layer.tex.offset.x + scrollSpeed * layer.parallax * dt) % 1;
+  resize(newViewWidth) {
+    this.viewWidth = newViewWidth;
+    this.sky
+      .clear()
+      .rect(0, 0, newViewWidth, GAME_CONFIG.VIRTUAL_HEIGHT)
+      .fill(this.skyGradient);
+
+    for (const layer of this.parallaxLayers) {
+      layer.sprite.width = newViewWidth;
+    }
+    this.ground.width = newViewWidth;
+  }
+
+  update(dt, scrollSpeed, { distanceMeters = 0, playerX = GAME_CONFIG.PLAYER_BASE_X } = {}) {
+    // Scroll parallax layers
+    for (const layer of this.parallaxLayers) {
+      layer.sprite.tilePosition.x -= scrollSpeed * layer.parallax * dt;
     }
 
-    // Scroll ground locked 1:1 with world units
-    this.groundLayer.tex.offset.x =
-      (this.groundLayer.tex.offset.x +
-        scrollSpeed * this.groundLayer.repeatPerUnit * dt) %
-      1;
+    // Scroll ground 1:1 with world pixels
+    this.ground.tilePosition.x -= scrollSpeed * dt;
 
-    // Position the MVP -> REAL PRODUCTION boundary line in world space
-    const unitsRemaining = GAME_CONFIG.MVP_DISTANCE_UNITS - distance;
-    this.productionLineGroup.position.x = playerX + unitsRemaining;
-    this.productionLineGroup.visible =
-      Math.abs(this.productionLineGroup.position.x) < 26;
+    // Position the MVP -> REAL PRODUCTION boundary line
+    const metersRemaining = GAME_CONFIG.MVP_DISTANCE_METERS - distanceMeters;
+    const lineX = playerX + metersRemaining * GAME_CONFIG.PIXELS_PER_METER;
+    this.productionLine.x = lineX;
+    this.productionLine.visible = lineX > -120 && lineX < this.viewWidth + 160;
 
     // Animate snowfall
-    const pos = this.snowParticles.geometry.attributes.position;
-    const halfH = GAME_CONFIG.WORLD_HEIGHT * 0.5 + 1;
-    for (let i = 0; i < pos.count; i++) {
-      let x = pos.getX(i) + (this.snowVelocities[i * 2] - scrollSpeed * 0.18) * dt;
-      let y = pos.getY(i) + this.snowVelocities[i * 2 + 1] * dt;
+    for (const flake of this.snowflakes) {
+      flake.sprite.x += (flake.vx - scrollSpeed * 0.2) * dt;
+      flake.sprite.y += flake.vy * dt;
 
-      if (x < -17) x += 34;
-      if (y < -halfH) {
-        y = halfH;
-        x = (Math.random() - 0.5) * 34;
+      if (flake.sprite.x < -10) {
+        flake.sprite.x = this.viewWidth + Math.random() * 40;
       }
-      pos.setXY(i, x, y);
+      if (flake.sprite.y > GAME_CONFIG.VIRTUAL_HEIGHT + 6) {
+        flake.sprite.y = -6;
+        flake.sprite.x = Math.random() * (this.viewWidth + 60);
+      }
     }
-    pos.needsUpdate = true;
   }
 }

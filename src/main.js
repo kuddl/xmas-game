@@ -13,7 +13,8 @@ async function bootstrap() {
   const assetLoader = new AssetLoader();
   try {
     await assetLoader.loadAll();
-    new Game(assetLoader);
+    const game = new Game(assetLoader);
+    await game.init();
   } catch (err) {
     console.error('Failed to initialize Christmas Game:', err);
   }

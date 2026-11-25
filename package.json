@@ -9,11 +9,11 @@
     "preview": "vite preview",
     "generate-assets": "node scripts/generate-assets.mjs"
   },
-  "dependencies": {
-    "three": "^0.174.0"
-  },
   "devDependencies": {
     "vite": "^6.2.0",
     "wrangler": "^4.168.0"
+  },
+  "dependencies": {
+    "pixi.js": "8.23.0"
   }
 }

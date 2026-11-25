@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { Application, Container } from 'pixi.js';
 import { GAME_CONFIG } from './config.js';
 import { World } from './world.js';
 import { Player } from './player.js';
@@ -12,78 +12,64 @@ export class Game {
     this.container = document.getElementById('canvas-container');
 
     this.state = 'START'; // START | PLAYING | GAME_OVER
-    this.distance = 0;
+    this.distanceMeters = 0;
     this.elapsedTime = 0;
     this.keys = {
       left: false,
       right: false,
     };
 
-    this.initThree();
+    this.app = null;
+    this.worldContainer = null;
+    this.viewWidth = 640;
+  }
 
-    this.world = new World(assetLoader, this.scene);
-    this.player = new Player(assetLoader);
-    this.scene.add(this.player.group);
-    this.obstacles = new ObstacleManager(assetLoader, this.scene);
+  async init() {
+    this.app = new Application();
+    await this.app.init({
+      resizeTo: this.container,
+      background: '#3a8ad6',
+      antialias: false,
+      roundPixels: true,
+      autoDensity: true,
+      resolution: Math.min(window.devicePixelRatio || 1, 2),
+    });
+
+    this.container.appendChild(this.app.canvas);
+
+    this.worldContainer = new Container();
+    this.worldContainer.sortableChildren = true;
+    this.app.stage.addChild(this.worldContainer);
+
+    this.computeScale(this.app.screen.width, this.app.screen.height);
+
+    this.world = new World(this.assetLoader, this.worldContainer, this.viewWidth);
+    this.player = new Player(this.assetLoader);
+    this.worldContainer.addChild(this.player.container);
+    this.obstacles = new ObstacleManager(this.assetLoader, this.worldContainer);
+
+    this.app.renderer.on('resize', (width, height) => {
+      this.computeScale(width, height);
+      this.world.resize(this.viewWidth);
+    });
+
+    this.resizeObserver = new ResizeObserver(() => this.app.queueResize());
+    this.resizeObserver.observe(this.container);
 
     this.bindEvents();
     this.ui.showStartScreen();
 
-    this.lastTime = performance.now();
-    this.loop = this.loop.bind(this);
-    requestAnimationFrame(this.loop);
+    this.app.ticker.add((ticker) => this.update(ticker));
   }
 
-  initThree() {
-    this.scene = new THREE.Scene();
-
-    const width = this.container.clientWidth || window.innerWidth;
-    const height = this.container.clientHeight || window.innerHeight;
-    const aspect = width / height;
-    const halfH = GAME_CONFIG.WORLD_HEIGHT / 2;
-    const halfW = halfH * aspect;
-
-    this.viewHalfWidth = halfW;
-    this.camera = new THREE.OrthographicCamera(
-      -halfW,
-      halfW,
-      halfH,
-      -halfH,
-      0.1,
-      50
-    );
-    this.camera.position.z = 10;
-
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: false,
-      powerPreference: 'high-performance',
-    });
-    this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-    this.container.appendChild(this.renderer.domElement);
-  }
-
-  onResize() {
-    const width = this.container.clientWidth || window.innerWidth;
-    const height = this.container.clientHeight || window.innerHeight;
-    const aspect = width / height;
-    const halfH = GAME_CONFIG.WORLD_HEIGHT / 2;
-    const halfW = halfH * aspect;
-
-    this.viewHalfWidth = halfW;
-    this.camera.left = -halfW;
-    this.camera.right = halfW;
-    this.camera.top = halfH;
-    this.camera.bottom = -halfH;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(width, height);
+  computeScale(screenWidth, screenHeight) {
+    const safeH = Math.max(1, screenHeight);
+    const scale = safeH / GAME_CONFIG.VIRTUAL_HEIGHT;
+    this.worldContainer.scale.set(scale);
+    this.viewWidth = screenWidth / scale;
   }
 
   bindEvents() {
-    window.addEventListener('resize', () => this.onResize());
-
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
         e.preventDefault();
@@ -110,8 +96,7 @@ export class Game {
       }
     });
 
-    // Touch / click jump during gameplay
-    this.renderer.domElement.addEventListener('pointerdown', () => {
+    this.app.canvas.addEventListener('pointerdown', () => {
       if (this.state === 'PLAYING') {
         this.player.queueJump();
       }
@@ -123,13 +108,13 @@ export class Game {
 
   startRun() {
     this.state = 'PLAYING';
-    this.distance = 0;
+    this.distanceMeters = 0;
     this.elapsedTime = 0;
     this.player.reset();
     this.obstacles.reset();
     this.ui.showPlayingHUD();
     this.ui.updateHUD({
-      distance: 0,
+      distanceMeters: 0,
       elapsedTime: 0,
       inProduction: false,
     });
@@ -138,21 +123,21 @@ export class Game {
   triggerGameOver(causeWord) {
     this.state = 'GAME_OVER';
     this.ui.showGameOver({
-      score: this.distance * GAME_CONFIG.METERS_PER_UNIT,
+      score: this.distanceMeters,
       elapsedTime: this.elapsedTime,
       causeWord,
     });
   }
 
   getSpeedInfo() {
-    const inProduction = this.distance >= GAME_CONFIG.MVP_DISTANCE_UNITS;
+    const inProduction = this.distanceMeters >= GAME_CONFIG.MVP_DISTANCE_METERS;
     let baseSpeed = GAME_CONFIG.BASE_SCROLL_SPEED;
 
     if (inProduction) {
-      const prodDist = this.distance - GAME_CONFIG.MVP_DISTANCE_UNITS;
+      const prodMeters = this.distanceMeters - GAME_CONFIG.MVP_DISTANCE_METERS;
       baseSpeed = Math.min(
         GAME_CONFIG.MAX_SCROLL_SPEED,
-        baseSpeed + (prodDist / 100) * GAME_CONFIG.PROD_SPEED_RAMP_PER_100M
+        baseSpeed + (prodMeters / 100) * GAME_CONFIG.PROD_SPEED_RAMP_PER_100M
       );
     }
 
@@ -174,15 +159,16 @@ export class Game {
     };
   }
 
-  update(dt) {
+  update(ticker) {
+    const dt = Math.min(0.05, ticker.deltaMS / 1000);
+
     if (this.state === 'START') {
-      // Gentle attract-mode scrolling in blurred background
       const idleSpeed = GAME_CONFIG.BASE_SCROLL_SPEED * 0.45;
       this.world.update(dt, idleSpeed, {
-        distance: 0,
+        distanceMeters: 0,
         playerX: this.player.x,
       });
-      this.player.update(dt, {
+      this.player.update(ticker, dt, {
         moveDir: 0,
         speedMultiplier: 0.6,
         isPlaying: false,
@@ -191,9 +177,8 @@ export class Game {
     }
 
     if (this.state === 'GAME_OVER') {
-      // Only gentle snowfall keeps moving
       this.world.update(dt, 0, {
-        distance: this.distance,
+        distanceMeters: this.distanceMeters,
         playerX: this.player.x,
       });
       return;
@@ -204,26 +189,25 @@ export class Game {
       this.getSpeedInfo();
 
     this.elapsedTime += dt;
-    this.distance += scrollSpeed * dt;
+    this.distanceMeters += (scrollSpeed * dt) / GAME_CONFIG.PIXELS_PER_METER;
 
     this.world.update(dt, scrollSpeed, {
-      distance: this.distance,
+      distanceMeters: this.distanceMeters,
       playerX: this.player.x,
     });
 
-    this.player.update(dt, {
+    this.player.update(ticker, dt, {
       moveDir,
       speedMultiplier,
       isPlaying: true,
     });
 
     this.obstacles.update(dt, scrollSpeed, {
-      viewHalfWidth: this.viewHalfWidth,
+      viewWidth: this.viewWidth,
       inProduction,
-      distance: this.distance,
+      distanceMeters: this.distanceMeters,
     });
 
-    // Collision check
     const hitObstacle = this.obstacles.checkCollision(this.player.getHitbox());
     if (hitObstacle) {
       if (!inProduction) {
@@ -239,19 +223,9 @@ export class Game {
     }
 
     this.ui.updateHUD({
-      distance: this.distance,
+      distanceMeters: this.distanceMeters,
       elapsedTime: this.elapsedTime,
       inProduction,
     });
-  }
-
-  loop(now) {
-    const dt = Math.min(0.05, (now - this.lastTime) / 1000);
-    this.lastTime = now;
-
-    this.update(dt);
-    this.renderer.render(this.scene, this.camera);
-
-    requestAnimationFrame(this.loop);
   }
 }

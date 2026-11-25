@@ -18,7 +18,7 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 - **Crouching später**: Für fliegende Obstacles, nicht im MVP
 - **Prototype-first**: Einfache Blöcke auf Augenhöhe zum Starten, später Höhenvarianz + fliegende Obstacles
 - **Backlog-Mindset**: Power-Up-System, Crouching, Obstacle-Text-Rendering, Firma-Logos, Musik/Audio später
-- **Three.js + Pixelart**: Asset-Austauschbarkeit kritisch für Text-Rendering auf Obstacles
+- **PixiJS v8 + Pixelart**: Umstellung von Three.js auf PixiJS v8 (native 2D-Engine mit `AnimatedSprite`, `TilingSprite`, `Assets`-API & `scaleMode: 'nearest'`). Offizielle `pixijs-skills` im Repo unter `.agents/skills/` eingebunden.
 
 ## Decisions so far
 

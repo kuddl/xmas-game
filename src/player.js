@@ -1,70 +1,63 @@
-import * as THREE from 'three';
+import { AnimatedSprite, Container, Graphics } from 'pixi.js';
 import { GAME_CONFIG } from './config.js';
 
 export class Player {
   constructor(assetLoader) {
     this.meta = assetLoader.getSpriteMeta('player');
-    const baseTexture = assetLoader.getTexture('player');
-    this.texture = baseTexture.clone();
-    this.texture.needsUpdate = true;
-    this.texture.magFilter = THREE.NearestFilter;
-    this.texture.minFilter = THREE.NearestFilter;
-    this.texture.generateMipmaps = false;
-    this.texture.colorSpace = THREE.SRGBColorSpace;
+    const allFrames = assetLoader.getFrames('player');
 
-    this.totalFrames = this.meta?.frames || 4;
-    this.runFrames = this.meta?.animations?.run?.frames || [0, 1, 2, 1];
-    this.runFps = this.meta?.animations?.run?.fps || 10;
-    this.jumpFrame = this.meta?.animations?.jump?.frames?.[0] ?? 3;
+    const runIndices = this.meta?.animations?.run?.frames || [0, 1, 2, 1];
+    const jumpIndices = this.meta?.animations?.jump?.frames || [3];
+    this.baseRunFps = this.meta?.animations?.run?.fps || 10;
 
-    this.texture.repeat.set(1 / this.totalFrames, 1);
-    this.texture.offset.set(0, 0);
+    this.runTextures = runIndices.map((i) => allFrames[i]);
+    this.jumpTextures = jumpIndices.map((i) => allFrames[i]);
 
-    const size = GAME_CONFIG.PLAYER_SIZE;
-    const geometry = new THREE.PlaneGeometry(size, size);
-    this.material = new THREE.MeshBasicMaterial({
-      map: this.texture,
-      transparent: true,
-      alphaTest: 0.1,
+    this.container = new Container();
+    this.container.zIndex = 20;
+
+    // Ground shadow oval under the player's feet
+    this.shadow = new Graphics()
+      .ellipse(0, 0, GAME_CONFIG.PLAYER_SIZE * 0.34, 4)
+      .fill({ color: 0x0f2b4c, alpha: 0.35 });
+    this.container.addChild(this.shadow);
+
+    // Animated 8-bit sprite (driven manually by game ticker via autoUpdate: false)
+    this.sprite = new AnimatedSprite({
+      textures: this.runTextures,
+      autoUpdate: false,
+      autoPlay: true,
+      animationSpeed: this.baseRunFps / 60,
     });
+    this.sprite.anchor.set(0.5, 1);
+    const scale = GAME_CONFIG.PLAYER_SIZE / (this.meta?.frameWidth || 16);
+    this.sprite.scale.set(scale);
+    this.container.addChild(this.sprite);
 
-    this.mesh = new THREE.Mesh(geometry, this.material);
-    this.mesh.position.z = 2;
-
-    // Ground shadow oval under player
-    const shadowGeo = new THREE.PlaneGeometry(size * 0.72, size * 0.14);
-    this.shadowMat = new THREE.MeshBasicMaterial({
-      color: 0x0f2b4c,
-      transparent: true,
-      opacity: 0.35,
-    });
-    this.shadow = new THREE.Mesh(shadowGeo, this.shadowMat);
-    this.shadow.position.z = 1.5;
-
-    this.group = new THREE.Group();
-    this.group.add(this.shadow);
-    this.group.add(this.mesh);
-
+    this.currentAnim = 'run';
     this.reset();
-  }
-
-  get groundCenterY() {
-    return GAME_CONFIG.GROUND_Y + GAME_CONFIG.PLAYER_SIZE * 0.5;
   }
 
   reset() {
     this.x = GAME_CONFIG.PLAYER_BASE_X;
-    this.y = this.groundCenterY;
+    this.y = GAME_CONFIG.GROUND_Y;
     this.vy = 0;
     this.isGrounded = true;
     this.coyoteTimer = 0;
     this.jumpBufferTimer = 0;
-    this.animTimer = 0;
-    this.animIndex = 0;
     this.flashTimer = 0;
-    this.material.opacity = 1;
-    this.material.color.setHex(0xffffff);
-    this.syncMesh();
+
+    this.setAnimation('run');
+    this.sprite.tint = 0xffffff;
+    this.sprite.alpha = 1;
+    this.syncDisplay();
+  }
+
+  setAnimation(name) {
+    if (this.currentAnim === name) return;
+    this.currentAnim = name;
+    this.sprite.textures = name === 'jump' ? this.jumpTextures : this.runTextures;
+    this.sprite.play();
   }
 
   queueJump() {
@@ -73,27 +66,24 @@ export class Player {
 
   triggerSafeHit() {
     this.flashTimer = 0.55;
-    // Slight playful hop if grounded
     if (this.isGrounded) {
       this.vy = GAME_CONFIG.JUMP_VELOCITY * 0.35;
       this.isGrounded = false;
     }
   }
 
-  update(dt, { moveDir = 0, speedMultiplier = 1, isPlaying = true } = {}) {
-    // Horizontal subtle adjustment with Left/Right keys
+  update(ticker, dt, { moveDir = 0, speedMultiplier = 1, isPlaying = true } = {}) {
+    // Subtle horizontal nudge with Left/Right keys
     if (isPlaying) {
       if (moveDir !== 0) {
         this.x += moveDir * GAME_CONFIG.PLAYER_NUDGE_SPEED * dt;
       } else {
-        // Gently drift back toward base X
         const diff = GAME_CONFIG.PLAYER_BASE_X - this.x;
         this.x += diff * Math.min(1, dt * 2.5);
       }
-      this.x = THREE.MathUtils.clamp(
-        this.x,
+      this.x = Math.max(
         GAME_CONFIG.PLAYER_MIN_X,
-        GAME_CONFIG.PLAYER_MAX_X
+        Math.min(GAME_CONFIG.PLAYER_MAX_X, this.x)
       );
     }
 
@@ -114,66 +104,60 @@ export class Player {
       }
     }
 
-    // Vertical physics
+    // Vertical physics (Y-down)
     this.vy += GAME_CONFIG.GRAVITY * dt;
     this.y += this.vy * dt;
 
-    if (this.y <= this.groundCenterY) {
-      this.y = this.groundCenterY;
+    if (this.y >= GAME_CONFIG.GROUND_Y) {
+      this.y = GAME_CONFIG.GROUND_Y;
       this.vy = 0;
       this.isGrounded = true;
     }
 
-    // Sprite frame animation
+    // Animation state
     if (!this.isGrounded) {
-      this.setFrame(this.jumpFrame);
+      this.setAnimation('jump');
     } else {
-      this.animTimer += dt * this.runFps * speedMultiplier;
-      this.animIndex = Math.floor(this.animTimer) % this.runFrames.length;
-      this.setFrame(this.runFrames[this.animIndex]);
+      this.setAnimation('run');
+      this.sprite.animationSpeed = (this.baseRunFps / 60) * speedMultiplier;
+      this.sprite.update(ticker);
     }
 
     // MVP safe-hit blink feedback
     if (this.flashTimer > 0) {
       this.flashTimer = Math.max(0, this.flashTimer - dt);
       const blink = Math.floor(this.flashTimer * 18) % 2 === 0;
-      this.material.color.setHex(blink ? 0x99ffbb : 0xffffff);
-      this.material.opacity = blink ? 0.75 : 1;
+      this.sprite.tint = blink ? 0x99ffbb : 0xffffff;
+      this.sprite.alpha = blink ? 0.75 : 1;
     } else {
-      this.material.color.setHex(0xffffff);
-      this.material.opacity = 1;
+      this.sprite.tint = 0xffffff;
+      this.sprite.alpha = 1;
     }
 
-    this.syncMesh();
+    this.syncDisplay();
   }
 
-  setFrame(frameIndex) {
-    this.texture.offset.x = frameIndex / this.totalFrames;
-  }
+  syncDisplay() {
+    this.sprite.position.set(this.x, this.y);
 
-  syncMesh() {
-    this.mesh.position.x = this.x;
-    this.mesh.position.y = this.y;
-
-    const heightAboveGround = Math.max(0, this.y - this.groundCenterY);
-    const shadowScale = Math.max(0.4, 1 - heightAboveGround * 0.14);
-    this.shadow.position.x = this.x;
-    this.shadow.position.y = GAME_CONFIG.GROUND_Y + 0.06;
-    this.shadow.scale.set(shadowScale, 1, 1);
-    this.shadowMat.opacity = 0.35 * shadowScale;
+    const heightAboveGround = Math.max(0, GAME_CONFIG.GROUND_Y - this.y);
+    const shadowScale = Math.max(0.4, 1 - heightAboveGround / 180);
+    this.shadow.position.set(this.x, GAME_CONFIG.GROUND_Y - 1);
+    this.shadow.scale.set(shadowScale, 1);
+    this.shadow.alpha = shadowScale;
   }
 
   /**
-   * Forgiving hitbox (slightly inset from visual sprite bounds)
+   * Forgiving hitbox in virtual pixel coordinates (Y-down)
    */
   getHitbox() {
     const halfW = GAME_CONFIG.PLAYER_SIZE * 0.28;
-    const halfH = GAME_CONFIG.PLAYER_SIZE * 0.38;
+    const height = GAME_CONFIG.PLAYER_SIZE * 0.82;
     return {
       left: this.x - halfW,
       right: this.x + halfW,
-      bottom: this.y - GAME_CONFIG.PLAYER_SIZE * 0.45,
-      top: this.y + halfH,
+      top: this.y - height,
+      bottom: this.y - 2,
     };
   }
 }

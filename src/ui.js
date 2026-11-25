@@ -127,17 +127,22 @@ export class UIManager {
     this.goTime.textContent = this.formatTime(elapsedTime);
   }
 
-  updateHUD({ distance, elapsedTime, inProduction }) {
-    const meters = distance * GAME_CONFIG.METERS_PER_UNIT;
-    this.hudScore.textContent = this.formatMeters(meters);
+  updateHUD({ distanceMeters, elapsedTime, inProduction }) {
+    this.hudScore.textContent = this.formatMeters(distanceMeters);
     this.hudTime.textContent = this.formatTime(elapsedTime);
 
-    const best = Math.max(this.getHighScore(), Math.floor(meters));
+    const best = Math.max(this.getHighScore(), Math.floor(distanceMeters));
     this.hudHighScore.textContent = this.formatMeters(best);
 
     if (!inProduction) {
-      const pct = Math.min(100, (distance / GAME_CONFIG.MVP_DISTANCE_UNITS) * 100);
-      const remaining = Math.max(0, Math.ceil(GAME_CONFIG.MVP_DISTANCE_UNITS - distance));
+      const pct = Math.min(
+        100,
+        (distanceMeters / GAME_CONFIG.MVP_DISTANCE_METERS) * 100
+      );
+      const remaining = Math.max(
+        0,
+        Math.ceil(GAME_CONFIG.MVP_DISTANCE_METERS - distanceMeters)
+      );
       this.phaseBadge.textContent = 'MVP PHASE (SAFE)';
       this.phaseBadge.className = 'badge badge-mvp';
       this.phaseProgressLabel.textContent = `${remaining}m TO PROD`;
