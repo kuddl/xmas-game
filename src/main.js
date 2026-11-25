@@ -15,6 +15,7 @@ async function bootstrap() {
     await assetLoader.loadAll();
     const game = new Game(assetLoader);
     await game.init();
+    if (import.meta.env.DEV) window.__game = game; // debug handle (dev only)
   } catch (err) {
     console.error('Failed to initialize Christmas Game:', err);
   }

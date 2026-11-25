@@ -17,7 +17,7 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 - **Input-Mechaniken**: Space (Jump), Left/Right (beschleunigen/verlangsamen, nicht links/rechts bewegen!)
 - **Crouching später**: Für fliegende Obstacles, nicht im MVP
 - **Prototype-first**: Einfache Blöcke auf Augenhöhe zum Starten, später Höhenvarianz + fliegende Obstacles
-- **Backlog-Mindset**: Power-Up-System, Crouching, Obstacle-Text-Rendering, Firma-Logos, Musik/Audio später
+- **Backlog-Mindset**: Crouching, Musik/Audio später
 - **PixiJS v8 + Pixelart**: Umstellung von Three.js auf PixiJS v8 (native 2D-Engine mit `AnimatedSprite`, `TilingSprite`, `Assets`-API & `scaleMode: 'nearest'`). Offizielle `pixijs-skills` im Repo unter `.agents/skills/` eingebunden.
 
 ## Decisions so far
@@ -26,8 +26,11 @@ Das Spiel ist ein **Weihnachtsgame für Firmenkunden** — der Spieler läuft au
 - [**Pixel Art in Three.js: Laden & Rendern**](tickets/02-pixel-art-approach.md) — PlaneGeometry + NearestFilter für crisp Pixels, spritesheet.json Config für Designer-Austausch, Text-Mesh für Buzzwords
 - [**Start & Game Over Screen Design**](tickets/06-ui-screens-design.md) — Start: Blurred Szenerie + "Christmas Game"-Titel. Game Over: 80er-Konsolen-Scores
 - [**Progression-Design: MVP-Phase vs Real Production**](tickets/05-progression-design.md) — MVP-Phase: erste 200-300 Units (25-40 Sekunden), dann Production mit 1 Leben Game Over. Kompletter Score von Anfang bis Ende
+- [**Power-Ups mit Firmen-Logos**](tickets/07-powerups.md) — Merkle-Logo = Breakthrough (durch Blöcke brechen), Arc-Logo = Double Jump; je 5 s, Aura + Funken an der Figur, HUD-Balken unten links
 
 ## Open Tickets (Frontier)
+
+**[Ducken & fliegende Hindernisse](tickets/08-ducking.md)** — Steuerung fürs Ducken (↓-Taste vs. automatisch vs. weglassen) und welche fliegenden Obstacles es braucht
 
 **[Hindernisse-Generator: Semi-Random-Algorithmus](tickets/04-obstacle-gen.md)** — Faire, spielbare Hindernisse ohne Chaos (nicht zu viele auf einmal, nicht zu lange leere Pausen)
 

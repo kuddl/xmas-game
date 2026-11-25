@@ -3,6 +3,8 @@ import { GAME_CONFIG } from './config.js';
 import { World } from './world.js';
 import { Player } from './player.js';
 import { ObstacleManager } from './obstacle.js';
+import { PowerUpManager } from './powerups.js';
+import { EffectsManager } from './effects.js';
 import { UIManager } from './ui.js';
 
 export class Game {
@@ -47,6 +49,18 @@ export class Game {
     this.player = new Player(this.assetLoader);
     this.worldContainer.addChild(this.player.container);
     this.obstacles = new ObstacleManager(this.assetLoader, this.worldContainer);
+    this.powerups = new PowerUpManager(this.assetLoader, this.worldContainer);
+    this.effects = new EffectsManager(this.assetLoader, this.worldContainer);
+    this.obstacles.onGap = (x, gapPx) => this.powerups.onObstacleGap(x, gapPx);
+
+    const icons = {};
+    for (const [type, def] of Object.entries(GAME_CONFIG.POWERUPS)) {
+      icons[type] = this.assetLoader.getSpriteMeta(def.sprite)?.path;
+    }
+    this.ui.setPowerUpIcons(icons);
+
+    this.shakeTime = 0;
+    this.auraEmitAccumulator = 0;
 
     this.app.renderer.on('resize', (width, height) => {
       this.computeScale(width, height);
@@ -112,6 +126,11 @@ export class Game {
     this.elapsedTime = 0;
     this.player.reset();
     this.obstacles.reset();
+    this.powerups.reset();
+    this.effects.clear();
+    this.ui.clearPowerUps();
+    this.shakeTime = 0;
+    this.worldContainer.position.set(0, 0);
     this.ui.showPlayingHUD();
     this.ui.updateHUD({
       distanceMeters: 0,
@@ -122,6 +141,9 @@ export class Game {
 
   triggerGameOver(causeWord) {
     this.state = 'GAME_OVER';
+    this.player.setPowerVisual(null);
+    this.ui.clearPowerUps();
+    this.worldContainer.position.set(0, 0);
     this.ui.showGameOver({
       score: this.distanceMeters,
       elapsedTime: this.elapsedTime,
@@ -161,6 +183,7 @@ export class Game {
 
   update(ticker) {
     const dt = Math.min(0.05, ticker.deltaMS / 1000);
+    this.effects.update(dt);
 
     if (this.state === 'START') {
       const idleSpeed = GAME_CONFIG.BASE_SCROLL_SPEED * 0.45;
@@ -200,7 +223,18 @@ export class Game {
       moveDir,
       speedMultiplier,
       isPlaying: true,
+      canAirJump: this.powerups.isActive('doubleJump'),
     });
+
+    if (this.player.justAirJumped) {
+      this.effects.burst(
+        this.player.x,
+        this.player.y,
+        GAME_CONFIG.POWERUPS.doubleJump.color,
+        14,
+        120
+      );
+    }
 
     this.obstacles.update(dt, scrollSpeed, {
       viewWidth: this.viewWidth,
@@ -208,9 +242,31 @@ export class Game {
       distanceMeters: this.distanceMeters,
     });
 
-    const hitObstacle = this.obstacles.checkCollision(this.player.getHitbox());
+    this.powerups.update(dt, scrollSpeed);
+
+    // Collect power-ups
+    const hitbox = this.player.getHitbox();
+    const collected = this.powerups.checkPickup(hitbox);
+    if (collected) {
+      const def = GAME_CONFIG.POWERUPS[collected.type];
+      this.powerups.activate(collected.type);
+      this.effects.burst(collected.x, collected.y, def.color, 24, 190);
+      this.ui.showToast(`${def.label}! ${def.hint}`, def.cssColor);
+    }
+
+    this.updatePowerUpVisuals(dt);
+
+    const hitObstacle = this.obstacles.checkCollision(hitbox);
     if (hitObstacle) {
-      if (!inProduction) {
+      if (this.powerups.isActive('breakthrough')) {
+        // MERKLE BREAKTHROUGH: smash right through the buzzword block
+        const pos = this.obstacles.smash(hitObstacle);
+        if (pos) {
+          this.effects.debris(pos.x, pos.y);
+          this.effects.burst(pos.x, pos.y, GAME_CONFIG.POWERUPS.breakthrough.color, 12, 150);
+          this.shakeTime = 0.18;
+        }
+      } else if (!inProduction) {
         if (!hitObstacle.hitInMvp) {
           this.obstacles.markSafeHit(hitObstacle);
           this.player.triggerSafeHit();
@@ -227,5 +283,48 @@ export class Game {
       elapsedTime: this.elapsedTime,
       inProduction,
     });
+    this.ui.updatePowerUps(this.powerups.getActiveList());
+    this.applyScreenShake(dt);
+  }
+
+  /** Aura + Asterix-style sparkles for whichever power-up is active */
+  updatePowerUpVisuals(dt) {
+    const activeList = this.powerups.getActiveList();
+    if (activeList.length === 0) {
+      this.player.setPowerVisual(null);
+      return;
+    }
+
+    // Breakthrough takes visual priority; otherwise show the active one
+    const primary =
+      activeList.find((p) => p.type === 'breakthrough') || activeList[0];
+    const def = GAME_CONFIG.POWERUPS[primary.type];
+    const warning = primary.remaining <= GAME_CONFIG.POWERUP_WARNING_TIME;
+    this.player.setPowerVisual(def.color, warning);
+
+    // ~45 sparkles per second, alternating colors if both are active
+    this.auraEmitAccumulator += dt * 45;
+    while (this.auraEmitAccumulator >= 1) {
+      this.auraEmitAccumulator -= 1;
+      const pick = activeList[Math.floor(Math.random() * activeList.length)];
+      this.effects.emitAura(
+        this.player.x,
+        this.player.centerY,
+        GAME_CONFIG.POWERUPS[pick.type].color
+      );
+    }
+  }
+
+  applyScreenShake(dt) {
+    if (this.shakeTime > 0) {
+      this.shakeTime = Math.max(0, this.shakeTime - dt);
+      const amp = 6 * (this.shakeTime / 0.18);
+      this.worldContainer.position.set(
+        (Math.random() - 0.5) * amp,
+        (Math.random() - 0.5) * amp
+      );
+    } else if (this.worldContainer.x !== 0 || this.worldContainer.y !== 0) {
+      this.worldContainer.position.set(0, 0);
+    }
   }
 }

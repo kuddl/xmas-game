@@ -436,7 +436,79 @@ function createCanvas(width, height) {
   c.save('bg-trees-near.png');
 }
 
-// 7. Write spritesheet.json config
+// 7. POWER-UP: MERKLE ICON (16x16) — Gulf Blue badge, white M, Pomegranate triangle
+{
+  const palette = {
+    O: '#f7d1a8', // Maize outline (glowing coin rim)
+    N: '#040e4b', // Gulf Blue
+    W: '#ffffff', // M glyph
+    R: '#f23a1d', // Pomegranate triangle
+  };
+  const grid = [
+    '..OOOOOOOOOOOO..',
+    '.ONNNNNNNNNNNNO.',
+    'ONNNNNNNNNNNNNNO',
+    'ONNNNNNNNNNNNNNO',
+    'ONRRRNWWNNNNWWNO',
+    'ONNRRNWWWNNWWWNO',
+    'ONNNRNWWWWWWWWNO',
+    'ONNNNNWWNWWNWWNO',
+    'ONNNNNWWNNNNWWNO',
+    'ONNNNNWWNNNNWWNO',
+    'ONNNNNWWNNNNWWNO',
+    'ONNNNNNNNNNNNNNO',
+    'ONNNNNNNNNNNNNNO',
+    'ONNNNNNNNNNNNNNO',
+    '.ONNNNNNNNNNNNO.',
+    '..OOOOOOOOOOOO..',
+  ];
+  const c = createCanvas(16, 16);
+  c.drawGrid(0, 0, grid, palette);
+  c.save('powerup-merkle.png');
+}
+
+// 8. POWER-UP: ARC LOGO (16x16) — inverted-Y arch on a snow-white badge
+{
+  const palette = {
+    O: '#040e4b', // dark outline
+    W: '#f2f8ff', // badge
+    B: '#3346d1', // arc stem blue
+    D: '#1d2a8c', // arc mid
+    N: '#0a0d30', // arc legs (dark navy)
+  };
+  const grid = [
+    '.....OOOOOO.....',
+    '...OOWWWWWWOO...',
+    '..OWWWWBBWWWWO..',
+    '.OWWWWWBBWWWWWO.',
+    '.OWWWWWBBWWWWWO.',
+    'OWWWWWWDDWWWWWWO',
+    'OWWWWWDDDDWWWWWO',
+    'OWWWWWNDDNWWWWWO',
+    'OWWWWNNWWNNWWWWO',
+    'OWWWNNWWWWNNWWWO',
+    'OWWNNWWWWWWNNWWO',
+    '.ONNNWWWWWWNNNO.',
+    '.ONNWWWWWWWWNNO.',
+    '..OWWWWWWWWWWO..',
+    '...OOWWWWWWOO...',
+    '.....OOOOOO.....',
+  ];
+  const c = createCanvas(16, 16);
+  c.drawGrid(0, 0, grid, palette);
+  c.save('powerup-arc.png');
+}
+
+// 9. SPARKLE (5x5) — white so it can be tinted per power-up
+{
+  const c = createCanvas(5, 5);
+  c.drawGrid(0, 0, ['..W..', '.WWW.', 'WWWWW', '.WWW.', '..W..'], {
+    W: '#ffffff',
+  });
+  c.save('sparkle.png');
+}
+
+// 10. Write spritesheet.json config
 const spritesheet = {
   version: '1.0.0',
   pixelArt: true,
@@ -475,6 +547,21 @@ const spritesheet = {
       path: '/assets/sprites/bg-trees-near.png',
       width: 256,
       height: 64,
+    },
+    powerupMerkle: {
+      path: '/assets/sprites/powerup-merkle.png',
+      width: 16,
+      height: 16,
+    },
+    powerupArc: {
+      path: '/assets/sprites/powerup-arc.png',
+      width: 16,
+      height: 16,
+    },
+    sparkle: {
+      path: '/assets/sprites/sparkle.png',
+      width: 5,
+      height: 5,
     },
   },
 };

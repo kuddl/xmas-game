@@ -22,6 +22,16 @@ export class Player {
       .fill({ color: 0x0f2b4c, alpha: 0.35 });
     this.container.addChild(this.shadow);
 
+    // Pulsing power-up aura (hidden unless a power-up is active)
+    this.aura = new Graphics()
+      .circle(0, 0, GAME_CONFIG.PLAYER_SIZE * 0.62)
+      .fill({ color: 0xffffff, alpha: 0.18 })
+      .circle(0, 0, GAME_CONFIG.PLAYER_SIZE * 0.46)
+      .fill({ color: 0xffffff, alpha: 0.22 });
+    this.aura.visible = false;
+    this.container.addChild(this.aura);
+    this.auraTime = 0;
+
     // Animated 8-bit sprite (driven manually by game ticker via autoUpdate: false)
     this.sprite = new AnimatedSprite({
       textures: this.runTextures,
@@ -46,7 +56,10 @@ export class Player {
     this.coyoteTimer = 0;
     this.jumpBufferTimer = 0;
     this.flashTimer = 0;
-
+    this.airJumpsUsed = 0;
+    this.justAirJumped = false;
+    this.powerTint = null;
+    this.aura.visible = false;
     this.setAnimation('run');
     this.sprite.tint = 0xffffff;
     this.sprite.alpha = 1;
@@ -72,7 +85,11 @@ export class Player {
     }
   }
 
-  update(ticker, dt, { moveDir = 0, speedMultiplier = 1, isPlaying = true } = {}) {
+  update(
+    ticker,
+    dt,
+    { moveDir = 0, speedMultiplier = 1, isPlaying = true, canAirJump = false } = {}
+  ) {
     // Subtle horizontal nudge with Left/Right keys
     if (isPlaying) {
       if (moveDir !== 0) {
@@ -94,6 +111,7 @@ export class Player {
       this.coyoteTimer = Math.max(0, this.coyoteTimer - dt);
     }
 
+    this.justAirJumped = false;
     if (this.jumpBufferTimer > 0) {
       this.jumpBufferTimer = Math.max(0, this.jumpBufferTimer - dt);
       if (this.coyoteTimer > 0) {
@@ -101,6 +119,12 @@ export class Player {
         this.isGrounded = false;
         this.coyoteTimer = 0;
         this.jumpBufferTimer = 0;
+      } else if (canAirJump && this.airJumpsUsed < 1) {
+        // ARC Double Jump: one extra jump in mid-air
+        this.vy = GAME_CONFIG.DOUBLE_JUMP_VELOCITY;
+        this.airJumpsUsed += 1;
+        this.jumpBufferTimer = 0;
+        this.justAirJumped = true;
       }
     }
 
@@ -112,6 +136,7 @@ export class Player {
       this.y = GAME_CONFIG.GROUND_Y;
       this.vy = 0;
       this.isGrounded = true;
+      this.airJumpsUsed = 0;
     }
 
     // Animation state
@@ -130,15 +155,42 @@ export class Player {
       this.sprite.tint = blink ? 0x99ffbb : 0xffffff;
       this.sprite.alpha = blink ? 0.75 : 1;
     } else {
-      this.sprite.tint = 0xffffff;
+      this.sprite.tint = this.powerTint ?? 0xffffff;
       this.sprite.alpha = 1;
     }
 
+    this.auraTime += dt;
     this.syncDisplay();
+  }
+
+  /**
+   * Power-up visuals: colored pulsing aura + subtle tint.
+   * @param {number|null} color  active power-up color (null = none)
+   * @param {boolean} warning    blink because the power-up is about to expire
+   */
+  setPowerVisual(color, warning = false) {
+    if (color == null) {
+      this.aura.visible = false;
+      this.powerTint = null;
+      return;
+    }
+    const blinkOff = warning && Math.floor(this.auraTime * 10) % 2 === 0;
+    this.aura.visible = !blinkOff;
+    this.aura.tint = color;
+    const pulse = 1 + Math.sin(this.auraTime * 14) * 0.1;
+    this.aura.scale.set(pulse);
+    // Light tint keeps the sprite readable while hinting the power-up color
+    this.powerTint = blinkOff ? 0xffffff : 0xfff2e0;
+  }
+
+  /** Center of the sprite body (for particle emitters) */
+  get centerY() {
+    return this.y - GAME_CONFIG.PLAYER_SIZE * 0.5;
   }
 
   syncDisplay() {
     this.sprite.position.set(this.x, this.y);
+    this.aura.position.set(this.x, this.y - GAME_CONFIG.PLAYER_SIZE * 0.5);
 
     const heightAboveGround = Math.max(0, GAME_CONFIG.GROUND_Y - this.y);
     const shadowScale = Math.max(0.4, 1 - heightAboveGround / 180);

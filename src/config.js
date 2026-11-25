@@ -43,4 +43,33 @@ export const GAME_CONFIG = {
 
   // Local leaderboard storage key
   LEADERBOARD_KEY: 'xmas_game_local_leaderboard_v1',
+
+  // Power-Ups (brand logos as collectibles)
+  POWERUP_SIZE: 32, // 16x16 sprite @ 2x
+  POWERUP_HEIGHT_ABOVE_GROUND: 74, // reachable only by jumping
+  POWERUP_FIRST_DELAY: 5, // seconds before the first power-up may appear
+  POWERUP_MIN_INTERVAL: 7,
+  POWERUP_MAX_INTERVAL: 12,
+  POWERUP_MIN_GAP_PX: 200, // only spawn in obstacle gaps at least this wide
+  POWERUP_WARNING_TIME: 1.5, // blink when this much time is left
+  DOUBLE_JUMP_VELOCITY: -410,
+
+  POWERUPS: {
+    breakthrough: {
+      sprite: 'powerupMerkle',
+      label: 'MERKLE BREAKTHROUGH',
+      hint: 'SMASH THROUGH BLOCKS!',
+      duration: 5,
+      color: 0xf23a1d,
+      cssColor: '#f23a1d',
+    },
+    doubleJump: {
+      sprite: 'powerupArc',
+      label: 'ARC DOUBLE JUMP',
+      hint: 'SPACE AGAIN IN THE AIR!',
+      duration: 5,
+      color: 0x6f8cff,
+      cssColor: '#6f8cff',
+    },
+  },
 };

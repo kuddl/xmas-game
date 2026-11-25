@@ -11,6 +11,7 @@ export class ObstacleManager {
     this.obstacles = [];
     this.spawnTimer = GAME_CONFIG.FIRST_OBSTACLE_DELAY;
     this.wordBag = [];
+    this.onGap = null; // (obstacleX, gapPx) => void
   }
 
   reset() {
@@ -121,6 +122,7 @@ export class ObstacleManager {
       const minGap = GAME_CONFIG.OBSTACLE_MIN_GAP_TIME * prodFactor;
       const maxGap = GAME_CONFIG.OBSTACLE_MAX_GAP_TIME * prodFactor;
       this.spawnTimer = minGap + Math.random() * (maxGap - minGap);
+      this.onGap?.(spawnX, this.spawnTimer * scrollSpeed);
     }
   }
 
@@ -150,5 +152,15 @@ export class ObstacleManager {
   markSafeHit(obs) {
     obs.hitInMvp = true;
     obs.container.alpha = 0.45;
+  }
+
+  /** Remove an obstacle instantly (Breakthrough power-up). Returns its position. */
+  smash(obs) {
+    const index = this.obstacles.indexOf(obs);
+    if (index === -1) return null;
+    const pos = { x: obs.x, y: GAME_CONFIG.GROUND_Y - GAME_CONFIG.OBSTACLE_HEIGHT * 0.5 };
+    obs.container.destroy({ children: true });
+    this.obstacles.splice(index, 1);
+    return pos;
   }
 }

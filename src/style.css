@@ -210,12 +210,87 @@ body {
 }
 
 .hud-controls-hint {
-  align-self: flex-start;
   display: flex;
   gap: 18px;
   font-size: 9px;
   color: rgba(242, 248, 255, 0.85);
   text-shadow: 2px 2px 0 var(--ice-dark);
+}
+
+/* Bottom HUD row: active power-ups + controls */
+.hud-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.powerup-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pu-slot {
+  --pu-color: #f23a1d;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 260px;
+  background: rgba(4, 14, 75, 0.82);
+  border: 3px solid var(--pu-color);
+  box-shadow:
+    4px 4px 0 rgba(7, 17, 34, 0.9),
+    0 0 12px var(--pu-color);
+  padding: 6px 10px 6px 6px;
+  animation: toastPop 0.2s ease-out;
+}
+
+.pu-slot.warning {
+  animation: puBlink 0.2s steps(2) infinite;
+}
+
+@keyframes puBlink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.pu-icon {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+.pu-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pu-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  color: var(--snow);
+}
+
+.pu-time {
+  color: var(--pu-color);
+}
+
+.pu-track {
+  height: 8px;
+  background: #0a1628;
+  border: 2px solid var(--snow);
+}
+
+.pu-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--pu-color);
 }
 
 /* Overlays */

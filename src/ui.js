@@ -21,6 +21,8 @@ export class UIManager {
     this.phaseProgressFill = document.getElementById('phase-progress-fill');
     this.hudLeaderboardList = document.getElementById('hud-leaderboard-list');
     this.mvpToast = document.getElementById('mvp-toast');
+    this.powerupBar = document.getElementById('powerup-bar');
+    this.powerupSlots = new Map(); // type -> { el, fill, time }
 
     this.goCause = document.getElementById('gameover-cause');
     this.goScore = document.getElementById('go-score');
@@ -156,11 +158,77 @@ export class UIManager {
   }
 
   showMvpSafeToast(word) {
-    this.mvpToast.textContent = `MVP SAFE! "${word}" IGNORED`;
+    this.showToast(`MVP SAFE! "${word}" IGNORED`, 'rgba(43, 138, 87, 0.92)');
+  }
+
+  showToast(text, background) {
+    this.mvpToast.textContent = text;
+    this.mvpToast.style.background = background;
     this.mvpToast.classList.remove('hidden');
     if (this.toastTimeout) clearTimeout(this.toastTimeout);
     this.toastTimeout = setTimeout(() => {
       this.mvpToast.classList.add('hidden');
-    }, 900);
+    }, 1100);
+  }
+
+  /**
+   * Renders one draining progress bar per active power-up.
+   * @param {{type:string, remaining:number, ratio:number}[]} activeList
+   */
+  updatePowerUps(activeList) {
+    const activeTypes = new Set(activeList.map((p) => p.type));
+
+    for (const [type, slot] of this.powerupSlots) {
+      if (!activeTypes.has(type)) {
+        slot.el.remove();
+        this.powerupSlots.delete(type);
+      }
+    }
+
+    for (const { type, remaining, ratio } of activeList) {
+      let slot = this.powerupSlots.get(type);
+      if (!slot) {
+        slot = this.createPowerUpSlot(type);
+        this.powerupSlots.set(type, slot);
+      }
+      slot.fill.style.width = `${(ratio * 100).toFixed(1)}%`;
+      slot.time.textContent = `${remaining.toFixed(1)}s`;
+      slot.el.classList.toggle(
+        'warning',
+        remaining <= GAME_CONFIG.POWERUP_WARNING_TIME
+      );
+    }
+  }
+
+  createPowerUpSlot(type) {
+    const def = GAME_CONFIG.POWERUPS[type];
+    const iconPath = this.powerupIcons?.[type] || '';
+
+    const el = document.createElement('div');
+    el.className = 'pu-slot';
+    el.style.setProperty('--pu-color', def.cssColor);
+    el.innerHTML = `
+      <img class="pu-icon" src="${iconPath}" alt="" />
+      <div class="pu-info">
+        <div class="pu-label"><span>${def.label}</span><span class="pu-time"></span></div>
+        <div class="pu-track"><div class="pu-fill"></div></div>
+      </div>`;
+    this.powerupBar.appendChild(el);
+
+    return {
+      el,
+      fill: el.querySelector('.pu-fill'),
+      time: el.querySelector('.pu-time'),
+    };
+  }
+
+  clearPowerUps() {
+    for (const slot of this.powerupSlots.values()) slot.el.remove();
+    this.powerupSlots.clear();
+  }
+
+  /** type -> icon URL (resolved from spritesheet.json so designers can swap assets) */
+  setPowerUpIcons(icons) {
+    this.powerupIcons = icons;
   }
 }
