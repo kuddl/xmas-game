@@ -70,8 +70,23 @@
           </div>
         </div>
 
-        <!-- Touch: pause button + zone hints (left half = duck, right half = jump) -->
-        <button id="btn-pause" class="pause-fab" aria-label="Pause">II</button>
+        <!-- Touch: zone hints (left half = duck, right half = jump) -->
+        <div class="hud-actions">
+          <button id="btn-pause" class="icon-btn icon-btn-pause" aria-label="Pause">
+            <svg viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true">
+              <rect x="1" y="1" width="2" height="6" />
+              <rect x="5" y="1" width="2" height="6" />
+            </svg>
+          </button>
+          <button class="icon-btn btn-fullscreen" aria-label="Fullscreen">
+            <svg class="fs-enter" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true">
+              <path d="M0 0h3v1H1v2H0zM5 0h3v3H7V1H5zM0 5h1v2h2v1H0zM7 5h1v3H5V7h2z" />
+            </svg>
+            <svg class="fs-exit" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true">
+              <path d="M2 0h1v3H0V2h2zM5 0h1v2h2v1H5zM0 5h3v3H2V6H0zM5 5h3v1H6v2H5z" />
+            </svg>
+          </button>
+        </div>
         <div class="touch-zone touch-zone-left txt-touch"><span>&darr;</span> HOLD = DUCK</div>
         <div class="touch-zone touch-zone-right txt-touch">TAP = JUMP <span>&uarr;</span></div>
       </div>
@@ -100,6 +115,10 @@
             <span><strong>TAP RIGHT</strong> Jump</span>
             <span><strong>HOLD LEFT</strong> Duck</span>
           </div>
+          <button class="fullscreen-link btn-fullscreen" type="button">
+            <span class="fs-enter">&#9634; PLAY IN FULLSCREEN</span>
+            <span class="fs-exit">&#9634; EXIT FULLSCREEN</span>
+          </button>
         </div>
       </div>
 

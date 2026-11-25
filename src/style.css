@@ -30,6 +30,7 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -814,26 +815,69 @@ body.touch .hud-bottom {
   margin-bottom: 44px;
 }
 
-/* ===== Pause button (mainly for touch, no ESC on phones) ===== */
-.pause-fab {
+/* ===== HUD icon buttons: pause (touch only) + fullscreen ===== */
+.hud-actions {
   position: absolute;
-  top: 96px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 36px;
-  font-family: var(--font-pixel);
-  font-size: 12px;
-  color: var(--snow);
+  top: 118px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  padding: 8px;
   background: rgba(4, 14, 75, 0.8);
   border: 3px solid var(--snow);
   box-shadow: 3px 3px 0 rgba(7, 17, 34, 0.9);
-  pointer-events: auto;
   cursor: pointer;
 }
 
-body:not(.touch) .pause-fab {
+.icon-btn svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: var(--snow);
+}
+
+.icon-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 rgba(7, 17, 34, 0.9);
+}
+
+body:not(.touch) .icon-btn-pause {
   display: none;
+}
+
+/* Fullscreen: hide when the browser can't do it (e.g. iPhone Safari), swap icon/label */
+body.no-fullscreen .btn-fullscreen {
+  display: none !important;
+}
+
+.btn-fullscreen .fs-exit,
+body.is-fullscreen .btn-fullscreen .fs-enter {
+  display: none;
+}
+
+body.is-fullscreen .btn-fullscreen .fs-exit {
+  display: block;
+}
+
+.fullscreen-link {
+  display: block;
+  margin: 14px auto 0;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--ice-light);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.fullscreen-link:hover {
+  color: var(--snow);
 }
 
 /* ===== Portrait phones: ask to rotate ===== */
@@ -905,8 +949,50 @@ body:not(.touch) .pause-fab {
     display: none; /* keep only the title; the full list is on the game-over screen */
   }
 
-  .pause-fab {
-    top: 80px;
+  .hud-actions {
+    top: 54px;
+    right: 10px;
+    gap: 6px;
+  }
+
+  .icon-btn {
+    width: 30px;
+    height: 30px;
+    padding: 6px;
+    border-width: 2px;
+  }
+
+  .fullscreen-link {
+    margin-top: 8px;
+  }
+
+  /* Game over: scores and highscores side by side so everything fits */
+  .overlay {
+    padding: 8px;
+    overflow-y: auto;
+    align-items: safe center; /* never clip the top of a tall card */
+  }
+
+  .gameover-card {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    column-gap: 12px;
+    align-items: start;
+    max-width: 640px;
+  }
+
+  .gameover-title,
+  .gameover-cause,
+  #btn-restart {
+    grid-column: 1 / -1;
+  }
+
+  #btn-restart {
+    justify-self: center;
+  }
+
+  .gameover-card .go-leaderboard {
+    margin-bottom: 10px;
   }
 
   .badge,

@@ -51,6 +51,7 @@ export class UIManager {
     this.spriteIcons = {};
     // A clicked checkbox keeps focus and would toggle on SPACE: hand focus back to the game
     this.chkTutorial.addEventListener('change', () => this.chkTutorial.blur());
+    this.setupFullscreen();
 
     this.toastTimeout = null;
     this.leaderboard = this.loadLeaderboard();
@@ -289,6 +290,47 @@ export class UIManager {
   /** Touch mode swaps every keyboard hint for its tap/hold counterpart (CSS: body.touch) */
   setTouchMode(isTouch) {
     document.body.classList.toggle('touch', isTouch);
+  }
+
+  /**
+   * Fullscreen toggle (start screen + HUD). Hides the mobile URL bar and, on Android,
+   * locks landscape. Browsers without the Fullscreen API (iPhone Safari) hide the buttons.
+   */
+  setupFullscreen() {
+    const root = document.documentElement;
+    const supported = !!(root.requestFullscreen || root.webkitRequestFullscreen);
+    document.body.classList.toggle('no-fullscreen', !supported);
+    if (!supported) return;
+
+    const isFullscreen = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+    const toggle = async () => {
+      try {
+        if (isFullscreen()) {
+          await (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        } else {
+          await (root.requestFullscreen || root.webkitRequestFullscreen).call(root, {
+            navigationUI: 'hide',
+          });
+          // Only allowed in fullscreen and only on some devices; ignore if refused
+          await screen.orientation?.lock?.('landscape').catch(() => {});
+        }
+      } catch (err) {
+        console.warn('Fullscreen not available:', err);
+      }
+    };
+
+    for (const btn of document.querySelectorAll('.btn-fullscreen')) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        btn.blur(); // keep SPACE for the game
+        toggle();
+      });
+    }
+
+    const sync = () => document.body.classList.toggle('is-fullscreen', isFullscreen());
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
   }
 
   set tutorialChecked(value) {
