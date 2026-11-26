@@ -23,6 +23,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 010 | [Arc-Logo als Hintergrund-Element](open/010-arc-logo-als-hintergrund-element.md) | enhancement, backlog | — |
 | 011 | [CI: GitHub Actions auf Node 24 aktualisieren](open/011-ci-github-actions-auf-node-24.md) | chore | — |
 | 018 | [Landingpage: Was braucht die Seite?](open/018-landingpage-was-braucht-die-seite.md) · Map Landingpage | wayfinder:grilling | tsailer |
+| 019 | [Konami-Code: Power-up (doppelte Größe & Durchlaufen)](open/019-konami-code-power-up.md) | enhancement, backlog | — |
 
 > Hinweis zu 007: Den unterschiedlichen Look für MVP und Production gibt es seit [013](done/013-mvp-phase-kuerzen-und-optisch-von.md). Zu klären ist, ob 007 damit erledigt ist oder ob eigene Welten (andere Motive) gemeint sind.
 
@@ -42,7 +43,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 ## Arbeitsweise
 
 **Neues Ticket anlegen**
-1. Die nächste freie Nummer nehmen (höchste Nummer in `open/` und `done/` + 1, aktuell **019**).
+1. Die nächste freie Nummer nehmen (höchste Nummer in `open/` und `done/` + 1, aktuell **020**).
 2. Datei `open/<NNN>-<kurzer-slug>.md` nach der Vorlage unten anlegen.
 3. Eine Zeile in die Tabelle „Offen“ oben eintragen. Committen, z. B. `tickets: add 018 …`
 
