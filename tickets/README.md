@@ -25,6 +25,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 019 | [Landingpage: Texte für Gruß und Satire-Blöcke](open/019-landingpage-texte-fuer-gruss-und-satire.md) · Map Landingpage | wayfinder:grilling | — |
 | 021 | [Konami-Code: Power-up (doppelte Größe & Durchlaufen)](open/021-konami-code-power-up.md) | enhancement, backlog | — |
 | 022 | [Spiel-Modi: freies Spiel (/game) und getracktes Spiel (/game/UUID)](open/022-spiel-modi-freies-und-getracktes-spiel.md) | wayfinder:grilling | — |
+| 023 | [Landingpage: Feinschliff und Fliegende Buzzwords](open/023-landingpage-feinschliff-und-fliegende-buzzwords.md) · Map Landingpage | enhancement | Agent (Review: tsailer) |
 
 > Hinweis zu 007: Den unterschiedlichen Look für MVP und Production gibt es seit [013](done/013-mvp-phase-kuerzen-und-optisch-von.md). Zu klären ist, ob 007 damit erledigt ist oder ob eigene Welten (andere Motive) gemeint sind.
 
@@ -46,7 +47,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 ## Arbeitsweise
 
 **Neues Ticket anlegen**
-1. Die nächste freie Nummer nehmen (höchste Nummer in `open/` und `done/` + 1, aktuell **023**).
+1. Die nächste freie Nummer nehmen (höchste Nummer in `open/` und `done/` + 1, aktuell **024**).
 2. Datei `open/<NNN>-<kurzer-slug>.md` nach der Vorlage unten anlegen.
 3. Eine Zeile in die Tabelle „Offen“ oben eintragen. Committen, z. B. `tickets: add 018 …`
 
