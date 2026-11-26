@@ -2,14 +2,30 @@
 
 Hinweise für Coding-Agents (und Menschen), die an diesem Repo arbeiten.
 
-## Issue-Tracker: GitHub Issues
+## Ticket-Tracker: lokal im Repo (`tickets/`)
 
-- Repo: **`kuddl/xmas-game`**, Zugriff per `gh` CLI
-- **Jede neue Aufgabe, jeder Bug und jede offene Entscheidung wird ein GitHub Issue.** Keine lokalen Ticket-Dateien mehr (`tickets/` ist nur noch Archiv).
-- **Wayfinder-Map:** [#12](https://github.com/kuddl/xmas-game/issues/12), Label `wayfinder:map`. Sie ist ein Index: pro entschiedenem Ticket eine Zeile mit Link, das Detail steht im Ticket.
+- **Jede neue Aufgabe, jeder Bug und jede offene Entscheidung wird ein Ticket als Markdown-Datei** unter `tickets/`. Den Fortschritt tracken wir über Git, einen separaten Issue-Tracker gibt es nicht. So können alle in GitHub (`origin`) und GitLab (`merkle`) gleichermaßen mitarbeiten.
+- **Keine GitHub Issues mehr anlegen oder bearbeiten.** `kuddl/xmas-game` Issues #1–#17 sind Archiv, ihr Inhalt steht vollständig in `tickets/`.
+- Arbeitsweise, Vorlage und Statusübersicht stehen in **[`tickets/README.md`](tickets/README.md)**.
 
-### Labels
-| Label | Bedeutung |
+### Struktur
+| Pfad | Inhalt |
+|---|---|
+| `tickets/MAP.md` | Wayfinder-Map: Ziel, Notizen, „Decisions so far“, Backlog. Ein Index: pro entschiedenem Ticket eine Zeile mit Link, das Detail steht im Ticket. |
+| `tickets/README.md` | Statusübersicht (Offen / Erledigt) und Arbeitsweise |
+| `tickets/open/NNN-slug.md` | offene Tickets |
+| `tickets/done/NNN-slug.md` | erledigte Tickets |
+| `tickets/archive/` | Entscheidungen von vor den GitHub Issues |
+
+### Wayfinder-Operationen
+- **Ticket anlegen:** nächste freie Nummer, Datei in `tickets/open/` nach der Vorlage, Zeile in `tickets/README.md` unter „Offen“
+- **Blockieren:** Zeile `| **Blockiert durch** | [0NN](…) |` in der Kopf-Tabelle des Tickets
+- **Claimen:** bei „Zugewiesen“ den eigenen Namen eintragen, committen und pushen, bevor die Arbeit beginnt
+- **Frontier:** Tickets in `open/` ohne Zuweisung und ohne offenen Blocker
+- **Auflösen:** Ergebnis unter `## Verlauf` (mit Commit-Hash), Status `✅ Erledigt` + Datum, `git mv` nach `tickets/done/`, Zeile im README verschieben, bei Entscheidungen eine Zeile unter „Decisions so far“ in `tickets/MAP.md`
+
+### Typen
+| Typ | Bedeutung |
 |---|---|
 | `wayfinder:grilling` | Entscheidung im Gespräch (HITL) |
 | `wayfinder:prototype` | Entscheidung über einen Prototyp oder Playtest (HITL) |
@@ -19,19 +35,15 @@ Hinweise für Coding-Agents (und Menschen), die an diesem Repo arbeiten.
 | `chore` | Tooling, CI, Wartung |
 | `bug`, `enhancement` | wie üblich |
 
-### Wayfinder-Operationen auf GitHub
-- **Ticket anlegen:** `gh issue create --label "wayfinder:<typ>"`, danach als **Sub-Issue** an die Map hängen:
-  `gh api -X POST repos/kuddl/xmas-game/issues/12/sub_issues -F sub_issue_id=<ID>`
-  (`<ID>` ist die interne Issue-ID: `gh api repos/kuddl/xmas-game/issues/<NR> --jq .id`)
-- **Blockieren** (native Abhängigkeit):
-  `gh api -X POST repos/kuddl/xmas-game/issues/<NR>/dependencies/blocked_by -F issue_id=<ID des Blockers>`
-- **Claimen:** sich selbst zuweisen, bevor die Arbeit beginnt (`gh issue edit <NR> --add-assignee @me`)
-- **Frontier:** offene, nicht zugewiesene Sub-Issues der Map ohne offene Blocker
-- **Auflösen:** Antwort als Kommentar posten, Issue schließen, eine Zeile unter „Decisions so far“ im Map-Issue ergänzen
+## Remotes
+- `origin`: GitHub `kuddl/xmas-game`. Ein Push auf `main` deployt.
+- `merkle`: GitLab `tsailer/xmas-merkle-game` (Firma, SSH-Port 2222). Ein Push dorthin deployt nicht.
+- Nach jedem Commit auf `main` in **beide** pushen: `git push origin main && git push merkle main`
 
 ## Projekt-Kurzinfo
 - **Engine:** PixiJS v8. Vor jedem PixiJS-Code den Skill `.agents/skills/pixijs/SKILL.md` lesen.
 - **Dev:** `npm run dev`, **Build:** `npm run build`, **Assets neu erzeugen:** `npm run generate-assets`
 - **Tuning-Werte:** `src/config.js`. **Assets:** `public/assets/spritesheet.json` (Designer-Austausch ohne Code-Änderung)
-- **Deploy:** Push auf `main` → GitHub Actions → Cloudflare Workers (https://christmas.familiesailer.com)
+- **Figma:** [ABX Game Assets](https://www.figma.com/design/HgKfwks85tYE0fOjVqWkTy/ABX-Game-Assets?node-id=26-2) mit allen Sprites. Zugriff über den Figma MCP (`.pi/mcp.json`), siehe Ticket 006.
+- **Deploy:** Push auf `main` nach `origin` → GitHub Actions → Cloudflare Workers (https://christmas.familiesailer.com)
 - **Sprache:** Spieltexte Englisch, Diskussion und Tickets Deutsch
