@@ -2,7 +2,8 @@
 
 Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLab (`merkle`) gleichermaßen, den Fortschritt sieht man in der Git-History. Die GitHub Issues von `kuddl/xmas-game` sind nur noch Archiv. Jedes Ticket verlinkt sein Original unter „Herkunft“.
 
-- **[MAP.md](MAP.md):** Wayfinder-Map mit Ziel, Notizen, „Decisions so far“ und Backlog
+- **[MAP.md](MAP.md):** Wayfinder-Map für das Spiel mit Ziel, Notizen, „Decisions so far“ und Backlog
+- **[MAP-landingpage.md](MAP-landingpage.md):** Wayfinder-Map für die Landingpage
 - **`open/`:** offene Tickets
 - **`done/`:** erledigte Tickets
 - **`archive/`:** Entscheidungen aus der Zeit vor den GitHub Issues (Nachschlagewerk)
@@ -21,6 +22,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 009 | [Hindernisse auch auf Plattformen](open/009-hindernisse-auch-auf-plattformen.md) | enhancement, backlog | — |
 | 010 | [Arc-Logo als Hintergrund-Element](open/010-arc-logo-als-hintergrund-element.md) | enhancement, backlog | — |
 | 011 | [CI: GitHub Actions auf Node 24 aktualisieren](open/011-ci-github-actions-auf-node-24.md) | chore | — |
+| 018 | [Landingpage: Was braucht die Seite?](open/018-landingpage-was-braucht-die-seite.md) · Map Landingpage | wayfinder:grilling | tsailer |
 
 > Hinweis zu 007: Den unterschiedlichen Look für MVP und Production gibt es seit [013](done/013-mvp-phase-kuerzen-und-optisch-von.md). Zu klären ist, ob 007 damit erledigt ist oder ob eigene Welten (andere Motive) gemeint sind.
 
@@ -40,7 +42,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 ## Arbeitsweise
 
 **Neues Ticket anlegen**
-1. Die nächste freie Nummer nehmen (höchste Nummer in `open/` und `done/` + 1, aktuell **018**).
+1. Die nächste freie Nummer nehmen (höchste Nummer in `open/` und `done/` + 1, aktuell **019**).
 2. Datei `open/<NNN>-<kurzer-slug>.md` nach der Vorlage unten anlegen.
 3. Eine Zeile in die Tabelle „Offen“ oben eintragen. Committen, z. B. `tickets: add 018 …`
 
@@ -52,7 +54,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 2. Status auf `✅ Erledigt` setzen und „Erledigt“ mit Datum füllen.
 3. Die Datei verschieben: `git mv tickets/open/<datei> tickets/done/`
 4. Die Zeile in diesem README von „Offen“ nach „Erledigt“ verschieben.
-5. Bei Entscheidungen eine Zeile unter „Decisions so far“ in [MAP.md](MAP.md) ergänzen.
+5. Bei Entscheidungen eine Zeile unter „Decisions so far“ in der zugehörigen Map ergänzen ([MAP.md](MAP.md) oder [MAP-landingpage.md](MAP-landingpage.md)). Gehört ein Ticket zu einer anderen Map als der Game-Map, bekommt es die Kopf-Zeile `| **Map** | … |`.
 6. Am besten im selben Commit wie die Umsetzung. In der Commit-Message `Closes 0NN` erwähnen.
 
 **Typen** (ersetzen die GitHub-Labels)

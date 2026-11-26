@@ -1,9 +1,8 @@
-# Xmas Game — Wayfinder Map
+# Xmas Game: Wayfinder Maps
 
-Die Map liegt jetzt auf GitHub: **[Wayfinder Map: Christmas Game (#12)](https://github.com/kuddl/xmas-game/issues/12)**
+Die Maps und alle Tickets liegen im Repo unter [`tickets/`](tickets/):
 
-- Offene Entscheidungen sind **Sub-Issues** der Map (Labels `wayfinder:*`).
-- Spätere Features sind Issues mit Label **`backlog`**.
-- Die erledigten Entscheidungen 01–12 liegen als Archiv in [`tickets/`](tickets/), die Map verlinkt sie.
+- **[Game](tickets/MAP.md):** das Spiel
+- **[Landingpage](tickets/MAP-landingpage.md):** die Landingpage als Unterseite
 
-Konventionen für die Arbeit mit Issues: siehe [`AGENTS.md`](AGENTS.md).
+Statusübersicht und Arbeitsweise stehen in [`tickets/README.md`](tickets/README.md), Konventionen in [`AGENTS.md`](AGENTS.md). Die GitHub Issues sind nur noch Archiv.

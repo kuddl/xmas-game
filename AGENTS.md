@@ -11,7 +11,7 @@ Hinweise für Coding-Agents (und Menschen), die an diesem Repo arbeiten.
 ### Struktur
 | Pfad | Inhalt |
 |---|---|
-| `tickets/MAP.md` | Wayfinder-Map: Ziel, Notizen, „Decisions so far“, Backlog. Ein Index: pro entschiedenem Ticket eine Zeile mit Link, das Detail steht im Ticket. |
+| `tickets/MAP.md`, `tickets/MAP-landingpage.md` | Wayfinder-Maps (Game, Landingpage): Ziel, Notizen, „Decisions so far“, Backlog. Ein Index: pro entschiedenem Ticket eine Zeile mit Link, das Detail steht im Ticket. |
 | `tickets/README.md` | Statusübersicht (Offen / Erledigt) und Arbeitsweise |
 | `tickets/open/NNN-slug.md` | offene Tickets |
 | `tickets/done/NNN-slug.md` | erledigte Tickets |
