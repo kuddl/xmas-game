@@ -258,7 +258,7 @@ export class TutorialDirector {
     const p = this.game.player;
     const text =
       type === 'breakthrough'
-        ? `For <b>${def.duration} seconds</b> you smash right<br>through every block and invite.`
+        ? `For <b>${def.duration} seconds</b> you smash right<br>through every block and invite &mdash;<br><b>+${GAME_CONFIG.BREAKTHROUGH_SMASH_SP} SP</b> for each one!`
         : (k) =>
             `For <b>${def.duration} seconds</b>: ${k('press <b>SPACE</b>', 'tap <b>right</b>')} again<br>in mid-air to jump a second time.`;
     this.open({

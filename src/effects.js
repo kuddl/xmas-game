@@ -1,4 +1,14 @@
-import { Container, Sprite, Texture } from 'pixi.js';
+import { Container, Sprite, Text, Texture } from 'pixi.js';
+
+const FLOAT_TEXT_LIFE = 0.9; // seconds a "+5 SP" label is visible
+const FLOAT_TEXT_RISE = 30; // px it rises over its lifetime
+const FLOAT_TEXT_STYLE = {
+  fontFamily: '"Press Start 2P", "Courier New", monospace',
+  fontSize: 9,
+  fill: 0xf5b82e,
+  stroke: { color: 0x12223a, width: 3 },
+  padding: 4,
+};
 
 /**
  * Lightweight pooled particle system for sparkles (power-up aura,
@@ -13,6 +23,30 @@ export class EffectsManager {
 
     this.active = [];
     this.pool = [];
+    this.floatTexts = []; // { text, y0, life }
+    this.textPool = new Map(); // label string -> Text[] (labels are fixed, never re-rasterised)
+  }
+
+  /** Rising, fading score label, e.g. "+5 SP" above a smashed block */
+  floatText(x, y, label) {
+    const pool = this.textPool.get(label) || [];
+    const text =
+      pool.pop() || new Text({ text: label, style: FLOAT_TEXT_STYLE, resolution: 4 });
+    text.anchor.set(0.5);
+    text.position.set(x, y);
+    text.alpha = 1;
+    text.scale.set(0.6);
+    text.visible = true;
+    this.container.addChild(text);
+    this.floatTexts.push({ text, y0: y, life: FLOAT_TEXT_LIFE });
+  }
+
+  releaseFloatText(text) {
+    text.visible = false;
+    this.container.removeChild(text);
+    const pool = this.textPool.get(text.text) || [];
+    pool.push(text);
+    this.textPool.set(text.text, pool);
   }
 
   acquire(texture) {
@@ -87,6 +121,22 @@ export class EffectsManager {
   }
 
   update(dt) {
+    for (let i = this.floatTexts.length - 1; i >= 0; i--) {
+      const f = this.floatTexts[i];
+      f.life -= dt;
+      if (f.life <= 0) {
+        this.releaseFloatText(f.text);
+        this.floatTexts.splice(i, 1);
+        continue;
+      }
+      const t = 1 - f.life / FLOAT_TEXT_LIFE; // 0 -> 1
+      const ease = 1 - (1 - t) * (1 - t); // ease-out rise
+      f.text.y = f.y0 - FLOAT_TEXT_RISE * ease;
+      // quick pop (0.6 -> 1.15 -> 1), then fade out over the last 40 %
+      const pop = t < 0.15 ? 0.6 + (t / 0.15) * 0.55 : Math.max(1, 1.15 - (t - 0.15) * 1.5);
+      f.text.scale.set(pop);
+      f.text.alpha = t < 0.6 ? 1 : 1 - (t - 0.6) / 0.4;
+    }
     for (let i = this.active.length - 1; i >= 0; i--) {
       const p = this.active[i];
       p.life -= dt;
@@ -108,6 +158,8 @@ export class EffectsManager {
   }
 
   clear() {
+    for (const f of this.floatTexts) this.releaseFloatText(f.text);
+    this.floatTexts = [];
     for (const p of this.active) {
       p.sprite.visible = false;
       this.container.removeChild(p.sprite);

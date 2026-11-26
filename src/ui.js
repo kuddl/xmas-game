@@ -1,9 +1,9 @@
 import { GAME_CONFIG } from './config.js';
 
 const DEFAULT_LEADERBOARD = [
-  { name: 'SANTA', score: 620 },
-  { name: 'PMO', score: 410 },
-  { name: 'DEV', score: 280 },
+  { name: 'SANTA', score: 1500 },
+  { name: 'PMO', score: 1000 },
+  { name: 'DEV', score: 600 },
 ];
 
 export class UIManager {
@@ -14,6 +14,7 @@ export class UIManager {
     this.gameOverScreen = document.getElementById('gameover-screen');
 
     this.hudScore = document.getElementById('hud-score');
+    this.hudDist = document.getElementById('hud-dist');
     this.hudTime = document.getElementById('hud-time');
     this.hudHighScore = document.getElementById('hud-highscore');
     this.phaseBadge = document.getElementById('phase-badge');
@@ -26,6 +27,8 @@ export class UIManager {
 
     this.goCause = document.getElementById('gameover-cause');
     this.goScore = document.getElementById('go-score');
+    this.goDist = document.getElementById('go-dist');
+    document.getElementById('go-sp-factor').textContent = `\u00d7${GAME_CONFIG.SP_SCORE_FACTOR}`;
     this.goHighScore = document.getElementById('go-highscore');
     this.goTime = document.getElementById('go-time');
     this.goLeaderboardList = document.getElementById('go-leaderboard-list');
@@ -103,12 +106,16 @@ export class UIManager {
     const html = top3
       .map(
         (entry) =>
-          `<li>${entry.name.padEnd(5, ' ')} ${this.formatMeters(entry.score)}</li>`
+          `<li>${entry.name.padEnd(5, ' ')} ${this.formatPts(entry.score)}</li>`
       )
       .join('');
     this.hudLeaderboardList.innerHTML = html;
     this.goLeaderboardList.innerHTML = html;
-    this.hudHighScore.textContent = this.formatMeters(this.getHighScore());
+    this.hudHighScore.textContent = this.formatPts(this.getHighScore());
+  }
+
+  formatPts(value) {
+    return String(Math.floor(value)).padStart(5, '0');
   }
 
   formatMeters(value) {
@@ -140,7 +147,7 @@ export class UIManager {
     this.hudSp.textContent = this.formatSp(0);
   }
 
-  showGameOver({ score, elapsedTime, causeWord, storyPoints = 0 }) {
+  showGameOver({ score, distanceMeters, elapsedTime, causeWord, storyPoints = 0 }) {
     const highScore = this.saveScore(score);
     this.canvasContainer.classList.add('blurred');
     this.hud.classList.add('hidden');
@@ -148,10 +155,11 @@ export class UIManager {
     this.gameOverScreen.classList.remove('hidden');
 
     this.goCause.textContent = `STOPPED BY: ${causeWord}`;
-    this.goScore.textContent = this.formatMeters(score);
-    this.goHighScore.textContent = this.formatMeters(highScore);
-    this.goTime.textContent = this.formatTime(elapsedTime);
+    this.goDist.textContent = this.formatMeters(distanceMeters);
     this.goSp.textContent = this.formatSp(storyPoints);
+    this.goTime.textContent = this.formatTime(elapsedTime);
+    this.goScore.textContent = `${this.formatPts(score)} PTS`;
+    this.goHighScore.textContent = `${this.formatPts(highScore)} PTS`;
   }
 
   formatSp(value) {
@@ -175,12 +183,13 @@ export class UIManager {
     this.pauseScreen.classList.toggle('hidden', !paused);
   }
 
-  updateHUD({ distanceMeters, elapsedTime, inProduction }) {
-    this.hudScore.textContent = this.formatMeters(distanceMeters);
+  updateHUD({ distanceMeters, elapsedTime, inProduction, score = 0 }) {
+    this.hudScore.textContent = this.formatPts(score);
+    this.hudDist.textContent = this.formatMeters(distanceMeters);
     this.hudTime.textContent = this.formatTime(elapsedTime);
 
-    const best = Math.max(this.getHighScore(), Math.floor(distanceMeters));
-    this.hudHighScore.textContent = this.formatMeters(best);
+    const best = Math.max(this.getHighScore(), Math.floor(score));
+    this.hudHighScore.textContent = this.formatPts(best);
 
     if (!inProduction) {
       const pct = Math.min(

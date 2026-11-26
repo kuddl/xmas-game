@@ -104,6 +104,17 @@ body {
   color: var(--gold);
 }
 
+/* Total score: the headline number of the HUD */
+.stat-row.stat-score {
+  font-size: 1.45em;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--ice-mid);
+}
+
+.stat-row.stat-score .label {
+  color: var(--snow);
+}
+
 .hud-phase {
   min-width: 280px;
   flex: 0 1 340px;
@@ -426,6 +437,17 @@ body {
 
 .score-num.accent {
   color: var(--gold);
+}
+
+.score-factor {
+  color: var(--ice-light);
+}
+
+/* Sum line: meters + SP x factor */
+.score-line.score-total {
+  font-size: 1.35em;
+  padding-top: 10px;
+  border-top: 2px solid var(--ice-mid);
 }
 
 .go-leaderboard {

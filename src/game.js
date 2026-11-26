@@ -278,7 +278,13 @@ export class Game {
       distanceMeters: 0,
       elapsedTime: 0,
       inProduction: false,
+      score: 0,
     });
+  }
+
+  /** SCORE = meters + story points x factor (decision #3) */
+  get score() {
+    return Math.floor(this.distanceMeters) + this.storyPoints * GAME_CONFIG.SP_SCORE_FACTOR;
   }
 
   triggerGameOver(causeWord) {
@@ -288,7 +294,8 @@ export class Game {
     this.ui.clearPowerUps();
     this.worldContainer.position.set(0, 0);
     this.ui.showGameOver({
-      score: this.distanceMeters,
+      score: this.score,
+      distanceMeters: this.distanceMeters,
       elapsedTime: this.elapsedTime,
       causeWord,
       storyPoints: this.storyPoints,
@@ -432,6 +439,12 @@ export class Game {
           this.effects.debris(pos.x, pos.y);
           this.effects.burst(pos.x, pos.y, GAME_CONFIG.POWERUPS.breakthrough.color, 12, 150);
           this.shakeTime = 0.18;
+          // every smashed block pays out story points
+          const sp = GAME_CONFIG.BREAKTHROUGH_SMASH_SP;
+          this.storyPoints += sp;
+          this.ui.updateStoryPoints(this.storyPoints);
+          this.effects.burst(pos.x, pos.y - 20, 0xf5b82e, 8, 110);
+          this.effects.floatText(pos.x, pos.y - 34, `+${sp} SP`);
         }
       } else if (!inProduction) {
         if (!hitObstacle.hitInMvp) {
@@ -449,6 +462,7 @@ export class Game {
       distanceMeters: this.distanceMeters,
       elapsedTime: this.elapsedTime,
       inProduction,
+      score: this.score,
     });
     this.ui.updatePowerUps(this.powerups.getActiveList());
     this.applyScreenShake(dt);

@@ -50,7 +50,11 @@ export const GAME_CONFIG = {
   ],
 
   // Local leaderboard storage key
-  LEADERBOARD_KEY: 'xmas_game_local_leaderboard_v1',
+  LEADERBOARD_KEY: 'xmas_game_local_leaderboard_v2', // v2: scores are PTS (v1 stored meters)
+
+  // Score (Ticket #3): SCORE = meters + story points * factor
+  SP_SCORE_FACTOR: 10,
+  BREAKTHROUGH_SMASH_SP: 5, // story points per block smashed with MERKLE BREAKTHROUGH
 
   // Ducking & flying obstacles (Ticket 08)
   FAST_FALL_MULTIPLIER: 1.9, // gravity boost while holding ↓ in the air
