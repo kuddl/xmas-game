@@ -161,12 +161,23 @@
             </div>
           </div>
 
-          <div class="go-leaderboard">
-            <div class="lb-title">LOCAL HIGHSCORES</div>
-            <ol id="go-leaderboard-list" class="lb-list"></ol>
+          <div class="go-actions">
+            <button id="btn-leaderboard" class="pixel-btn pixel-btn-secondary">VIEW LEADERBOARD</button>
+            <button id="btn-restart" class="pixel-btn">PLAY AGAIN</button>
           </div>
+        </div>
+      </div>
 
-          <button id="btn-restart" class="pixel-btn"><span class="txt-key">PRESS SPACE</span><span class="txt-touch">TAP HERE</span> TO RESTART</button>
+      <!-- Leaderboard (from Game Over) -->
+      <div id="leaderboard-screen" class="overlay hidden">
+        <div class="gameover-card leaderboard-card">
+          <h2 class="gameover-title lb-screen-title">LEADERBOARD</h2>
+          <div class="gameover-cause">LOCAL TOP <span id="lb-size">20</span> &middot; SCORE = METERS + SP &times; <span id="lb-sp-factor">10</span></div>
+          <ol id="lb-full-list" class="lb-full-list"></ol>
+          <div class="go-actions">
+            <button id="btn-lb-back" class="pixel-btn pixel-btn-secondary">BACK</button>
+            <button id="btn-lb-restart" class="pixel-btn">PLAY AGAIN</button>
+          </div>
         </div>
       </div>
 

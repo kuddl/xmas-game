@@ -134,11 +134,12 @@ export class Game {
         e.preventDefault();
         if (this.state === 'INTRO') {
           this.continueTutorial();
-        } else if (this.state === 'START' || this.state === 'GAME_OVER') {
+        } else if (this.state === 'START') {
           this.startRun();
         } else if (this.state === 'PLAYING' && !e.repeat) {
           this.player.queueJump();
         }
+        // GAME_OVER: deliberately nothing (players are still mashing SPACE), use the buttons
       }
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
         this.keys.left = true;
@@ -173,6 +174,9 @@ export class Game {
 
     this.ui.btnStart.addEventListener('click', () => this.startRun());
     this.ui.btnRestart.addEventListener('click', () => this.startRun());
+    this.ui.btnLbRestart.addEventListener('click', () => this.startRun());
+    this.ui.btnLeaderboard.addEventListener('click', () => this.ui.showLeaderboard(true));
+    this.ui.btnLbBack.addEventListener('click', () => this.ui.showLeaderboard(false));
     this.ui.btnResume.addEventListener('click', () => this.setPaused(false));
     this.ui.tutOverlay.addEventListener('pointerdown', () => this.continueTutorial());
 

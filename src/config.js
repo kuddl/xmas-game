@@ -55,6 +55,8 @@ export const GAME_CONFIG = {
   // Score (Ticket #3): SCORE = meters + story points * factor
   SP_SCORE_FACTOR: 10,
   BREAKTHROUGH_SMASH_SP: 5, // story points per block smashed with MERKLE BREAKTHROUGH
+  GAME_OVER_INPUT_LOCK_MS: 600, // game-over buttons ignore clicks right after dying
+  LEADERBOARD_SIZE: 20, // entries kept locally and shown on the leaderboard screen
 
   // Ducking & flying obstacles (Ticket 08)
   FAST_FALL_MULTIPLIER: 1.9, // gravity boost while holding ↓ in the air

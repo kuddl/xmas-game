@@ -12,6 +12,11 @@ export class UIManager {
     this.hud = document.getElementById('hud');
     this.startScreen = document.getElementById('start-screen');
     this.gameOverScreen = document.getElementById('gameover-screen');
+    this.leaderboardScreen = document.getElementById('leaderboard-screen');
+    this.lbFullList = document.getElementById('lb-full-list');
+    document.getElementById('lb-sp-factor').textContent = GAME_CONFIG.SP_SCORE_FACTOR;
+    document.getElementById('lb-size').textContent = GAME_CONFIG.LEADERBOARD_SIZE;
+    this.latestEntry = null; // leaderboard entry of the last finished run (highlighted)
 
     this.hudScore = document.getElementById('hud-score');
     this.hudDist = document.getElementById('hud-dist');
@@ -31,10 +36,17 @@ export class UIManager {
     document.getElementById('go-sp-factor').textContent = `\u00d7${GAME_CONFIG.SP_SCORE_FACTOR}`;
     this.goHighScore = document.getElementById('go-highscore');
     this.goTime = document.getElementById('go-time');
-    this.goLeaderboardList = document.getElementById('go-leaderboard-list');
 
     this.btnStart = document.getElementById('btn-start');
     this.btnRestart = document.getElementById('btn-restart');
+    this.btnLeaderboard = document.getElementById('btn-leaderboard');
+    this.btnLbBack = document.getElementById('btn-lb-back');
+    this.btnLbRestart = document.getElementById('btn-lb-restart');
+    this.goButtons = [this.btnRestart, this.btnLeaderboard];
+    // A clicked button keeps focus and would fire again on SPACE/ENTER: hand focus back
+    for (const btn of [...this.goButtons, this.btnLbBack, this.btnLbRestart]) {
+      btn.addEventListener('click', () => btn.blur());
+    }
     this.btnResume = document.getElementById('btn-resume');
     this.btnPause = document.getElementById('btn-pause');
     this.pauseScreen = document.getElementById('pause-screen');
@@ -78,11 +90,13 @@ export class UIManager {
 
   saveScore(score) {
     const rounded = Math.floor(score);
+    this.latestEntry = null;
     if (rounded <= 0) return this.getHighScore();
 
-    this.leaderboard.push({ name: 'YOU', score: rounded });
+    this.latestEntry = { name: 'YOU', score: rounded };
+    this.leaderboard.push(this.latestEntry);
     this.leaderboard.sort((a, b) => b.score - a.score);
-    this.leaderboard = this.leaderboard.slice(0, 5);
+    this.leaderboard = this.leaderboard.slice(0, GAME_CONFIG.LEADERBOARD_SIZE);
 
     try {
       localStorage.setItem(
@@ -110,8 +124,30 @@ export class UIManager {
       )
       .join('');
     this.hudLeaderboardList.innerHTML = html;
-    this.goLeaderboardList.innerHTML = html;
     this.hudHighScore.textContent = this.formatPts(this.getHighScore());
+  }
+
+  renderFullLeaderboard() {
+    // Always show every place; free places are dotted placeholders
+    const rows = [];
+    for (let i = 0; i < GAME_CONFIG.LEADERBOARD_SIZE; i++) {
+      const entry = this.leaderboard[i];
+      const rank = `<span class="lb-rank">${i + 1}.</span>`;
+      rows.push(
+        entry
+          ? `<li class="${entry === this.latestEntry ? 'lb-latest' : ''}">${rank}` +
+              `<span>${entry.name}</span><span>${this.formatPts(entry.score)}</span></li>`
+          : `<li class="lb-empty">${rank}<span>...</span><span>.....</span></li>`
+      );
+    }
+    this.lbFullList.innerHTML = rows.join('');
+  }
+
+  /** Game Over -> Leaderboard (show=true) or back (show=false) */
+  showLeaderboard(show) {
+    if (show) this.renderFullLeaderboard();
+    this.leaderboardScreen.classList.toggle('hidden', !show);
+    this.gameOverScreen.classList.toggle('hidden', show);
   }
 
   formatPts(value) {
@@ -133,6 +169,7 @@ export class UIManager {
     this.startScreen.classList.remove('hidden');
     this.hud.classList.add('hidden');
     this.gameOverScreen.classList.add('hidden');
+    this.leaderboardScreen.classList.add('hidden');
     this.renderLeaderboard();
   }
 
@@ -140,6 +177,7 @@ export class UIManager {
     this.canvasContainer.classList.remove('blurred');
     this.startScreen.classList.add('hidden');
     this.gameOverScreen.classList.add('hidden');
+    this.leaderboardScreen.classList.add('hidden');
     this.hud.classList.remove('hidden');
     this.mvpToast.classList.add('hidden');
     this.pauseScreen.classList.add('hidden');
@@ -152,7 +190,15 @@ export class UIManager {
     this.canvasContainer.classList.add('blurred');
     this.hud.classList.add('hidden');
     this.pauseScreen.classList.add('hidden');
+    this.leaderboardScreen.classList.add('hidden');
     this.gameOverScreen.classList.remove('hidden');
+
+    // Mouse players click to jump: ignore clicks that were meant for the last jump
+    for (const btn of this.goButtons) btn.disabled = true;
+    clearTimeout(this.goLockTimer);
+    this.goLockTimer = setTimeout(() => {
+      for (const btn of this.goButtons) btn.disabled = false;
+    }, GAME_CONFIG.GAME_OVER_INPUT_LOCK_MS);
 
     this.goCause.textContent = `STOPPED BY: ${causeWord}`;
     this.goDist.textContent = this.formatMeters(distanceMeters);

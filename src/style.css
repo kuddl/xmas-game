@@ -458,6 +458,84 @@ body {
   text-align: left;
 }
 
+/* Game over / leaderboard buttons: mouse or tap only (SPACE is for jumping) */
+.go-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.go-actions .pixel-btn {
+  animation: none;
+}
+
+.go-actions .pixel-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+
+.pixel-btn-secondary {
+  background: var(--ice-mid);
+  box-shadow: 4px 4px 0 #071224;
+}
+
+.pixel-btn-secondary:hover {
+  background: #23558f;
+}
+
+.pixel-btn-secondary:active {
+  box-shadow: 2px 2px 0 #071224;
+}
+
+.lb-screen-title {
+  color: var(--gold);
+}
+
+.lb-full-list {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 14px 18px;
+  background: #081529;
+  border: 3px solid var(--ice-light);
+  display: grid;
+  /* places 1-10 in the left column, 11-20 in the right one */
+  grid-template-rows: repeat(10, auto);
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  column-gap: 28px;
+  row-gap: 10px;
+  font-size: 12px;
+  text-align: left;
+}
+
+.leaderboard-card {
+  max-width: 720px;
+}
+
+.lb-full-list li {
+  display: grid;
+  grid-template-columns: 3.6em 1fr auto;
+  color: var(--snow);
+}
+
+.lb-full-list li.lb-empty {
+  color: var(--ice-mid);
+}
+
+.lb-full-list .lb-rank {
+  color: var(--ice-light);
+}
+
+.lb-full-list li.lb-latest {
+  color: var(--gold);
+}
+
+.lb-full-list li.lb-latest .lb-rank {
+  color: var(--gold);
+}
+
 /* Version badge on main screen */
 .version-badge {
   position: fixed;
@@ -995,26 +1073,48 @@ body.is-fullscreen .btn-fullscreen .fs-exit {
     align-items: safe center; /* never clip the top of a tall card */
   }
 
-  .gameover-card {
+  .gameover-card:not(.leaderboard-card) {
     display: grid;
     grid-template-columns: 1.15fr 1fr;
     column-gap: 12px;
-    align-items: start;
+    align-items: center;
     max-width: 640px;
   }
 
   .gameover-title,
-  .gameover-cause,
-  #btn-restart {
+  .gameover-cause {
     grid-column: 1 / -1;
   }
 
-  #btn-restart {
-    justify-self: center;
+  .gameover-card:not(.leaderboard-card) .score-board {
+    margin-bottom: 0;
   }
 
-  .gameover-card .go-leaderboard {
-    margin-bottom: 10px;
+  .gameover-card:not(.leaderboard-card) .go-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .lb-full-list {
+    padding: 6px 12px;
+    row-gap: 3px;
+    column-gap: 18px;
+    font-size: 8px;
+    margin-bottom: 8px;
+  }
+
+  .leaderboard-card {
+    max-width: 640px;
+  }
+
+  .leaderboard-card .gameover-title {
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+
+  .leaderboard-card .gameover-cause {
+    margin-bottom: 6px;
+    font-size: 8px;
   }
 
   .badge,
