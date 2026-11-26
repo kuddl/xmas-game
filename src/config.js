@@ -99,6 +99,34 @@ export const GAME_CONFIG = {
   POWERUP_WARNING_TIME: 1.5, // blink when this much time is left
   DOUBLE_JUMP_VELOCITY: -410,
 
+  // Coin cloud (#17): after grabbing the Arc logo, a cloud of coins appears
+  // high in the air, only reachable with the double jump
+  COIN_CLOUD: {
+    ROWS: [6, 7, 5], // coins per row, bottom -> top (18 total)
+    BOTTOM_ABOVE_GROUND: 152, // single jump tops out at ~145 incl. pickup radius
+    ROW_GAP: 20,
+    DELAY: 0.6, // seconds after the pickup
+    LEAD_PX: 600, // spawn this far ahead of the player (or just off-screen, if closer)
+    POP_TIME: 0.35, // puff-in animation
+  },
+
+  // Creative-mode mushrooms (#14): harmless ground pickup, pink + blur for a few seconds
+  CREATIVE_MODE: {
+    label: 'CREATIVE MODE',
+    hint: 'YOU CHANGED A COLOR TOKEN IN FIGMA',
+    cssColor: '#e8458b',
+    duration: 5, // seconds; another mushroom restarts the timer
+    fade: 0.4, // fade in / out
+    tint: [1.0, 0.42, 0.78], // pink overlay (r, g, b in 0..1)
+    tintAmount: 0.35, // 0 = off, 1 = solid pink
+    blur: 1.5, // blur strength at full effect
+    firstDelay: 10, // seconds into REAL PRODUCTION before the first mushroom
+    minInterval: 25,
+    maxInterval: 40,
+    minGapPx: 240, // only in wide gaps, centered (never right before a block)
+    size: 32, // 16x16 sprite @ 2x
+  },
+
   POWERUPS: {
     breakthrough: {
       sprite: 'powerupMerkle',

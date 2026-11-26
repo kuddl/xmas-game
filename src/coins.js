@@ -18,11 +18,52 @@ export class CoinManager {
     this.coins = [];
     this.pool = [];
     this.animTime = 0;
+
+    // Coin cloud backdrop (#17): sits behind the coins, scrolls with them
+    this.cloudTexture = assetLoader.getTexture('coinCloud');
+    this.cloudLayer = new Container();
+    this.cloudLayer.zIndex = 15;
+    parentContainer.addChild(this.cloudLayer);
+    this.clouds = [];
   }
 
   reset() {
     for (const coin of this.coins) this.release(coin);
     this.coins = [];
+    for (const cl of this.clouds) cl.sprite.destroy();
+    this.clouds = [];
+  }
+
+  /**
+   * Cluster of coins high in the air with a pixel cloud behind it.
+   * Rows are centered on x, so 6 / 7 / 5 coins stagger naturally.
+   * @returns {{left:number, right:number, top:number, bottom:number}} world-space bounds
+   */
+  cloudAt(x) {
+    const cfg = GAME_CONFIG.COIN_CLOUD;
+    const sp = GAME_CONFIG.COIN_SPACING;
+    let widest = 0;
+    cfg.ROWS.forEach((count, row) => {
+      const y = GAME_CONFIG.GROUND_Y - cfg.BOTTOM_ABOVE_GROUND - row * cfg.ROW_GAP;
+      const startX = x - ((count - 1) * sp) / 2;
+      for (let i = 0; i < count; i++) this.add(startX + i * sp, y, i + row);
+      widest = Math.max(widest, (count - 1) * sp);
+    });
+    const top = GAME_CONFIG.GROUND_Y - cfg.BOTTOM_ABOVE_GROUND - (cfg.ROWS.length - 1) * cfg.ROW_GAP;
+    const midY = (top + GAME_CONFIG.GROUND_Y - cfg.BOTTOM_ABOVE_GROUND) / 2;
+
+    if (this.cloudTexture) {
+      const sprite = new Sprite(this.cloudTexture);
+      sprite.anchor.set(0.5);
+      const w = widest + 80;
+      sprite.width = w;
+      sprite.height = w * (this.cloudTexture.height / this.cloudTexture.width);
+      sprite.position.set(x, midY + 4);
+      this.cloudLayer.addChild(sprite);
+      this.clouds.push({ sprite, x, age: 0, baseScale: sprite.scale.x });
+    }
+    const half = (widest + 24) / 2;
+    return { left: x - half, right: x + half, top: top - 12, bottom: midY + 30 };
   }
 
   release(coin) {
@@ -101,6 +142,23 @@ export class CoinManager {
   update(dt, scrollSpeed) {
     this.animTime += dt;
     const frameCount = this.frames.length;
+
+    const pop = GAME_CONFIG.COIN_CLOUD.POP_TIME;
+    for (let i = this.clouds.length - 1; i >= 0; i--) {
+      const cl = this.clouds[i];
+      cl.age += dt;
+      cl.x -= scrollSpeed * dt;
+      cl.sprite.x = cl.x;
+      // puff in: quick overshoot, then settle
+      const t = Math.min(1, cl.age / pop);
+      const s = t < 1 ? 0.4 + 0.6 * t + 0.2 * Math.sin(Math.PI * t) : 1;
+      cl.sprite.scale.set(cl.baseScale * s);
+      cl.sprite.alpha = Math.min(1, t * 1.5);
+      if (cl.x < -cl.sprite.width) {
+        cl.sprite.destroy();
+        this.clouds.splice(i, 1);
+      }
+    }
 
     for (let i = this.coins.length - 1; i >= 0; i--) {
       const coin = this.coins[i];

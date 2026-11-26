@@ -265,4 +265,14 @@ export class ObstacleManager {
     this.obstacles.splice(index, 1);
     return pos;
   }
+
+  /** Remove every obstacle overlapping [left, right] (ground below the coin cloud) */
+  clearRange(left, right, onRemoved) {
+    for (const obs of [...this.obstacles]) {
+      if (obs.x + obs.hit.right > left && obs.x + obs.hit.left < right) {
+        const pos = this.smash(obs);
+        if (pos) onRemoved?.(pos);
+      }
+    }
+  }
 }

@@ -620,7 +620,66 @@ function createCanvas(width, height) {
   c.save('coin.png');
 }
 
-// 13. Write spritesheet.json config
+// 13. CREATIVE-MODE MUSHROOM (16x16) — pink cap with white dots (#14)
+{
+  const palette = {
+    K: '#3a1030', // outline
+    R: '#e8458b', // pink cap
+    D: '#a8235e', // cap shade
+    W: '#fff4fb', // dots
+    S: '#f7e7d4', // stem
+    H: '#d9c2a8', // stem shade
+    E: '#3a1030', // tiny eyes
+  };
+  const grid = [
+    '................',
+    '.....KKKKKK.....',
+    '...KKRRWWRRKK...',
+    '..KRRRWWWRRRRK..',
+    '.KRWWRRRRRRWWRK.',
+    '.KRWWRRRRRRWWRK.',
+    'KRRRRRWWRRRRRRRK',
+    'KRRRRWWWWRRRWRRK',
+    'KDDRRRWWRRRRDDDK',
+    '.KKDDDDDDDDDDKK.',
+    '....KSSSSSSK....',
+    '....KSESSESK....',
+    '....KSSSSSSK....',
+    '....KSSSSSHK....',
+    '....KSSSSHHK....',
+    '.....KKKKKK.....',
+  ];
+  const c = createCanvas(16, 16);
+  c.drawGrid(0, 0, grid, palette);
+  c.save('mushroom.png');
+}
+
+// 14. COIN CLOUD (64x24) — soft pixel cloud drawn behind the double-jump coin cluster (#17)
+{
+  const FILL = '#ffffffd9';
+  const SHADE = '#d7eeffd9';
+  const EDGE = '#9cc8eef0';
+  const blobs = [
+    [13, 15, 8.5],
+    [24, 10, 9.5],
+    [37, 8.5, 10.5],
+    [50, 13, 9],
+    [31, 15, 10],
+  ];
+  const inside = (x, y) =>
+    y <= 21 && blobs.some(([cx, cy, r]) => (x + 0.5 - cx) ** 2 + (y + 0.5 - cy) ** 2 <= r * r);
+  const c = createCanvas(64, 24);
+  for (let y = 0; y < 24; y++) {
+    for (let x = 0; x < 64; x++) {
+      if (!inside(x, y)) continue;
+      const edge = !inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1);
+      c.set(x, y, edge ? EDGE : y >= 17 ? SHADE : FILL);
+    }
+  }
+  c.save('coin-cloud.png');
+}
+
+// 15. Write spritesheet.json config
 const spritesheet = {
   version: '1.0.0',
   pixelArt: true,
@@ -694,6 +753,16 @@ const spritesheet = {
       animations: {
         spin: { frames: [0, 1, 2, 3], fps: 8 },
       },
+    },
+    mushroom: {
+      path: '/assets/sprites/mushroom.png',
+      width: 16,
+      height: 16,
+    },
+    coinCloud: {
+      path: '/assets/sprites/coin-cloud.png',
+      width: 64,
+      height: 24,
     },
   },
 };

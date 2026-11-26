@@ -97,6 +97,16 @@
           "fps": 8
         }
       }
+    },
+    "mushroom": {
+      "path": "/assets/sprites/mushroom.png",
+      "width": 16,
+      "height": 16
+    },
+    "coinCloud": {
+      "path": "/assets/sprites/coin-cloud.png",
+      "width": 64,
+      "height": 24
     }
   }
 }

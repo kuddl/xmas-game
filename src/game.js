@@ -7,6 +7,7 @@ import { PowerUpManager } from './powerups.js';
 import { EffectsManager } from './effects.js';
 import { PlatformManager } from './platforms.js';
 import { CoinManager } from './coins.js';
+import { CreativeModeEffect, MushroomManager } from './mushrooms.js';
 import { TutorialDirector } from './tutorial.js';
 import { UIManager } from './ui.js';
 
@@ -59,8 +60,20 @@ export class Game {
     this.effects = new EffectsManager(this.assetLoader, this.worldContainer);
     this.platforms = new PlatformManager(this.assetLoader, this.worldContainer);
     this.coins = new CoinManager(this.assetLoader, this.worldContainer);
+    this.mushrooms = new MushroomManager(this.assetLoader, this.worldContainer);
+    this.creative = new CreativeModeEffect(this.worldContainer);
+    this.pendingCloud = -1; // seconds until a coin cloud spawns (-1 = none)
+    this.cloudZone = null; // { left, right } in world x while a coin cloud is on screen
+    this.inProduction = false;
     this.obstacles.onGap = (x, gapPx, obstacle) => {
-      this.powerups.onObstacleGap(x, gapPx, (px) => this.platforms.coversX(px));
+      const placedMushroom = this.mushrooms.onObstacleGap(x, gapPx, {
+        inProduction: this.inProduction,
+        effectActive: this.creative.active,
+        isBlocked: (px) => this.platforms.coversX(px) || this.inCloudZone(px, px),
+      });
+      if (!placedMushroom) {
+        this.powerups.onObstacleGap(x, gapPx, (px) => this.platforms.coversX(px));
+      }
       this.coins.onObstacle(obstacle, gapPx);
     };
     this.platforms.onReward = (x, y) => this.powerups.spawnReward(x, y);
@@ -68,10 +81,11 @@ export class Game {
       this.tutorial?.active
         ? this.coins.rowOnPlatform(left, width, top) // scripted track: always show coins
         : this.coins.onPlatform(left, width, top);
-    // Spacing rules: no obstacles under/next to platforms, no platform over an obstacle
+    // Spacing rules: no obstacles under/next to platforms or the coin cloud, no platform over an obstacle
     this.obstacles.isBlocked = (left, right, speed) =>
-      this.platforms.blocksObstacle(left, right, speed);
-    this.platforms.canSpawnAt = (x) => this.obstacles.rightmostEdge() < x;
+      this.platforms.blocksObstacle(left, right, speed) || this.inCloudZone(left, right);
+    this.platforms.canSpawnAt = (x) =>
+      this.obstacles.rightmostEdge() < x && !this.inCloudZone(x, x + 400);
     this.storyPoints = 0;
 
     const icons = {};
@@ -266,6 +280,11 @@ export class Game {
     this.powerups.reset();
     this.platforms.reset();
     this.coins.reset();
+    this.mushrooms.reset();
+    this.creative.reset();
+    this.pendingCloud = -1;
+    this.cloudZone = null;
+    this.inProduction = false;
     this.storyPoints = 0;
     this.ui.hideSpotlight();
     if (this.ui.tutorialChecked) {
@@ -366,6 +385,7 @@ export class Game {
     // PLAYING state
     const { inProduction, moveDir, speedMultiplier, scrollSpeed } =
       this.getSpeedInfo();
+    this.inProduction = inProduction;
 
     this.elapsedTime += dt;
     this.distanceMeters += (scrollSpeed * dt) / GAME_CONFIG.PIXELS_PER_METER;
@@ -401,6 +421,9 @@ export class Game {
     });
     this.platforms.update(dt, scrollSpeed, this.viewWidth);
     this.coins.update(dt, scrollSpeed);
+    this.mushrooms.update(dt, scrollSpeed, inProduction);
+    this.creative.update(dt);
+    this.updateCoinCloud(dt, scrollSpeed);
 
     // Scripted MVP onboarding: spawn elements and freeze for spotlight cards
     if (this.tutorial.update(this.distanceMeters)) {
@@ -418,6 +441,8 @@ export class Game {
       this.powerups.activate(collected.type);
       this.effects.burst(collected.x, collected.y, def.color, 24, 190);
       this.ui.showToast(`${def.label}! ${def.hint}`, def.cssColor);
+      // Arc double jump: a coin cloud high up, only reachable with the second jump
+      if (collected.type === 'doubleJump') this.pendingCloud = GAME_CONFIG.COIN_CLOUD.DELAY;
       if (this.tutorial.onPowerUpCollected(collected.type)) {
         this.enterIntro();
         return;
@@ -432,6 +457,15 @@ export class Game {
       this.storyPoints += coinsHit.length;
       for (const c of coinsHit) this.effects.burst(c.x, c.y, 0xf5b82e, 6, 90);
       this.ui.updateStoryPoints(this.storyPoints);
+    }
+
+    // Creative-mode mushroom: harmless, only changes the look (also during Breakthrough)
+    const shroom = this.mushrooms.collect(hitbox);
+    if (shroom) {
+      const cm = GAME_CONFIG.CREATIVE_MODE;
+      this.creative.trigger();
+      this.effects.burst(shroom.x, shroom.y, 0xe8458b, 18, 150);
+      this.ui.showToast(`${cm.label}! ${cm.hint}`, cm.cssColor);
     }
 
     const hitObstacle = this.obstacles.checkCollision(hitbox);
@@ -470,6 +504,40 @@ export class Game {
     });
     this.ui.updatePowerUps(this.powerups.getActiveList());
     this.applyScreenShake(dt);
+  }
+
+  /** Coin-cloud bookkeeping (#17): delayed spawn and the obstacle-free zone below it */
+  updateCoinCloud(dt, scrollSpeed) {
+    if (this.cloudZone) {
+      this.cloudZone.left -= scrollSpeed * dt;
+      this.cloudZone.right -= scrollSpeed * dt;
+      if (this.cloudZone.right < -40) this.cloudZone = null;
+    }
+    if (this.pendingCloud < 0) return;
+    this.pendingCloud -= dt;
+    if (this.pendingCloud > 0) return;
+
+    const cfg = GAME_CONFIG.COIN_CLOUD;
+    const x = Math.min(this.viewWidth + 80, this.player.x + cfg.LEAD_PX);
+    if (this.platforms.coversX(x, 140)) {
+      this.pendingCloud = 0.1; // an ice platform is in the way: try again in a moment
+      return;
+    }
+    this.pendingCloud = -1;
+    const box = this.coins.cloudAt(x);
+    // Keep the ground below free so the landing after the double jump is safe.
+    // MVP: landing on a block is harmless anyway, and the tutorial's practice blocks stay.
+    this.cloudZone = { left: box.left - 90, right: box.right + 140 };
+    if (this.inProduction) {
+      this.obstacles.clearRange(this.cloudZone.left, this.cloudZone.right, (pos) =>
+        this.effects.burst(pos.x, pos.y, 0xffffff, 10, 120)
+      );
+    }
+    this.effects.burst(x, box.top + 20, 0xffffff, 22, 170);
+  }
+
+  inCloudZone(left, right) {
+    return !!this.cloudZone && right > this.cloudZone.left && left < this.cloudZone.right;
   }
 
   /** Aura + Asterix-style sparkles for whichever power-up is active */
