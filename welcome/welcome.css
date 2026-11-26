@@ -1,0 +1,431 @@
+/* Landing page prototype (#020): vertical scroll drives a horizontal run, like the game. */
+
+:root {
+  --ice-dark: #0c1f3a;
+  --ice-mid: #1a4273;
+  --ice-light: #6cb8f0;
+  --snow: #f2f8ff;
+  --red: #e02f40;
+  --red-dark: #991926;
+  --gold: #f5b82e;
+  --font-pixel: 'Press Start 2P', 'Courier New', monospace;
+
+  /* one "game pixel": the game is 360 virtual px tall, so the page scales the same way */
+  --px: calc(100dvh / 360);
+  --ground-h: calc(68 * var(--px)); /* 360 - GROUND_Y (292) */
+  --travel: 200vw; /* set exactly by main.js */
+  --track-w: 300vw; /* set exactly by main.js */
+  --p: 0; /* scroll progress 0..1, only used by the JS fallback */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--ice-dark);
+  color: var(--snow);
+  font-family: var(--font-pixel);
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  margin: 0;
+}
+
+/* ---------- scroll container & sticky stage ---------- */
+
+.scroller {
+  height: calc(100dvh + var(--travel));
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: clip;
+  isolation: isolate;
+}
+
+.shake {
+  position: absolute;
+  inset: 0;
+}
+
+.shake.is-shaking {
+  animation: shake 0.22s steps(4) both;
+}
+
+@keyframes shake {
+  25% { translate: -6px 3px; }
+  50% { translate: 5px -4px; }
+  75% { translate: -3px -2px; }
+}
+
+/* ---------- scenery ---------- */
+
+.sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(#3a8ad6 0%, #7bc4f7 45%, #c7e8ff 85%, #eaf6ff 100%);
+}
+
+.layer {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--ground-h) - var(--sink));
+  height: var(--h);
+  width: calc(100vw + var(--travel) * var(--speed) + var(--tile-w));
+  background-image: var(--img);
+  background-repeat: repeat-x;
+  background-size: var(--tile-w) var(--h);
+  background-position: left bottom;
+  image-rendering: pixelated;
+  will-change: transform;
+}
+
+/* same assets, scales and parallax factors as the game (src/world.js) */
+.layer-far {
+  --img: url('/assets/sprites/bg-mountains-far.png');
+  --tile-w: calc(256 * 2 * var(--px));
+  --h: calc(128 * 2 * var(--px));
+  --speed: 0.14;
+  --sink: calc(4 * var(--px));
+}
+
+.layer-mid {
+  --img: url('/assets/sprites/bg-mountains-mid.png');
+  --tile-w: calc(256 * 1.75 * var(--px));
+  --h: calc(128 * 1.75 * var(--px));
+  --speed: 0.3;
+  --sink: calc(4 * var(--px));
+}
+
+.layer-near {
+  --img: url('/assets/sprites/bg-trees-near.png');
+  --tile-w: calc(256 * 1.85 * var(--px));
+  --h: calc(64 * 1.85 * var(--px));
+  --speed: 0.62;
+  --sink: calc(2 * var(--px));
+}
+
+/* ---------- the track (moves 1:1 with the scroll) ---------- */
+
+.track {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--track-w);
+  will-change: transform;
+}
+
+.ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--ground-h) + 8 * var(--px));
+  background: url('/assets/sprites/ground-tile.png') repeat-x left top / calc(64 * 3 * var(--px)) calc(32 * 3 * var(--px));
+  image-rendering: pixelated;
+}
+
+/* ---------- scroll-driven motion (native, compositor) ---------- */
+
+@keyframes run-track {
+  to { transform: translateX(calc(-1 * var(--travel))); }
+}
+
+@keyframes run-layer {
+  to { transform: translateX(calc(-1 * var(--travel) * var(--speed))); }
+}
+
+@supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+  .track {
+    animation: run-track linear both;
+    animation-timeline: scroll(root block);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .layer {
+      animation: run-layer linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+/* JS fallback (main.js sets --p and the class only when the native feature is missing) */
+.no-sda .track {
+  transform: translateX(calc(-1 * var(--travel) * var(--p)));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .no-sda .layer {
+    transform: translateX(calc(-1 * var(--travel) * var(--speed) * var(--p)));
+  }
+}
+
+/* ---------- beats: intro, blocks, finale ---------- */
+
+.beat {
+  position: absolute;
+  bottom: var(--ground-h);
+  left: var(--x);
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+  gap: calc(10 * var(--px));
+  width: min(30rem, 80vw);
+}
+
+.intro {
+  bottom: auto;
+  top: 18%;
+  text-align: center;
+}
+
+.kicker {
+  display: inline-block;
+  padding: 0.5em 0.8em;
+  background: var(--snow);
+  color: var(--red);
+  font-size: clamp(9px, calc(6.4 * var(--px)), 14px);
+}
+
+.pixel-title {
+  margin: 0;
+  font-size: clamp(18px, 4.2vw, 46px);
+  line-height: 1.35;
+  text-shadow: 4px 4px 0 var(--red), 7px 7px 0 #071224;
+  text-wrap: balance;
+}
+
+.scroll-hint {
+  margin-top: 1.5em;
+  font-size: clamp(10px, 1.4vw, 14px);
+  color: var(--ice-dark);
+  background: rgb(242 248 255 / 0.8);
+  padding: 0.7em 1em;
+}
+
+.scroll-hint::after {
+  content: ' \2192';
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-hint::after {
+    animation: nudge 0.9s ease-in-out infinite;
+  }
+}
+
+@keyframes nudge {
+  50% { translate: 6px 0; }
+}
+
+/* the smashable block */
+.block {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(24 * 3 * var(--px));
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: url('/assets/sprites/obstacle-block.png') center / contain no-repeat;
+  image-rendering: pixelated;
+  font: inherit;
+  color: #b81d2c;
+  cursor: pointer;
+  order: 2;
+}
+
+.block-word {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  font-size: max(7px, calc(6 * var(--px)));
+  letter-spacing: -0.04em;
+  color: var(--snow);
+  text-shadow: 2px 0 #071224, -2px 0 #071224, 0 2px #071224, 0 -2px #071224;
+}
+
+.block:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.block:hover {
+  filter: brightness(1.12) drop-shadow(0 0 8px rgb(245 184 46 / 0.8));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .block {
+    animation: bob 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes bob {
+  50% { translate: 0 calc(-4 * var(--px)); }
+}
+
+.smash-hint {
+  order: 1;
+  font-size: clamp(8px, 1.1vw, 11px);
+  color: var(--ice-dark);
+  background: var(--gold);
+  padding: 0.6em 0.8em;
+  box-shadow: 3px 3px 0 #071224;
+}
+
+.beat.is-open .block,
+.beat.is-open .smash-hint {
+  visibility: hidden;
+}
+
+/* the greeting card behind the block */
+.card {
+  order: 0;
+  margin: 0;
+  padding: clamp(14px, 2.2vw, 24px);
+  background: rgb(12 31 58 / 0.94);
+  border: 4px solid var(--snow);
+  box-shadow: 8px 8px 0 rgb(7 17 34 / 0.95);
+  text-align: left;
+  opacity: 0;
+  scale: 0.6;
+  translate: 0 30%;
+  transition: opacity 0.35s ease, scale 0.45s cubic-bezier(0.2, 1.6, 0.4, 1), translate 0.45s cubic-bezier(0.2, 1.6, 0.4, 1);
+  pointer-events: none;
+
+  @media (prefers-reduced-motion: reduce) {
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+.beat.is-open .card {
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+  pointer-events: auto;
+}
+
+.card h2 {
+  margin: 0 0 0.9em;
+  font-size: clamp(11px, 1.5vw, 16px);
+  color: var(--gold);
+  line-height: 1.5;
+}
+
+.card p {
+  margin: 0;
+  font-size: clamp(9px, 1.05vw, 12px);
+  line-height: 1.9;
+}
+
+.card small {
+  display: block;
+  margin-top: 1em;
+  font-size: 8px;
+  color: var(--ice-light);
+}
+
+/* finale banner */
+.finale .card {
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+  text-align: center;
+  border-color: var(--gold);
+  pointer-events: auto;
+}
+
+.finale .pixel-title {
+  font-size: clamp(14px, 2.6vw, 30px);
+  margin: 0.6em 0 1em;
+}
+
+.start-btn {
+  display: inline-block;
+  font-family: var(--font-pixel);
+  font-size: clamp(11px, 1.4vw, 16px);
+  padding: 1em 1.4em;
+  color: var(--snow);
+  background: var(--red);
+  border: 3px solid var(--snow);
+  box-shadow: 4px 4px 0 var(--red-dark);
+  text-decoration: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: blink 1.2s steps(2) infinite;
+  }
+}
+
+.start-btn:hover,
+.start-btn:focus-visible {
+  background: #f0384a;
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+  animation: none;
+}
+
+@keyframes blink {
+  50% { opacity: 0.55; }
+}
+
+/* ---------- effects canvas & runner ---------- */
+
+.fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.runner {
+  --size: calc(16 * 2.4 * var(--px));
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: var(--size);
+  height: var(--size);
+  background: url('/assets/sprites/player.png') 0 0 / calc(var(--size) * 5) var(--size) no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 10;
+  will-change: transform;
+}
+
+.runner.is-running {
+  animation: run-frames 0.3s steps(3) infinite;
+}
+
+.runner.is-jumping {
+  animation: none;
+  background-position-x: calc(var(--size) * -3);
+}
+
+@keyframes run-frames {
+  to { background-position-x: calc(var(--size) * -3); }
+}
+
+/* Desktop: the runner is the cursor */
+@media (pointer: fine) {
+  .stage,
+  .stage * {
+    cursor: none;
+  }
+}
+
+/* Touch: the runner runs along the ground */
+@media (pointer: coarse) {
+  .runner {
+    left: 18vw;
+    top: auto;
+    bottom: var(--ground-h);
+    translate: -50% 0;
+  }
+}

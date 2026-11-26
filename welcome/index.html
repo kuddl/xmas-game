@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Merry Christmas, Merkle! · from the ARC team</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./welcome.css" />
+  </head>
+  <body>
+    <!-- The scroller is tall; the stage sticks to the viewport and translates the track sideways -->
+    <div class="scroller" id="scroller">
+      <main class="stage" id="stage">
+        <div class="shake" id="shake">
+          <div class="sky" aria-hidden="true"></div>
+          <div class="layer layer-far" aria-hidden="true"></div>
+          <div class="layer layer-mid" aria-hidden="true"></div>
+          <div class="layer layer-near" aria-hidden="true"></div>
+
+          <div class="track" id="track">
+            <div class="ground" aria-hidden="true"></div>
+            <!-- beats are rendered from content.js -->
+          </div>
+        </div>
+        <div class="runner" id="runner" aria-hidden="true"></div>
+      </main>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
