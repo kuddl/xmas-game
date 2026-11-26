@@ -679,7 +679,139 @@ function createCanvas(width, height) {
   c.save('coin-cloud.png');
 }
 
-// 15. Write spritesheet.json config
+// 15. SANTA'S SLEIGH WITH TWO FLYING REINDEER (2 frames x 64x24 = 128x24), facing left (landing page #023)
+{
+  const K = '#141824'; // outline
+  const B = '#8a5a2b'; // reindeer brown
+  const L = '#c49058'; // belly / light brown
+  const A = '#e8d2a8'; // antlers
+  const N = '#e02f40'; // red nose
+  const R = '#d92638'; // sleigh / santa red
+  const D = '#941727'; // dark red
+  const G = '#f5b82e'; // gold
+  const W = '#f4f8ff'; // white fur / beard
+  const S = '#f7c59f'; // skin
+  const c = createCanvas(128, 24);
+
+  const reindeer = (ox, oy, frame, nose) => {
+    c.rect(ox + 3, oy + 3, 9, 4, B); // body
+    c.rect(ox + 4, oy + 6, 7, 1, L); // belly
+    c.rect(ox + 1, oy + 1, 3, 3, B); // neck
+    c.rect(ox - 1, oy, 3, 2, B); // head
+    c.set(ox - 2, oy + 1, nose); // nose
+    c.set(ox, oy, K); // eye
+    for (const [x, y] of [[0, -1], [1, -2], [-1, -2], [2, -1], [2, -3], [0, -3]]) c.set(ox + x, oy + y, A);
+    c.set(ox + 12, oy + 3, W); // tail
+    if (frame === 0) {
+      c.rect(ox + 4, oy + 7, 1, 3, B);
+      c.rect(ox + 10, oy + 7, 1, 3, B);
+      c.set(ox + 4, oy + 10, K);
+      c.set(ox + 10, oy + 10, K);
+    } else {
+      // gallop: legs stretched forward and back
+      for (const [x, y] of [[3, 7], [2, 8], [1, 9], [11, 7], [12, 8], [13, 9]]) c.set(ox + x, oy + y, B);
+      c.set(ox + 0, oy + 9, K);
+      c.set(ox + 14, oy + 9, K);
+    }
+  };
+
+  for (let frame = 0; frame < 2; frame++) {
+    const fx = frame * 64;
+    const bob = frame === 0 ? 0 : 1;
+    reindeer(fx + 3, 7 + bob, frame, N);
+    reindeer(fx + 19, 8 - bob, 1 - frame, '#4a2c2a');
+    // reins
+    for (let x = fx + 15; x < fx + 44; x += 2) c.set(x, 11, G);
+
+    // sleigh body with curled front
+    c.rect(fx + 38, 13, 22, 6, R);
+    c.rect(fx + 38, 18, 22, 1, D);
+    c.rect(fx + 36, 14, 2, 3, R);
+    c.set(fx + 36, 13, R);
+    c.rect(fx + 38, 13, 22, 1, G);
+    // runner
+    c.rect(fx + 37, 21, 25, 1, G);
+    c.set(fx + 36, 20, G);
+    c.set(fx + 35, 19, G);
+    c.rect(fx + 42, 19, 1, 2, G);
+    c.rect(fx + 56, 19, 1, 2, G);
+
+    // gift on the back
+    c.rect(fx + 54, 7, 6, 6, G);
+    c.rect(fx + 56, 7, 2, 6, N);
+    c.rect(fx + 54, 9, 6, 1, N);
+
+    // santa
+    c.rect(fx + 45, 7, 8, 6, R); // coat
+    c.rect(fx + 45, 11, 8, 1, W); // fur trim
+    c.rect(fx + 46, 3, 5, 3, S); // face
+    c.rect(fx + 45, 5, 7, 3, W); // beard
+    c.rect(fx + 46, 1, 5, 2, R); // hat
+    c.rect(fx + 45, 3, 7, 1, W); // hat brim
+    c.set(fx + 52, 1, W); // pompom
+    c.set(fx + 47, 4, K); // eye
+    c.rect(fx + 43, 8 + bob, 2, 2, R); // arm
+    c.set(fx + 42, 9 + bob, K); // mitten
+  }
+
+  // 1px dark outline around everything
+  const filled = (x, y) => x >= 0 && y >= 0 && x < 128 && y < 24 && c.buf[(y * 128 + x) * 4 + 3] > 0;
+  const edge = [];
+  for (let y = 0; y < 24; y++) {
+    for (let x = 0; x < 128; x++) {
+      if (filled(x, y)) continue;
+      if (x % 64 === 63 || x % 64 === 0) continue; // keep frames separate
+      if (filled(x - 1, y) || filled(x + 1, y) || filled(x, y - 1) || filled(x, y + 1)) edge.push([x, y]);
+    }
+  }
+  for (const [x, y] of edge) c.set(x, y, K);
+  c.save('santa-sleigh.png');
+}
+
+// 16. TINSEL GARLAND TILE (32x12) — seamless sagging strand with beads (landing page finale #023)
+{
+  const beads = ['#f5b82e', '#e02f40', '#dfe8f2', '#6cb8f0'];
+  const c = createCanvas(32, 12);
+  for (let x = 0; x < 32; x++) {
+    const y = Math.round(2 + 6 * Math.sin((Math.PI * x) / 32));
+    c.set(x, y, '#f5b82e');
+    c.set(x, y + 1, x % 4 < 2 ? '#d18815' : '#ffe27a');
+    if (x % 8 === 4) {
+      const col = beads[(x / 8) | 0];
+      c.rect(x - 1, y + 2, 3, 2, col);
+      c.set(x, y + 2, '#ffffff');
+    }
+  }
+  c.save('tinsel.png');
+}
+
+// 17. FAVICON (16x16) — golden gift with red ribbon
+{
+  const palette = { K: '#141824', Y: '#f5b82e', O: '#d18815', R: '#e02f40', D: '#941727', W: '#ffffff' };
+  const grid = [
+    '................',
+    '....RR....RR....',
+    '...R..R..R..R...',
+    '...R...RR...R...',
+    '....RRRRRRRR....',
+    '.KKKKKKRRKKKKKK.',
+    '.KYYYYYRRYYYYYK.',
+    '.KRRRRRRRRRRRRK.',
+    '.KKKKKKRRKKKKKK.',
+    '..KYWYYRRYYYYK..',
+    '..KYYYYRRYYYOK..',
+    '..KYYYYRRYYYOK..',
+    '..KYYYYRRYYOOK..',
+    '..KOYYYRRYYOOK..',
+    '..KKKKKKKKKKKK..',
+    '................',
+  ];
+  const c = createCanvas(16, 16);
+  c.drawGrid(0, 0, grid, palette);
+  c.save('favicon.png');
+}
+
+// 18. Write spritesheet.json config
 const spritesheet = {
   version: '1.0.0',
   pixelArt: true,
@@ -763,6 +895,25 @@ const spritesheet = {
       path: '/assets/sprites/coin-cloud.png',
       width: 64,
       height: 24,
+    },
+    santaSleigh: {
+      path: '/assets/sprites/santa-sleigh.png',
+      frameWidth: 64,
+      frameHeight: 24,
+      frames: 2,
+      animations: {
+        fly: { frames: [0, 1], fps: 6 },
+      },
+    },
+    tinsel: {
+      path: '/assets/sprites/tinsel.png',
+      width: 32,
+      height: 12,
+    },
+    favicon: {
+      path: '/assets/sprites/favicon.png',
+      width: 16,
+      height: 16,
     },
   },
 };

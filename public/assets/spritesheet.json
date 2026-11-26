@@ -107,6 +107,31 @@
       "path": "/assets/sprites/coin-cloud.png",
       "width": 64,
       "height": 24
+    },
+    "santaSleigh": {
+      "path": "/assets/sprites/santa-sleigh.png",
+      "frameWidth": 64,
+      "frameHeight": 24,
+      "frames": 2,
+      "animations": {
+        "fly": {
+          "frames": [
+            0,
+            1
+          ],
+          "fps": 6
+        }
+      }
+    },
+    "tinsel": {
+      "path": "/assets/sprites/tinsel.png",
+      "width": 32,
+      "height": 12
+    },
+    "favicon": {
+      "path": "/assets/sprites/favicon.png",
+      "width": 16,
+      "height": 16
     }
   }
 }

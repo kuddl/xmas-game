@@ -4,6 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Merry Christmas, Merkle! · from the ARC team</title>
+    <meta name="description" content="A Christmas greeting from the ARC team to everyone at Merkle: smash the buzzword blocks and unwrap your gift, the Christmas Project Game." />
+    <meta name="theme-color" content="#3a8ad6" />
+    <link rel="icon" type="image/png" href="/assets/sprites/favicon.png" />
+
+    <!-- link previews in mail, Teams, Slack -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://christmas.familiesailer.com/" />
+    <meta property="og:title" content="Merry Christmas, Merkle! 🎄 from the ARC team" />
+    <meta property="og:description" content="Smash the buzzword blocks, dodge the meeting invites and unwrap your gift: the Christmas Project Game." />
+    <meta property="og:image" content="https://christmas.familiesailer.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
@@ -16,14 +30,16 @@
         <div class="shake" id="shake">
           <div class="sky" aria-hidden="true"></div>
           <div class="layer layer-far" aria-hidden="true"></div>
+          <div class="santa" id="santa" aria-hidden="true"><div class="santa-sprite"></div></div>
           <div class="layer layer-mid" aria-hidden="true"></div>
           <div class="layer layer-near" aria-hidden="true"></div>
 
           <div class="track" id="track">
             <div class="ground" aria-hidden="true"></div>
-            <!-- beats are rendered from content.js -->
+            <!-- beats and flyers are rendered from welcome/content.js -->
           </div>
         </div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
         <div class="runner" id="runner" aria-hidden="true"></div>
       </main>
     </div>

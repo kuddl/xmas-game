@@ -26,3 +26,22 @@ Die Landingpage vor dem Versand an alle Merkle-Mitarbeiter fertig machen. Entsch
 - **Versand:** Link-Vorschau für Mail, Teams und Slack (Open Graph, Vorschaubild) und ein Favicon.
 
 ## Verlauf
+
+### 2026-11-26 · Umgesetzt (wartet auf Review von Tobias)
+
+- **Tab-Navigation:** `focusin` auf der Strecke scrollt sanft zum fokussierten Element. Nach dem Aufsprengen springt der Fokus auf die geöffnete Karte.
+- **Hinweis:** „↑ SCROLL UP TO RUN“. Der Pfeil richtet sich nach `layout.scrollDirection`.
+- **Fliegende Buzzwords:** 6 Flieger aus `content.js` → `flyers` (Wort + Meldung), jeweils mittig in den Lücken zwischen den Kisten und auf wechselnden Höhen.
+  - Berühren mit der Cursor-Figur: 2 s eingefroren (`effects.freezeSeconds`), Toast, Figur dizzy mit kreisenden Sternen, die Szene schwankt 0,55 s. Klicks sind in der Zeit blockiert.
+  - Anklicken oder Antippen: Trümmer und +5 SP.
+- **Kisten auf Eis:** automatisch Boden / Ebene 2 / Ebene 3 (oder per `level`), mit Eisplattform darunter. Die Karte geht oben auf, oder unten, wenn oben kein Platz ist.
+- **Kompakter:** `beatSpacing` 0,4, mindestens 300 px.
+- **Finale:** groß und mittig. Lametta-Girlanden (`tinsel.png`, zwei schwingende Stränge), dauerhaftes Glitzern ums Banner, beim ersten Sichtkontakt nach dem Freischalten ein Feuerwerk mit 7 Salven, pulsierender „PRESS START“.
+- **Weihnachtsmann:** `santa-sleigh.png` (2 Frames, 2 Rentiere), fliegt alle 18 s (`effects.santaEverySeconds`) hinter den Bergen durchs Bild und hinterlässt eine Glitzerspur.
+- **Versand:** Open-Graph- und Twitter-Tags, `public/og-image.png` (1200×630, Screenshot der Startszene), `favicon.png` (Geschenk) für Landingpage und Spiel.
+- **Neue Sprites** in `scripts/generate-assets.mjs` und `spritesheet.json`: `santaSleigh`, `tinsel`, `favicon`.
+- **Geprüft:**
+  - Desktop 1720×1267 und 1440×900, Handy 390×844 (auch als echtes Touch-Gerät emuliert)
+  - „Bewegung reduzieren“: ohne Parallax, Weihnachtsmann, Explosionen und Schwanken, die Karten bleiben sichtbar
+  - Einfrieren inklusive Klick-Sperre, Tab-Navigation, Freischalten des Geschenks, das Spiel unter `/game/` startet weiter
+  - keine Konsolenfehler
