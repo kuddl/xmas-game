@@ -45,3 +45,4 @@ Die Landingpage vor dem Versand an alle Merkle-Mitarbeiter fertig machen. Entsch
   - „Bewegung reduzieren“: ohne Parallax, Weihnachtsmann, Explosionen und Schwanken, die Karten bleiben sichtbar
   - Einfrieren inklusive Klick-Sperre, Tab-Navigation, Freischalten des Geschenks, das Spiel unter `/game/` startet weiter
   - keine Konsolenfehler
+- **Figma:** neue Gruppe „Landing Page“ mit `santaSleigh`, `tinsel` und `favicon` auf der Asset-Seite (ABX Game Assets).
