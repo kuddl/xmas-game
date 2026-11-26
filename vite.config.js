@@ -19,10 +19,10 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      // multi-page: the game on / and the landing page on /welcome/
+      // multi-page: the landing page on / and the game on /game/
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
-        welcome: resolve(import.meta.dirname, 'welcome/index.html'),
+        game: resolve(import.meta.dirname, 'game/index.html'),
       },
     },
   }

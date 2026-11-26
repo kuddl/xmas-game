@@ -23,8 +23,8 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 010 | [Arc-Logo als Hintergrund-Element](open/010-arc-logo-als-hintergrund-element.md) | enhancement, backlog | — |
 | 011 | [CI: GitHub Actions auf Node 24 aktualisieren](open/011-ci-github-actions-auf-node-24.md) | chore | — |
 | 019 | [Landingpage: Texte für Gruß und Satire-Blöcke](open/019-landingpage-texte-fuer-gruss-und-satire.md) · Map Landingpage | wayfinder:grilling | — |
-| 020 | [Landingpage: Scroll-Prototyp](open/020-landingpage-scroll-prototyp.md) · Map Landingpage | wayfinder:prototype | tsailer |
 | 021 | [Konami-Code: Power-up (doppelte Größe & Durchlaufen)](open/021-konami-code-power-up.md) | enhancement, backlog | — |
+| 022 | [Spiel-Modi: freies Spiel (/game) und getracktes Spiel (/game/UUID)](open/022-spiel-modi-freies-und-getracktes-spiel.md) | wayfinder:grilling | — |
 
 > Hinweis zu 007: Den unterschiedlichen Look für MVP und Production gibt es seit [013](done/013-mvp-phase-kuerzen-und-optisch-von.md). Zu klären ist, ob 007 damit erledigt ist oder ob eigene Welten (andere Motive) gemeint sind.
 
@@ -41,11 +41,12 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 016 | [Game Over: kein Neustart per SPACE, Buttons für Leaderboard und Neustart](done/016-game-over-kein-neustart-per-space.md) | bug, enhancement | 2026-11-26 |
 | 017 | [Coin-Wolke in der Luft während Arc Double Jump](done/017-coin-wolke-in-der-luft-waehrend.md) | backlog | 2026-11-26 |
 | 018 | [Landingpage: Was braucht die Seite?](done/018-landingpage-was-braucht-die-seite.md) · Map Landingpage | wayfinder:grilling | 2026-11-26 |
+| 020 | [Landingpage: Scroll-Prototyp](done/020-landingpage-scroll-prototyp.md) · Map Landingpage | wayfinder:prototype | 2026-11-26 |
 
 ## Arbeitsweise
 
 **Neues Ticket anlegen**
-1. Die nächste freie Nummer nehmen (höchste Nummer in `open/` und `done/` + 1, aktuell **022**).
+1. Die nächste freie Nummer nehmen (höchste Nummer in `open/` und `done/` + 1, aktuell **023**).
 2. Datei `open/<NNN>-<kurzer-slug>.md` nach der Vorlage unten anlegen.
 3. Eine Zeile in die Tabelle „Offen“ oben eintragen. Committen, z. B. `tickets: add 018 …`
 

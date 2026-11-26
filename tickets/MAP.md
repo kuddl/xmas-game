@@ -4,7 +4,7 @@
 
 ## Destination
 
-Ein spielbares, witziges **Corporate-Satire-Run-Game** als Weihnachtsgruß an Firmenkunden: Die Figur läuft automatisch durch eine winterliche 8-Bit-Projektwelt (Band-Scrolling links → rechts), springt und duckt sich unter Business-Buzzwords, sammelt Story Points und Firmenlogos als Power-Ups. Zuerst die sichere **MVP-Phase** (175 m), danach **Real Production** mit 1 Leben. Leaderboard nach Score. Spielbar im Browser auf Desktop und Handy, live auf https://christmas.familiesailer.com.
+Ein spielbares, witziges **Corporate-Satire-Run-Game** als interner Weihnachtsgruß des ARC-Teams an alle Merkle-Mitarbeiter: Die Figur läuft automatisch durch eine winterliche 8-Bit-Projektwelt (Band-Scrolling links → rechts), springt und duckt sich unter Business-Buzzwords, sammelt Story Points und Firmenlogos als Power-Ups. Zuerst die sichere **MVP-Phase** (175 m), danach **Real Production** mit 1 Leben. Leaderboard nach Score. Spielbar im Browser auf Desktop und Handy, live auf https://christmas.familiesailer.com/game/ (die Landingpage liegt auf `/`).
 
 ## Notes
 
@@ -42,7 +42,7 @@ Ein spielbares, witziges **Corporate-Satire-Run-Game** als Weihnachtsgruß an Fi
 
 ## Backlog
 
-Spätere Features, als Tickets in `open/` (Typ `backlog`): [#4](open/004-backend-leaderboard-statt-localstorage.md) Backend-Leaderboard · [#5](open/005-audio-musik-soundeffekte.md) Audio · [#6](open/006-designer-assets-ueber-figma-austauschen-pixelart.md) Designer-Assets (über Figma) · [#7](open/007-hintergrund-welten-mvp-vs-production-look.md) Hintergrund-Welten · [#8](open/008-training-modus-vs-highscore-modus.md) Training- vs. Highscore-Modus · [#9](open/009-hindernisse-auch-auf-plattformen.md) Hindernisse auf Plattformen · [#10](open/010-arc-logo-als-hintergrund-element.md) Arc-Logo im Hintergrund · [#11](open/011-ci-github-actions-auf-node-24.md) CI auf Node 24
+Spätere Features, als Tickets in `open/` (Typ `backlog`): [#4](open/004-backend-leaderboard-statt-localstorage.md) Backend-Leaderboard · [#5](open/005-audio-musik-soundeffekte.md) Audio · [#6](open/006-designer-assets-ueber-figma-austauschen-pixelart.md) Designer-Assets (über Figma) · [#7](open/007-hintergrund-welten-mvp-vs-production-look.md) Hintergrund-Welten · [#8](open/008-training-modus-vs-highscore-modus.md) Training- vs. Highscore-Modus · [#9](open/009-hindernisse-auch-auf-plattformen.md) Hindernisse auf Plattformen · [#10](open/010-arc-logo-als-hintergrund-element.md) Arc-Logo im Hintergrund · [#11](open/011-ci-github-actions-auf-node-24.md) CI auf Node 24 · [#22](open/022-spiel-modi-freies-und-getracktes-spiel.md) Spiel-Modi (frei / getrackt)
 
 ## Out of scope
 

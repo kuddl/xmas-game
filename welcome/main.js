@@ -55,22 +55,60 @@ WELCOME.blocks.forEach((block, i) => {
   beats.push(beat);
 });
 
+const finale = el('section', 'beat finale');
+const giftProgress = el('div', 'gift-progress');
+giftProgress.setAttribute('role', 'status');
 {
   const f = WELCOME.finale;
-  const finale = el('section', 'beat finale');
+  const lock = el('div', 'gift-lock');
+  lock.append(el('div', 'kicker', f.kicker), el('h2', '', f.lockedTitle), giftProgress);
   const card = el('div', 'card');
   const link = el('a', 'start-btn', f.button);
   link.href = f.href;
   card.append(el('div', 'kicker', f.kicker), el('h2', 'pixel-title', f.title), link);
-  finale.append(card);
+  finale.append(lock, card);
   beats.push(finale);
 }
 
+const totalBlocks = WELCOME.blocks.length;
+let smashedBlocks = 0;
+
+function updateGift() {
+  giftProgress.textContent = WELCOME.finale.lockedProgress
+    .replace('{done}', smashedBlocks)
+    .replace('{total}', totalBlocks);
+  if (smashedBlocks >= totalBlocks && !finale.classList.contains('is-open')) {
+    finale.classList.add('is-open');
+    return true;
+  }
+  return false;
+}
+
 track.append(...beats);
+updateGift();
 
 /* ---------- layout: beat positions, track width, scroll distance ---------- */
 
+const reverse = WELCOME.layout.scrollDirection === 'reverse';
+if (reverse) {
+  root.classList.add('scroll-reverse');
+  history.scrollRestoration = 'manual'; // always start at the beginning of the run
+}
+
+const maxScroll = () => document.documentElement.scrollHeight - innerHeight;
+/** run progress 0..1 (0 = start), independent of the scroll direction */
+function progress() {
+  const max = maxScroll();
+  const r = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+  return reverse ? 1 - r : r;
+}
+function scrollToProgress(p) {
+  const r = reverse ? 1 - p : p;
+  scrollTo({ top: r * maxScroll(), behavior: 'instant' });
+}
+
 function layout() {
+  const keep = beats[0].style.getPropertyValue('--x') ? progress() : 0;
   const vw = innerWidth;
   const spacing = Math.max(vw * WELCOME.layout.beatSpacing, WELCOME.layout.minBeatSpacingPx);
   const first = vw * 0.5;
@@ -78,6 +116,7 @@ function layout() {
   const trackW = first + (beats.length - 1) * spacing + vw * 0.5;
   root.style.setProperty('--track-w', `${trackW}px`);
   root.style.setProperty('--travel', `${trackW - vw}px`);
+  scrollToProgress(keep);
 }
 
 layout();
@@ -90,8 +129,7 @@ if (!nativeScrollTimeline) {
   let queued = false;
   const update = () => {
     queued = false;
-    const max = document.documentElement.scrollHeight - innerHeight;
-    root.style.setProperty('--p', max > 0 ? String(Math.min(1, scrollY / max)) : '0');
+    root.style.setProperty('--p', String(progress()));
   };
   addEventListener(
     'scroll',
@@ -183,8 +221,11 @@ function smash(beat, button) {
   beat.classList.add('is-open');
   button.setAttribute('aria-expanded', 'true');
   button.disabled = true;
+  smashedBlocks += 1;
+  const unlocked = updateGift();
 
   if (reducedMotion.matches || !effects) return;
+  if (unlocked) celebrate();
   effects.debris(x, y);
   effects.burst(x, y, 0xe02f40, 14, 160);
   effects.burst(x, y - 20, 0xf5b82e, 10, 120);
@@ -192,6 +233,15 @@ function smash(beat, button) {
   shakeEl.classList.remove('is-shaking');
   void shakeEl.offsetWidth; // restart the CSS animation
   shakeEl.classList.add('is-shaking');
+}
+
+/** All blocks smashed: confetti over the gift, if it is on screen */
+function celebrate() {
+  const r = finale.getBoundingClientRect();
+  if (r.right < 0 || r.left > innerWidth) return;
+  const x = (r.left + r.width / 2) / fxScale;
+  const y = (r.top + r.height / 2) / fxScale;
+  for (const c of [0xf5b82e, 0xe02f40, 0xf2f8ff, 0x6cb8f0]) effects.burst(x, y, c, 16, 200);
 }
 
 /* ---------- runner: follows the pointer (desktop) or runs on the ground (touch) ---------- */

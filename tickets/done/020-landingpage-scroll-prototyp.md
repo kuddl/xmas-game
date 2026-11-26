@@ -2,12 +2,12 @@
 
 | | |
 |---|---|
-| **Status** | 🟡 Offen |
+| **Status** | ✅ Erledigt |
 | **Typ** | wayfinder:prototype |
 | **Map** | [Landingpage](../MAP-landingpage.md) |
 | **Zugewiesen** | tsailer |
 | **Erstellt** | 2026-11-26 |
-| **Erledigt** | — |
+| **Erledigt** | 2026-11-26 |
 
 ## Frage
 
@@ -36,3 +36,13 @@ Lokal: `npm run dev` → http://localhost:5173/welcome/ (im Build als `dist/welc
 - **Finale:** Banner „PLAY THE CHRISTMAS PROJECT GAME“, Button „PRESS START“ führt auf `/`.
 - **Geprüft:** Desktop 1720×1267 und Handy 390×844. Keine Konsolenfehler, Build ok.
 - **Offen für den Playtest:** Fühlt es sich flüssig an? Passen Länge und Tempo? Ist die Figur als Cursor gut, und ist sie zu groß oder zu klein? Braucht es GSAP?
+
+### 2026-11-26 · Playtest Tobias: Entscheidung
+
+- **Flüssigkeit:** gut, **kein GSAP nötig**. Es bleibt bei nativem CSS Scroll-Driven Animations + PixiJS für Partikel.
+- **Länge und Tempo:** passen (etwa 3 Bildschirmbreiten, 1:1).
+- **Figur als Cursor:** passt, auch in der Größe. Die Drehung nach links und rechts ist gut.
+- **Scrollrichtung umdrehen:** Die Seite startet jetzt **unten** und läuft beim Hochscrollen nach vorn (Finger bzw. Trackpad nach unten). Umsetzung über `animation-direction: reverse`, die JS-Ersatzlösung rechnet `1 - p`. Einstellbar in `welcome/content.js` → `layout.scrollDirection` (`'reverse'` | `'normal'`).
+- **Geschenk erst nach allen Kisten:** Das Finale ist gesperrt mit „SMASH ALL BLOCKS TO UNWRAP YOUR GIFT · x / 4 SMASHED“. Nach der letzten Kiste springt es mit Konfetti auf. Texte in `content.js` (`lockedTitle`, `lockedProgress`).
+- **URLs getauscht:** Die **Landingpage liegt auf `/`**, das **Spiel auf `/game/`** (`game/index.html`). Die Info-Seite des Spiels liegt jetzt unter `/game/?info`, weil ein eigener Pfad auf Cloudflare zur Landingpage zurückfallen würde.
+- Daraus neu: [022 · Spiel-Modi: freies Spiel und getracktes Spiel](../open/022-spiel-modi-freies-und-getracktes-spiel.md)

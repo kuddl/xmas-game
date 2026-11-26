@@ -46,12 +46,18 @@ export const WELCOME = {
     kicker: 'YOUR GIFT',
     title: 'PLAY THE CHRISTMAS PROJECT GAME',
     button: 'PRESS START',
-    href: '/',
+    href: '/game/',
+    // shown until every block is smashed ("{done}" / "{total}" are replaced)
+    lockedTitle: 'SMASH ALL BLOCKS TO UNWRAP YOUR GIFT',
+    lockedProgress: '{done} / {total} SMASHED',
   },
 
   // Layout of the run (CSS px, scaled down on small screens)
   layout: {
     beatSpacing: 0.62, // distance between beats, in viewport widths
     minBeatSpacingPx: 380,
+    // 'reverse': the page starts at the bottom and runs forward while scrolling up
+    // (finger / trackpad moves down). 'normal': forward while scrolling down.
+    scrollDirection: 'reverse',
   },
 };

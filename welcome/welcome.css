@@ -154,6 +154,11 @@ body {
       animation-timeline: scroll(root block);
     }
   }
+
+  /* scroll up to run forward: the page starts at the bottom */
+  .scroll-reverse :is(.track, .layer) {
+    animation-direction: reverse;
+  }
 }
 
 /* JS fallback (main.js sets --p and the class only when the native feature is missing) */
@@ -333,14 +338,44 @@ body {
   color: var(--ice-light);
 }
 
-/* finale banner */
+/* finale banner: locked until every block is smashed */
+.gift-lock {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 1.4em;
+  padding: clamp(14px, 2.2vw, 24px);
+  background: rgb(12 31 58 / 0.82);
+  border: 4px dashed var(--gold);
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.gift-lock h2 {
+  margin: 0;
+  font-size: clamp(10px, 1.4vw, 15px);
+  line-height: 1.7;
+  color: var(--snow);
+}
+
+.gift-progress {
+  font-size: clamp(9px, 1.1vw, 12px);
+  color: var(--gold);
+}
+
+.finale.is-open .gift-lock {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.finale .gift-lock,
 .finale .card {
-  opacity: 1;
-  scale: 1;
-  translate: 0 0;
+  grid-area: 1 / 1;
+}
+
+.finale .card {
   text-align: center;
   border-color: var(--gold);
-  pointer-events: auto;
 }
 
 .finale .pixel-title {

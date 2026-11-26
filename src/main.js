@@ -3,7 +3,8 @@ import { AssetLoader } from './assetLoader.js';
 import { Game } from './game.js';
 
 async function bootstrap() {
-  if (window.location.pathname === '/info') {
+  // /game/?info (a separate path would fall back to the landing page on Cloudflare)
+  if (new URLSearchParams(window.location.search).has('info')) {
     renderInfoRoute();
     return;
   }
@@ -23,7 +24,7 @@ async function bootstrap() {
 
 function renderVersionBadge() {
   const badge = document.createElement('a');
-  badge.href = '/info';
+  badge.href = '/game/?info';
   badge.className = 'version-badge';
   badge.title = 'View deployment info';
   badge.textContent = `v${__APP_VERSION__} · commit ${__GIT_COMMIT__}`;
@@ -68,7 +69,7 @@ function renderInfoRoute() {
           </div>
         </div>
 
-        <a href="/" class="pixel-btn info-back-btn">← ZURÜCK ZUM SPIEL</a>
+        <a href="/game/" class="pixel-btn info-back-btn">← ZURÜCK ZUM SPIEL</a>
       </div>
     </div>
   `;

@@ -41,6 +41,7 @@ Hinweise für Coding-Agents (und Menschen), die an diesem Repo arbeiten.
 - Nach jedem Commit auf `main` in **beide** pushen: `git push origin main && git push merkle main`
 
 ## Projekt-Kurzinfo
+- **Seiten:** `/` = Landingpage (`index.html`, Quellen in `welcome/`, Texte in `welcome/content.js`), `/game/` = Spiel (`game/index.html`, Quellen in `src/`), Info-Seite unter `/game/?info`. Beide Seiten baut Vite (`vite.config.js` → `build.rollupOptions.input`).
 - **Engine:** PixiJS v8. Vor jedem PixiJS-Code den Skill `.agents/skills/pixijs/SKILL.md` lesen.
 - **Dev:** `npm run dev`, **Build:** `npm run build`, **Assets neu erzeugen:** `npm run generate-assets`
 - **Tuning-Werte:** `src/config.js`. **Assets:** `public/assets/spritesheet.json` (Designer-Austausch ohne Code-Änderung)
