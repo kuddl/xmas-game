@@ -1,4 +1,4 @@
-# 019 · Konami-Code: Power-up (doppelte Größe & Durchlaufen)
+# 021 · Konami-Code: Power-up (doppelte Größe & Durchlaufen)
 
 | | |
 |---|---|

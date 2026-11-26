@@ -2,12 +2,12 @@
 
 | | |
 |---|---|
-| **Status** | 🟡 Offen |
+| **Status** | ✅ Erledigt |
 | **Typ** | wayfinder:grilling |
 | **Map** | [Landingpage](../MAP-landingpage.md) |
 | **Zugewiesen** | tsailer |
 | **Erstellt** | 2026-11-26 |
-| **Erledigt** | — |
+| **Erledigt** | 2026-11-26 |
 
 ## Frage
 
@@ -47,3 +47,17 @@ Ergebnis: eine Liste der Entscheidungen. Was sich daraus als eigene Frage abspal
 - **Finale:** ein großes Banner „Play the Christmas Project Game now“, das ins Spiel führt.
 - **Assets:** die vorhandenen aus dem Spiel.
 - **Qualität:** Die Animation muss **extrem flüssig** sein und „High-End wie von Google“ aussehen. Offen ist, ob GSAP, PixiJS oder Three.js dabei helfen. Den Skill `modern-web-guidance` dabei nutzen.
+
+### 2026-11-26 · Runde 2 (Grilling): Entscheidungen
+
+Alle Empfehlungen angenommen:
+
+- **Scroll-Mechanik:** normal vertikal scrollen (Mausrad, Trackpad, Wischen, Tastatur). Eine fixierte Bühne bewegt den Inhalt von rechts nach links, über native **CSS Scroll-Driven Animations**. Für Browser ohne Support eine schlanke JS-Ersatzlösung, kein Polyfill (laut `modern-web-guidance`: parallax-scroll-effects, scrollytelling, motion).
+- **Bibliotheken:** kein GSAP, kein Three.js. Scroll und Parallax in nativem CSS. Eine **PixiJS-Ebene als Canvas** nur für Explosionen, Partikel und Schnee, mit den Effekten aus dem Spiel. GSAP nur, falls der Prototyp mehr Choreografie verlangt.
+- **Texte:** echtes HTML im Pixel-Look (Press Start 2P, Pixelrahmen). Die Texte stehen in einer **JS-Config**, damit das Team sie leicht ändern kann. Weitere Blöcke sollen ohne Code-Änderung hinzukommen können.
+- **Blöcke:** 4 Buzzword-Blöcke im Weg: zuerst der Weihnachtsgruß, dann 3 satirische. Ein Klick, Tap oder Enter lässt den Block explodieren (Trümmer, Wackeln, „+5 SP“), dahinter erscheint die Textbox. Das Scrollen wird nicht blockiert. Über ungeklickten Blöcken steht „CLICK TO SMASH“. Bei „Bewegung reduzieren“ blendet der Text nur ein.
+- **Länge:** etwa 3 Bildschirmbreiten. Den genauen Wert legen wir im Prototyp fest.
+- **Cursor:** Am Desktop folgt die animierte Spielfigur dem Mauszeiger, leicht verzögert, mit Laufanimation und in Bewegungsrichtung gedreht. Auf Touch-Geräten läuft sie unten auf dem Boden mit.
+- **Finale:** großes Banner „PLAY THE CHRISTMAS PROJECT GAME“ mit Button „PRESS START“, der auf `/` führt. Das Spiel bleibt auf `/`, die Landingpage liegt unter `/welcome`.
+- **Texte schreibt der Agent**, Tobias bespricht sie mit dem Team (eventuell kommen ein dritter oder vierter Block dazu). → [019 · Landingpage: Texte für Gruß und Satire-Blöcke](../open/019-landingpage-texte-fuer-gruss-und-satire.md)
+- **Erst ein super einfacher Prototyp**, um die Mechanik kennenzulernen, dann die richtige Seite. → [020 · Landingpage: Scroll-Prototyp](../open/020-landingpage-scroll-prototyp.md)

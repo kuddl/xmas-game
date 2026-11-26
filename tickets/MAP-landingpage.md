@@ -17,12 +17,11 @@ Eine abgestimmte **Spezifikation der Landingpage** als Unterseite dieses Repos (
 
 ## Decisions so far
 
-*(noch keine)*
+- [Landingpage: Was braucht die Seite?](done/018-landingpage-was-braucht-die-seite.md): interner Weihnachtsgruß vom ARC-Team an Merkle unter `/welcome`, auf Englisch, im Pixel-Look. Vertikal scrollen bewegt die Seite horizontal (native CSS Scroll-Driven Animations), dazu Parallax. Buzzword-Blöcke explodieren per Klick und geben die Texte frei (JS-Config). Die Spielfigur ist der Cursor. Finale-Banner führt ins Spiel auf `/`. Vite mit HTML, CSS und etwas JS, PixiJS nur für Partikel, kein GSAP.
 
 ## Not yet specified
 
-- Inhalte der einzelnen Sektionen (Texte, Bilder), sobald Zweck und Sektionen feststehen
-- Rechtliches (Impressum, Datenschutz, Cookies/Tracking), abhängig von Betreiber und Zielgruppe
+- Zugriffsschutz: Die Seite ist intern, liegt aber öffentlich auf christmas.familiesailer.com. Reicht „wer den Link hat“, oder braucht es einen Schutz? Dazu Tracking und Analytics.
 - Verhältnis zum Backend-Leaderboard ([#4](open/004-backend-leaderboard-statt-localstorage.md)), falls die Seite Highscores zeigen soll
 
 ## Out of scope
