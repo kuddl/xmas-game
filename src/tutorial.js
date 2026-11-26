@@ -71,7 +71,7 @@ export class TutorialDirector {
         },
       },
       {
-        at: 20,
+        at: 15,
         spawn: () => {
           const x = this.spawnX;
           g().obstacles.spawn(x, 'ground', 'TCO');
@@ -86,7 +86,7 @@ export class TutorialDirector {
         },
       },
       {
-        at: 40,
+        at: 28,
         spawn: () => {
           const o = g().obstacles.spawn(this.spawnX, 'flyer', 'MEETING');
           g().coins.rowUnderFlyer(o.x);
@@ -105,7 +105,7 @@ export class TutorialDirector {
         },
       },
       {
-        at: 62,
+        at: 42,
         spawn: () => {
           const x = this.spawnX;
           const low = g().platforms.create(x, 256, 0);
@@ -125,7 +125,7 @@ export class TutorialDirector {
         },
       },
       {
-        at: 100,
+        at: 60,
         spawn: () => {
           const x = this.spawnX;
           const p = g().powerups.spawn(x, 'breakthrough');
@@ -147,7 +147,7 @@ export class TutorialDirector {
         },
       },
       {
-        at: 150,
+        at: 100,
         spawn: () => {
           const x = this.spawnX;
           const p = g().powerups.spawn(x, 'doubleJump');
@@ -168,7 +168,9 @@ export class TutorialDirector {
         },
       },
       {
-        at: 200,
+        // keep >= ~45 m before MVP_DISTANCE_METERS: both blocks spawn just off-screen
+        // and must land in the MVP phase even on ultra-wide screens
+        at: 130,
         spawn: () => {
           g().obstacles.spawn(this.spawnX, 'ground', 'DEADLINE');
           g().obstacles.spawn(this.spawnX + 300, 'flyer', 'ASAP');

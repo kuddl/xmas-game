@@ -1,4 +1,6 @@
 import {
+  BlurFilter,
+  ColorMatrixFilter,
   Container,
   FillGradient,
   Graphics,
@@ -25,11 +27,52 @@ export class World {
     this.parallaxLayers = [];
     this.snowflakes = [];
 
+    // Sky + parallax live in their own container so the MVP "staging" look
+    // (tint + blur) never touches ground, obstacles, coins or the player
+    this.backdrop = new Container();
+    this.bgContainer.addChild(this.backdrop);
+
     this.buildSky();
     this.buildParallaxLayers();
     this.buildGround();
     this.buildProductionLine();
     this.buildSnowfall();
+    this.buildStagingLook();
+  }
+
+  buildStagingLook() {
+    const cfg = GAME_CONFIG.MVP_BACKDROP;
+    this.stagingColor = new ColorMatrixFilter();
+    this.stagingColor.saturate(cfg.SATURATION, false);
+    this.stagingColor.tint(cfg.TINT, true);
+
+    this.stagingBlur = new BlurFilter({ strength: cfg.BLUR, quality: 3, resolution: 'inherit' });
+    this.stagingBlur.repeatEdgePixels = true; // no transparent fringe at the screen edges
+
+    this.backdrop.filters = [this.stagingColor, this.stagingBlur];
+    this.productionMix = 0; // 0 = MVP staging look, 1 = full production colours
+    this.applyStagingLook();
+  }
+
+  applyStagingLook() {
+    const staging = 1 - this.productionMix;
+    this.stagingColor.alpha = staging;
+    this.stagingColor.enabled = staging > 0;
+    this.stagingBlur.strength = GAME_CONFIG.MVP_BACKDROP.BLUR * staging;
+    this.stagingBlur.enabled = staging > 0 && GAME_CONFIG.MVP_BACKDROP.BLUR > 0;
+  }
+
+  updateStagingLook(dt, inProduction) {
+    let mix = this.productionMix;
+    if (!inProduction) {
+      mix = 0; // new run: back to staging instantly
+    } else if (mix < 1) {
+      mix = Math.min(1, mix + dt / GAME_CONFIG.MVP_BACKDROP.FADE_SECONDS);
+    }
+    if (mix !== this.productionMix) {
+      this.productionMix = mix;
+      this.applyStagingLook();
+    }
   }
 
   buildSky() {
@@ -48,7 +91,7 @@ export class World {
     this.sky = new Graphics()
       .rect(0, 0, this.viewWidth, GAME_CONFIG.VIRTUAL_HEIGHT)
       .fill(this.skyGradient);
-    this.bgContainer.addChild(this.sky);
+    this.backdrop.addChild(this.sky);
   }
 
   buildParallaxLayers() {
@@ -83,7 +126,7 @@ export class World {
       });
       tiling.tileScale.set(def.scale, def.scale);
       tiling.position.set(0, def.bottomY - layerHeight);
-      this.bgContainer.addChild(tiling);
+      this.backdrop.addChild(tiling);
 
       this.parallaxLayers.push({ sprite: tiling, parallax: def.parallax });
     }
@@ -190,6 +233,8 @@ export class World {
     const lineX = playerX + metersRemaining * GAME_CONFIG.PIXELS_PER_METER;
     this.productionLine.x = lineX;
     this.productionLine.visible = lineX > -120 && lineX < this.viewWidth + 160;
+
+    this.updateStagingLook(dt, distanceMeters >= GAME_CONFIG.MVP_DISTANCE_METERS);
 
     // Animate snowfall
     for (const flake of this.snowflakes) {

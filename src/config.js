@@ -23,7 +23,15 @@ export const GAME_CONFIG = {
   MAX_SCROLL_SPEED: 410,
 
   // Progression: MVP-Phase -> Real Production (in meters)
-  MVP_DISTANCE_METERS: 250,
+  MVP_DISTANCE_METERS: 175,
+  // MVP "staging" look: backdrop (sky + parallax) is cooler, desaturated and slightly blurred,
+  // fades to full colour once the player crosses the REAL PRODUCTION line
+  MVP_BACKDROP: {
+    SATURATION: -0.5, // -1 = greyscale, 0 = unchanged
+    TINT: 0xc4d6f2, // cool blue-grey multiply
+    BLUR: 2, // blur strength (0 = off)
+    FADE_SECONDS: 1, // crossfade to production colours
+  },
 
   // Obstacles (Ticket 02 & 04)
   OBSTACLE_WIDTH: 48, // 24x24 sprite @ 2x crisp pixel scale
