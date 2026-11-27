@@ -713,8 +713,8 @@ body {
 }
 
 @keyframes dizzy {
-  from { rotate: -9deg; }
-  to { rotate: 9deg; }
+  from { rotate: -3deg; }
+  to { rotate: 3deg; }
 }
 
 .stars {
