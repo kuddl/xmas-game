@@ -42,3 +42,16 @@
 - **Verhältnis zu 022:** Wird 022 durch diesen Vorschlag ersetzt, also freies Spiel für alle und Claim nur für die Top 20? Dann würden 022 und 008 hier aufgehen.
 
 ## Verlauf
+
+### 2026-11-27 · Grilling Runde 1: Entscheidungen
+
+- **Q1 Verhältnis zu 022/008:** 024 **ersetzt** 022. Die UUID-Links fallen weg, alle spielen frei unter `/game/`. 022 und 008 werden geschlossen und verweisen auf 024.
+- **Q2 Top 20:** Im Board stehen nur geclaimte Einträge. Claimen darf, wer einen höheren Score als Platz 20 hat oder wenn noch keine 20 Einträge da sind. Geprüft wird **auf dem Server** beim Claim.
+- **Q3 Zeitfenster:** nur auf dem Game-Over-Screen für genau diesen Lauf, **60 s lang**, **nur einmal**. Ein späteres Nachtragen gibt es nicht.
+- **Q4 Verbessern:** Pro Adresse zählt der beste Score. Ein besserer Lauf darf neu claimen und ersetzt den alten Eintrag, ein schlechterer lässt den alten stehen.
+- **Q5 Domains:** `@merkle.com` und `@dentsu.com`, als Liste in der Config. Nur ein Format-Check, keine Verifikation.
+- **Q6 Nickname:** max. 16 Zeichen, Buchstaben, Ziffern, Leerzeichen, `-` und `.`, in Großbuchstaben angezeigt, kleiner Wortfilter, **keine Emojis**. Angezeigt wird nur der Nickname, nie die Adresse.
+- **Q7 Gleichstand:** Der frühere Claim liegt vorn.
+- **Q8 Schummelschutz:** **mehr als Klartext-JSON.** Die Spieler sind Webentwickler. Mindestens ein serverseitiges Token pro Spiel mit Zeit-Plausibilität (Zeit → maximal mögliche Meter). Gewünscht ist mehr, z. B. ein Seed pro Spiel und eine signierte Rückmeldung. → Runde 2
+- **Q9 Datenschutz:** Die Adressen bleiben im Klartext gespeichert, damit wir z. B. den **Sieger benachrichtigen** können. Angezeigt werden sie nie. Zugriff nur fürs Projektteam, ein kurzer Hinweis auf der Seite. Das Löschdatum steht noch aus.
+- **Q10 Technik:** **Nicht nur Cloudflare.** Die GitHub-Version (`origin`) läuft auf Cloudflare Workers, die GitLab-Version (`merkle`) läuft auf **Vercel**. Das sind zwei Spiele mit zwei getrennten Leaderboards. Gewünscht ist **eine Speicherlösung, die auf beiden Plattformen läuft**. Im Gespräch: Redis, oder eine Abstraktion wie **unstorage** mit Adaptern. → Recherche
