@@ -25,6 +25,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 021 | [Konami-Code: Power-up (doppelte Größe & Durchlaufen)](open/021-konami-code-power-up.md) | enhancement, backlog | — |
 | 023 | [Landingpage: Feinschliff und Fliegende Buzzwords](open/023-landingpage-feinschliff-und-fliegende-buzzwords.md) · Map Landingpage | enhancement | Agent (Review: tsailer) |
 | 024 | [Leaderboard: Top 20 per Claim statt E-Mail-Versand](open/024-leaderboard-top-20-claim-statt-mail.md) | wayfinder:grilling | Agent (Setup: Team) |
+| 025 | [GitLab-Pipeline für Vercel-Deploys](open/025-ci-gitlab-vercel-pipeline.md) | chore | Agent |
 
 > Hinweis zu 007: Den unterschiedlichen Look für MVP und Production gibt es seit [013](done/013-mvp-phase-kuerzen-und-optisch-von.md). Zu klären ist, ob 007 damit erledigt ist oder ob eigene Welten (andere Motive) gemeint sind.
 

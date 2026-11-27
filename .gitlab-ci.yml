@@ -1,0 +1,65 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+
+.node:
+  image: node:22
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
+
+build:
+  extends: .node
+  stage: build
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - dist/
+
+.vercel:
+  extends: .node
+  variables:
+    VERCEL_CLI_VERSION: "67.0.0"
+  before_script:
+    - |
+      if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+        echo "Missing Vercel CI variables: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID"
+        exit 1
+      fi
+    - npm ci
+    - npm install --global "vercel@$VERCEL_CLI_VERSION"
+
+preview:
+  extends: .vercel
+  stage: deploy
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - vercel pull --yes --environment=preview --token="$VERCEL_TOKEN"
+    - vercel build --token="$VERCEL_TOKEN"
+    - vercel deploy --prebuilt --token="$VERCEL_TOKEN"
+  environment:
+    name: vercel-preview/$CI_MERGE_REQUEST_IID
+    action: start
+
+production:
+  extends: .vercel
+  stage: deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  script:
+    - vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+    - vercel build --prod --token="$VERCEL_TOKEN"
+    - vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+  environment:
+    name: production
+    url: https://xmas-merkle-game.vercel.app
