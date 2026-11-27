@@ -1245,3 +1245,172 @@ body.is-fullscreen .btn-fullscreen .fs-exit {
     height: 36px;
   }
 }
+
+/* ---------- Online leaderboard claim (ticket 024) ---------- */
+
+.claim {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  background: #081529;
+  border: 3px solid var(--gold);
+  text-align: left;
+}
+
+.claim.hidden {
+  display: none;
+}
+
+.claim-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.claim-title {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--gold);
+}
+
+.claim-timer {
+  min-width: 3.2em;
+  padding: 4px 6px;
+  font-size: 11px;
+  text-align: center;
+  color: var(--ice-dark);
+  background: var(--gold);
+}
+
+.claim-timer.is-low {
+  background: var(--red);
+  color: var(--snow);
+}
+
+.claim-field {
+  display: grid;
+  gap: 4px;
+}
+
+.claim-field label {
+  font-size: 9px;
+  color: var(--snow);
+}
+
+.claim-hint {
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--ice-light);
+}
+
+.claim-field input {
+  font: inherit;
+  font-family: var(--font-pixel);
+  font-size: max(16px, 1em); /* no iOS zoom on focus */
+  min-height: 44px;
+  padding: 8px 10px;
+  color: var(--snow);
+  background: #0c1f3a;
+  border: 2px solid var(--ice-light);
+  border-radius: 0;
+  user-select: text;
+}
+
+#claim-nick {
+  text-transform: uppercase;
+}
+
+.claim-field input:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.claim-field input:user-invalid,
+.claim-field input[aria-invalid='true'] {
+  border-color: var(--red);
+  background: #2a0f1c;
+}
+
+.pixel-btn-gold {
+  background: var(--gold);
+  color: var(--ice-dark);
+  box-shadow: 4px 4px 0 #a5710f;
+  animation: none;
+}
+
+.pixel-btn-gold:hover {
+  background: #ffc94a;
+}
+
+.pixel-btn-gold:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.claim-note {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ice-light);
+}
+
+.claim-status:empty {
+  display: none;
+}
+
+.claim-status {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--snow);
+  background: rgba(8, 21, 41, 0.85);
+  border: 2px solid var(--ice-mid);
+}
+
+.claim-status.is-ok {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.claim-status.is-error {
+  border-color: var(--red);
+}
+
+.lb-full-list li.lb-mine,
+.lb-full-list li.lb-mine .lb-rank {
+  color: var(--gold);
+}
+
+@media (max-height: 500px) {
+  .claim,
+  .claim-status {
+    grid-column: 1 / -1;
+    margin-bottom: 8px;
+  }
+
+  .claim {
+    grid-template-columns: 1fr 1fr;
+    padding: 8px 10px;
+    gap: 6px 10px;
+  }
+
+  .claim-head,
+  .claim-note,
+  #btn-claim {
+    grid-column: 1 / -1;
+  }
+
+  .claim-hint {
+    display: none;
+  }
+
+  .claim-field input {
+    min-height: 36px;
+    padding: 4px 8px;
+  }
+}

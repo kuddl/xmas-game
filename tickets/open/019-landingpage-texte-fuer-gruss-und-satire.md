@@ -19,6 +19,6 @@ Welche Texte stehen in den Blöcken der Landingpage? Der Agent entwirft sie, Tob
 - Pro Block auch das **Buzzword auf dem Block**, z. B. DEADLINE, BUDGET, CAPACITY, TIMESHEET.
 - Sprache: Englisch.
 
-Die Texte stehen in der Content-Config der Landingpage (`welcome/content.js`), damit das Team sie ohne Code-Änderung anpassen und weitere Blöcke ergänzen kann. Erste Entwürfe entstehen schon im Scroll-Prototyp ([020](020-landingpage-scroll-prototyp.md)).
+Die Texte stehen in der Content-Config der Landingpage (`welcome/content.js`), damit das Team sie ohne Code-Änderung anpassen und weitere Blöcke ergänzen kann. Erste Entwürfe entstehen schon im Scroll-Prototyp ([020](../done/020-landingpage-scroll-prototyp.md)).
 
 ## Verlauf

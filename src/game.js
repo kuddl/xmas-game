@@ -10,6 +10,11 @@ import { CoinManager } from './coins.js';
 import { CreativeModeEffect, MushroomManager } from './mushrooms.js';
 import { TutorialDirector } from './tutorial.js';
 import { UIManager } from './ui.js';
+import { OnlineLeaderboard } from './online/client.js';
+import { seedRng } from './rng.js';
+
+/** typing into the claim form must not jump, pause or start a run */
+const isTyping = (e) => e.target instanceof HTMLElement && (e.target.matches('input, textarea, select') || e.target.isContentEditable);
 
 export class Game {
   constructor(assetLoader) {
@@ -104,6 +109,12 @@ export class Game {
     this.ui.setSpriteIcons(spriteIcons);
     this.ui.tutorialChecked = !TutorialDirector.isDone();
 
+    // Online leaderboard (ticket 024): best-effort, the game works offline as before
+    this.online = new OnlineLeaderboard();
+    this.checkpointClock = 0;
+    this.refreshOnline();
+    this.online.prepare();
+
     this.shakeTime = 0;
     this.auraEmitAccumulator = 0;
 
@@ -138,6 +149,7 @@ export class Game {
     });
 
     window.addEventListener('keydown', (e) => {
+      if (isTyping(e)) return;
       this.setTouchMode(false);
       if (e.code === 'Escape' || e.code === 'KeyP') {
         e.preventDefault();
@@ -168,6 +180,7 @@ export class Game {
     });
 
     window.addEventListener('keyup', (e) => {
+      if (isTyping(e)) return;
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
         this.keys.left = false;
       }
@@ -272,6 +285,9 @@ export class Game {
   }
 
   startRun() {
+    // seeded run: the online leaderboard hands out the seed (null offline -> random)
+    seedRng(this.online.begin());
+    this.checkpointClock = 0;
     this.state = 'PLAYING';
     this.distanceMeters = 0;
     this.elapsedTime = 0;
@@ -323,6 +339,27 @@ export class Game {
       causeWord,
       storyPoints: this.storyPoints,
     });
+    this.finishOnlineRun();
+  }
+
+  async refreshOnline() {
+    const data = await this.online.refresh();
+    if (data.ok) this.ui.setOnlineLeaderboard(data.entries);
+  }
+
+  /** final checkpoint; a top-20 run may then be claimed on the game-over screen */
+  async finishOnlineRun() {
+    const res = await this.online.checkpoint(this.distanceMeters, this.storyPoints, true);
+    this.online.prepare(); // token for the next run
+    if (this.state !== 'GAME_OVER') return;
+    if (res?.ok && res.claimable) {
+      this.ui.showClaim({
+        rank: res.rank,
+        seconds: res.claimSeconds,
+        onSubmit: (email, nickname) => this.online.claim(email, nickname),
+      });
+    }
+    this.refreshOnline();
   }
 
   getSpeedInfo() {
@@ -389,6 +426,13 @@ export class Game {
 
     this.elapsedTime += dt;
     this.distanceMeters += (scrollSpeed * dt) / GAME_CONFIG.PIXELS_PER_METER;
+
+    // online checkpoint every few seconds (the server checks it against its own clock)
+    this.checkpointClock += dt;
+    if (this.checkpointClock >= GAME_CONFIG.ONLINE.CHECKPOINT_SECONDS) {
+      this.checkpointClock = 0;
+      this.online.checkpoint(this.distanceMeters, this.storyPoints);
+    }
 
     this.world.update(dt, scrollSpeed, {
       distanceMeters: this.distanceMeters,

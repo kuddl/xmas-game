@@ -162,6 +162,31 @@
             </div>
           </div>
 
+          <!-- Online leaderboard claim (ticket 024): only shown for a top-20 run, for 60 s -->
+          <form id="claim-form" class="claim hidden" method="post" action="/api/claim" aria-labelledby="claim-title" novalidate>
+            <div class="claim-head">
+              <h3 id="claim-title" class="claim-title">TOP 20! YOU ARE <span id="claim-rank">#1</span></h3>
+              <span id="claim-timer" class="claim-timer" aria-label="Seconds left to claim">60</span>
+            </div>
+            <div class="claim-field">
+              <label for="claim-nick">NICKNAME</label>
+              <span id="claim-nick-hint" class="claim-hint">Max 16: letters, digits, space, . and -</span>
+              <input id="claim-nick" name="nickname" type="text" required maxlength="16" pattern="[A-Za-z0-9ÄÖÜäöü .\-]{1,16}"
+                autocomplete="nickname" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="next"
+                aria-describedby="claim-nick-hint" />
+            </div>
+            <div class="claim-field">
+              <label for="claim-email">COMPANY E-MAIL</label>
+              <span id="claim-email-hint" class="claim-hint">you@merkle.com or you@dentsu.com</span>
+              <input id="claim-email" name="email" type="email" required inputmode="email"
+                autocomplete="email" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="send"
+                aria-describedby="claim-email-hint" />
+            </div>
+            <button id="btn-claim" type="submit" class="pixel-btn pixel-btn-gold">CLAIM YOUR SPOT</button>
+            <p class="claim-note">Only your nickname is shown. We keep your e-mail to allow one entry per person and to contact the winner, and delete it by 31 January.</p>
+          </form>
+          <div id="claim-status" class="claim-status" role="status" aria-live="polite"></div>
+
           <div class="go-actions">
             <button id="btn-leaderboard" class="pixel-btn pixel-btn-secondary">VIEW LEADERBOARD</button>
             <button id="btn-restart" class="pixel-btn">PLAY AGAIN</button>
@@ -173,7 +198,7 @@
       <div id="leaderboard-screen" class="overlay hidden">
         <div class="gameover-card leaderboard-card">
           <h2 class="gameover-title lb-screen-title">LEADERBOARD</h2>
-          <div class="gameover-cause">LOCAL TOP <span id="lb-size">20</span> &middot; SCORE = METERS + SP &times; <span id="lb-sp-factor">10</span></div>
+          <div class="gameover-cause"><span id="lb-scope">LOCAL TOP</span> <span id="lb-size">20</span> &middot; SCORE = METERS + SP &times; <span id="lb-sp-factor">10</span></div>
           <ol id="lb-full-list" class="lb-full-list"></ol>
           <div class="go-actions">
             <button id="btn-lb-back" class="pixel-btn pixel-btn-secondary">BACK</button>

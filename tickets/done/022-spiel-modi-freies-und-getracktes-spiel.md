@@ -2,12 +2,12 @@
 
 | | |
 |---|---|
-| **Status** | 🟡 Offen |
+| **Status** | ✅ Erledigt |
 | **Typ** | wayfinder:grilling |
 | **Zugewiesen** | — |
 | **Erstellt** | 2026-11-26 |
-| **Erledigt** | — |
-| **Hängt zusammen mit** | [004 · Backend-Leaderboard statt localStorage](004-backend-leaderboard-statt-localstorage.md), [008 · Training-Modus vs. Highscore-Modus](008-training-modus-vs-highscore-modus.md) (überschneidet sich stark, ggf. zusammenlegen) |
+| **Erledigt** | 2026-11-27 |
+| **Hängt zusammen mit** | [004 · Backend-Leaderboard statt localStorage](../open/004-backend-leaderboard-statt-localstorage.md), [008 · Training-Modus vs. Highscore-Modus](008-training-modus-vs-highscore-modus.md) (überschneidet sich stark, ggf. zusammenlegen) |
 
 ## Frage
 
@@ -20,7 +20,7 @@ Das Spiel bekommt **zwei Modi**. Wie genau funktionieren sie, und was braucht es
 
 - **Woher kommt die UUID?** Vorab erzeugt und per Mail verschickt, oder holt man sich den Link selbst mit E-Mail und Nickname? Wer legt den Nickname fest?
 - **Was zählt als „einmal“?** Beim Start verbraucht, oder erst beim Game Over? Was passiert bei Abbruch, Reload oder Tab-Wechsel?
-- **Backend & Speicher:** zusammen mit [004](004-backend-leaderboard-statt-localstorage.md). Zum Beispiel Cloudflare Workers + D1/KV, weil die Seite dort schon läuft.
+- **Backend & Speicher:** zusammen mit [004](../open/004-backend-leaderboard-statt-localstorage.md). Zum Beispiel Cloudflare Workers + D1/KV, weil die Seite dort schon läuft.
 - **Schummelschutz:** Wie weit vertrauen wir dem Score aus dem Browser (intern, also eher leicht)?
 - **Routing (technischer Fakt):** `wrangler.jsonc` nutzt `not_found_handling: single-page-application`. Unbekannte Pfade wie `/game/<UUID>` liefern heute die **Landingpage** (Root-`index.html`) aus, nicht das Spiel. Dafür braucht es eine Weiterleitung im Worker oder eine `_redirects`-Regel.
 - **Datenschutz:** E-Mail-Adressen von Merkle-Mitarbeitern. Wer sieht was, wie lange wird gespeichert?
@@ -31,4 +31,8 @@ Das Spiel bekommt **zwei Modi**. Wie genau funktionieren sie, und was braucht es
 
 ### 2026-11-27 · Gegenvorschlag
 
-Tobias und Thomas schlagen vor, auf E-Mail-Versand und persönliche UUID-Links zu verzichten. Alle spielen frei, und nur wer in die Top 20 kommt, claimt seinen Platz mit Merkle-Adresse und Nickname. Details und offene Punkte: [024 · Leaderboard: Top 20 per Claim statt E-Mail-Versand](024-leaderboard-top-20-claim-statt-mail.md). Wird 024 angenommen, geht 022 darin auf.
+Tobias und Thomas schlagen vor, auf E-Mail-Versand und persönliche UUID-Links zu verzichten. Alle spielen frei, und nur wer in die Top 20 kommt, claimt seinen Platz mit Merkle-Adresse und Nickname. Details und offene Punkte: [024 · Leaderboard: Top 20 per Claim statt E-Mail-Versand](../open/024-leaderboard-top-20-claim-statt-mail.md). Wird 024 angenommen, geht 022 darin auf.
+
+### 2026-11-27 · Geschlossen
+
+Ersetzt durch [024 · Leaderboard: Top 20 per Claim statt E-Mail-Versand](../open/024-leaderboard-top-20-claim-statt-mail.md) (Grilling Q1): Es gibt keine UUID-Links und keinen getrackten Modus mehr. Alle spielen frei, und die Top 20 claimen ihren Platz.

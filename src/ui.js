@@ -1,4 +1,8 @@
 import { GAME_CONFIG } from './config.js';
+import { REASON_TEXT, validateEmail, validateNickname } from './online/protocol.js';
+
+const escapeHtml = (v) =>
+  String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 const DEFAULT_LEADERBOARD = [
   { name: 'SANTA', score: 1500 },
@@ -17,6 +21,23 @@ export class UIManager {
     document.getElementById('lb-sp-factor').textContent = GAME_CONFIG.SP_SCORE_FACTOR;
     document.getElementById('lb-size').textContent = GAME_CONFIG.LEADERBOARD_SIZE;
     this.latestEntry = null; // leaderboard entry of the last finished run (highlighted)
+    this.lbScope = document.getElementById('lb-scope');
+    this.onlineMode = false; // true once the online leaderboard answered (ticket 024)
+    this.myRank = null; // rank of the last successful claim (highlighted)
+
+    this.claimForm = document.getElementById('claim-form');
+    this.claimRank = document.getElementById('claim-rank');
+    this.claimTimer = document.getElementById('claim-timer');
+    this.claimNick = document.getElementById('claim-nick');
+    this.claimEmail = document.getElementById('claim-email');
+    this.btnClaim = document.getElementById('btn-claim');
+    this.claimStatus = document.getElementById('claim-status');
+    this.claimTimerId = 0;
+    this.claimForm.addEventListener('submit', (e) => this.submitClaim(e));
+    for (const input of [this.claimNick, this.claimEmail]) {
+      // clear errors while typing, never yell before the user is done
+      input.addEventListener('input', () => input.removeAttribute('aria-invalid'));
+    }
 
     this.hudScore = document.getElementById('hud-score');
     this.hudDist = document.getElementById('hud-dist');
@@ -88,9 +109,19 @@ export class UIManager {
     return [...DEFAULT_LEADERBOARD];
   }
 
+  /** Online leaderboard (ticket 024) replaces the local one while it is reachable */
+  setOnlineLeaderboard(entries) {
+    this.onlineMode = true;
+    this.leaderboard = entries.map((e) => ({ name: e.nickname, score: e.score }));
+    this.lbScope.textContent = 'TOP';
+    this.renderLeaderboard();
+    if (!this.leaderboardScreen.classList.contains('hidden')) this.renderFullLeaderboard();
+  }
+
   saveScore(score) {
     const rounded = Math.floor(score);
     this.latestEntry = null;
+    if (this.onlineMode) return Math.max(this.getHighScore(), rounded); // claimed via the form instead
     if (rounded <= 0) return this.getHighScore();
 
     this.latestEntry = { name: 'YOU', score: rounded };
@@ -120,7 +151,7 @@ export class UIManager {
     const html = top3
       .map(
         (entry) =>
-          `<li>${entry.name.padEnd(5, ' ')} ${this.formatPts(entry.score)}</li>`
+          `<li>${escapeHtml(entry.name.padEnd(5, ' '))} ${this.formatPts(entry.score)}</li>`
       )
       .join('');
     this.hudLeaderboardList.innerHTML = html;
@@ -135,8 +166,8 @@ export class UIManager {
       const rank = `<span class="lb-rank">${i + 1}.</span>`;
       rows.push(
         entry
-          ? `<li class="${entry === this.latestEntry ? 'lb-latest' : ''}">${rank}` +
-              `<span>${entry.name}</span><span>${this.formatPts(entry.score)}</span></li>`
+          ? `<li class="${entry === this.latestEntry ? 'lb-latest' : ''}${this.onlineMode && this.myRank === i + 1 ? ' lb-mine' : ''}">${rank}` +
+              `<span>${escapeHtml(entry.name)}</span><span>${this.formatPts(entry.score)}</span></li>`
           : `<li class="lb-empty">${rank}<span>...</span><span>.....</span></li>`
       );
     }
@@ -174,6 +205,7 @@ export class UIManager {
   }
 
   showPlayingHUD() {
+    this.hideClaim();
     this.canvasContainer.classList.remove('blurred');
     this.startScreen.classList.add('hidden');
     this.gameOverScreen.classList.add('hidden');
@@ -185,7 +217,83 @@ export class UIManager {
     this.hudSp.textContent = this.formatSp(0);
   }
 
+  /* ---------- claim form (ticket 024) ---------- */
+
+  /** show the claim form for a top-20 run; onSubmit(email, nickname) resolves with the API answer */
+  showClaim({ rank, seconds, onSubmit }) {
+    this.claimOnSubmit = onSubmit;
+    this.claimRank.textContent = `#${rank}`;
+    this.claimForm.classList.remove('hidden');
+    this.btnClaim.disabled = false;
+    this.setClaimStatus('');
+    const deadline = performance.now() + seconds * 1000;
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((deadline - performance.now()) / 1000));
+      this.claimTimer.textContent = String(left);
+      this.claimTimer.classList.toggle('is-low', left <= 10);
+      if (left <= 0) {
+        this.hideClaim();
+        this.setClaimStatus(REASON_TEXT.CLAIM_EXPIRED, 'error');
+      }
+    };
+    tick();
+    clearInterval(this.claimTimerId);
+    this.claimTimerId = setInterval(tick, 250);
+  }
+
+  hideClaim() {
+    clearInterval(this.claimTimerId);
+    this.claimForm.classList.add('hidden');
+    if (this.claimForm.contains(document.activeElement)) document.activeElement.blur();
+  }
+
+  setClaimStatus(text, kind = '') {
+    this.claimStatus.textContent = text;
+    this.claimStatus.classList.toggle('is-ok', kind === 'ok');
+    this.claimStatus.classList.toggle('is-error', kind === 'error');
+  }
+
+  async submitClaim(e) {
+    e.preventDefault();
+    const nick = validateNickname(this.claimNick.value);
+    const mail = validateEmail(this.claimEmail.value);
+    const firstBad = !nick.ok ? [this.claimNick, nick.reason] : !mail.ok ? [this.claimEmail, mail.reason] : null;
+    for (const [input, ok] of [[this.claimNick, nick.ok], [this.claimEmail, mail.ok]]) {
+      if (ok) input.removeAttribute('aria-invalid');
+      else input.setAttribute('aria-invalid', 'true');
+    }
+    if (firstBad) {
+      this.setClaimStatus(REASON_TEXT[firstBad[1]] || REASON_TEXT.REJECTED, 'error');
+      firstBad[0].focus();
+      return;
+    }
+    this.btnClaim.disabled = true; // no double posts
+    this.setClaimStatus('CLAIMING ...');
+    const res = await this.claimOnSubmit?.(mail.email, nick.nickname);
+    if (res?.ok) {
+      this.hideClaim();
+      this.myRank = res.rank;
+      if (res.entries) this.setOnlineLeaderboard(res.entries);
+      this.setClaimStatus(`CLAIMED! ${res.nickname} IS #${res.rank} ON THE LEADERBOARD`, 'ok');
+      return;
+    }
+    const reason = res?.reason || 'OFFLINE';
+    let text = REASON_TEXT[reason] || REASON_TEXT.REJECTED;
+    if (reason === 'NOT_BETTER' && res.bestRank) text = `YOUR BEST IS STILL #${res.bestRank}`;
+    this.setClaimStatus(text, 'error');
+    const fixable = reason.startsWith('EMAIL_') || reason.startsWith('NICKNAME_') || reason === 'OFFLINE' || reason === 'RATE_LIMIT';
+    if (fixable) {
+      this.btnClaim.disabled = false;
+      if (reason.startsWith('EMAIL_')) this.claimEmail.setAttribute('aria-invalid', 'true');
+      if (reason.startsWith('NICKNAME_')) this.claimNick.setAttribute('aria-invalid', 'true');
+    } else {
+      this.hideClaim();
+    }
+  }
+
   showGameOver({ score, distanceMeters, elapsedTime, causeWord, storyPoints = 0 }) {
+    this.hideClaim();
+    this.setClaimStatus('');
     const highScore = this.saveScore(score);
     this.canvasContainer.classList.add('blurred');
     this.hud.classList.add('hidden');

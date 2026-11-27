@@ -1,5 +1,6 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
 import { GAME_CONFIG } from './config.js';
+import { rng } from './rng.js';
 
 const TYPES = Object.keys(GAME_CONFIG.POWERUPS);
 
@@ -32,7 +33,7 @@ export class PowerUpManager {
 
   nextType() {
     if (this.typeBag.length === 0) {
-      this.typeBag = [...TYPES].sort(() => Math.random() - 0.5);
+      this.typeBag = [...TYPES].sort(() => rng() - 0.5);
     }
     return this.typeBag.pop();
   }
@@ -57,7 +58,7 @@ export class PowerUpManager {
   resetCooldown() {
     this.cooldown =
       GAME_CONFIG.POWERUP_MIN_INTERVAL +
-      Math.random() *
+      rng() *
         (GAME_CONFIG.POWERUP_MAX_INTERVAL - GAME_CONFIG.POWERUP_MIN_INTERVAL);
   }
 
@@ -84,7 +85,7 @@ export class PowerUpManager {
     c.addChild(icon);
 
     this.container.addChild(c);
-    const pickup = { type, container: c, glow, icon, x, baseY, t: Math.random() * 6 };
+    const pickup = { type, container: c, glow, icon, x, baseY, t: rng() * 6 };
     this.pickups.push(pickup);
     return pickup;
   }

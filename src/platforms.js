@@ -1,5 +1,6 @@
 import { Container, Graphics, TilingSprite } from 'pixi.js';
 import { GAME_CONFIG } from './config.js';
+import { rng } from './rng.js';
 
 /**
  * One-way ice platforms on level 2 and 3 ("Ebenen").
@@ -31,7 +32,7 @@ export class PlatformManager {
   randomWidth() {
     const { PLATFORM_MIN_WIDTH: min, PLATFORM_MAX_WIDTH: max } = GAME_CONFIG;
     // snap to whole 32px tiles for crisp pixel edges
-    return Math.round((min + Math.random() * (max - min)) / 32) * 32;
+    return Math.round((min + rng() * (max - min)) / 32) * 32;
   }
 
   topForLevel(levelIndex) {
@@ -42,7 +43,7 @@ export class PlatformManager {
     const lowWidth = this.randomWidth();
     this.create(startX, lowWidth, 0);
 
-    if (Math.random() < GAME_CONFIG.PLATFORM_STAIR_CHANCE) {
+    if (rng() < GAME_CONFIG.PLATFORM_STAIR_CHANCE) {
       // Staircase: level 3 starts halfway along level 2 and runs past it
       const highX = startX + lowWidth * 0.5;
       const highWidth = this.randomWidth();
@@ -130,7 +131,7 @@ export class PlatformManager {
       this.spawnPattern(startX);
       this.timer =
         GAME_CONFIG.PLATFORM_MIN_INTERVAL +
-        Math.random() *
+        rng() *
           (GAME_CONFIG.PLATFORM_MAX_INTERVAL - GAME_CONFIG.PLATFORM_MIN_INTERVAL);
     }
   }

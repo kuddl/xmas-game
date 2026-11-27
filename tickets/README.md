@@ -18,15 +18,13 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 005 | [Audio: Musik & Soundeffekte](open/005-audio-musik-soundeffekte.md) | enhancement, backlog | — |
 | 006 | [Designer-Assets über Figma austauschen](open/006-designer-assets-ueber-figma-austauschen-pixelart.md) | enhancement, backlog | — |
 | 007 | [Hintergrund-Welten: MVP- vs. Production-Look](open/007-hintergrund-welten-mvp-vs-production-look.md) | enhancement, backlog | — |
-| 008 | [Training-Modus vs. Highscore-Modus](open/008-training-modus-vs-highscore-modus.md) | enhancement, backlog | — |
 | 009 | [Hindernisse auch auf Plattformen](open/009-hindernisse-auch-auf-plattformen.md) | enhancement, backlog | — |
 | 010 | [Arc-Logo als Hintergrund-Element](open/010-arc-logo-als-hintergrund-element.md) | enhancement, backlog | — |
 | 011 | [CI: GitHub Actions auf Node 24 aktualisieren](open/011-ci-github-actions-auf-node-24.md) | chore | — |
 | 019 | [Landingpage: Texte für Gruß und Satire-Blöcke](open/019-landingpage-texte-fuer-gruss-und-satire.md) · Map Landingpage | wayfinder:grilling | — |
 | 021 | [Konami-Code: Power-up (doppelte Größe & Durchlaufen)](open/021-konami-code-power-up.md) | enhancement, backlog | — |
-| 022 | [Spiel-Modi: freies Spiel (/game) und getracktes Spiel (/game/UUID)](open/022-spiel-modi-freies-und-getracktes-spiel.md) | wayfinder:grilling | — |
 | 023 | [Landingpage: Feinschliff und Fliegende Buzzwords](open/023-landingpage-feinschliff-und-fliegende-buzzwords.md) · Map Landingpage | enhancement | Agent (Review: tsailer) |
-| 024 | [Leaderboard: Top 20 per Claim statt E-Mail-Versand](open/024-leaderboard-top-20-claim-statt-mail.md) | wayfinder:grilling | — |
+| 024 | [Leaderboard: Top 20 per Claim statt E-Mail-Versand](open/024-leaderboard-top-20-claim-statt-mail.md) | wayfinder:grilling | Agent (Setup: Team) |
 
 > Hinweis zu 007: Den unterschiedlichen Look für MVP und Production gibt es seit [013](done/013-mvp-phase-kuerzen-und-optisch-von.md). Zu klären ist, ob 007 damit erledigt ist oder ob eigene Welten (andere Motive) gemeint sind.
 
@@ -44,6 +42,8 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 017 | [Coin-Wolke in der Luft während Arc Double Jump](done/017-coin-wolke-in-der-luft-waehrend.md) | backlog | 2026-11-26 |
 | 018 | [Landingpage: Was braucht die Seite?](done/018-landingpage-was-braucht-die-seite.md) · Map Landingpage | wayfinder:grilling | 2026-11-26 |
 | 020 | [Landingpage: Scroll-Prototyp](done/020-landingpage-scroll-prototyp.md) · Map Landingpage | wayfinder:prototype | 2026-11-26 |
+| 008 | [Training-Modus vs. Highscore-Modus](done/008-training-modus-vs-highscore-modus.md) | enhancement, backlog | 2026-11-27 |
+| 022 | [Spiel-Modi: freies Spiel (/game) und getracktes Spiel (/game/UUID)](done/022-spiel-modi-freies-und-getracktes-spiel.md) | wayfinder:grilling | 2026-11-27 |
 
 ## Arbeitsweise
 

@@ -58,6 +58,22 @@ export const GAME_CONFIG = {
   GAME_OVER_INPUT_LOCK_MS: 600, // game-over buttons ignore clicks right after dying
   LEADERBOARD_SIZE: 20, // entries kept locally and shown on the leaderboard screen
 
+  // Online leaderboard (ticket 024): top 20, claimed with a company e-mail + nickname.
+  // Shared by the game (src/) and the server (server/), so the limits follow the game tuning.
+  ONLINE: {
+    API_BASE: '/api',
+    CLAIM_WINDOW_SECONDS: 60, // claim only on the game-over screen, within this time
+    CHECKPOINT_SECONDS: 10, // the game reports distance + SP this often
+    RUN_MAX_MINUTES: 30, // a run token is useless after this
+    EMAIL_DOMAINS: ['merkle.com', 'dentsu.com'],
+    NICKNAME_MAX: 16,
+    // plausibility: fastest possible run (MAX_SCROLL_SPEED * MAX_SPEED_MULTIPLIER) and SP rate
+    MAX_SP_PER_SECOND: 4, // coins + breakthrough smashes, generous
+    TOLERANCE: 1.15, // +15 % on every upper bound
+    RATE_LIMIT_RUNS_PER_MINUTE: 20, // per IP
+    RATE_LIMIT_CLAIMS_PER_MINUTE: 5, // per IP
+  },
+
   // Ducking & flying obstacles (Ticket 08)
   FAST_FALL_MULTIPLIER: 1.9, // gravity boost while holding ↓ in the air
   PLATFORM_DROP_TIME: 0.22, // seconds platforms are ignored after pressing ↓ on one

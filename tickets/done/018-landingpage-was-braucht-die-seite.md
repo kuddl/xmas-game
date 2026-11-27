@@ -60,4 +60,4 @@ Alle Empfehlungen angenommen:
 - **Cursor:** Am Desktop folgt die animierte Spielfigur dem Mauszeiger, leicht verzögert, mit Laufanimation und in Bewegungsrichtung gedreht. Auf Touch-Geräten läuft sie unten auf dem Boden mit.
 - **Finale:** großes Banner „PLAY THE CHRISTMAS PROJECT GAME“ mit Button „PRESS START“, der auf `/` führt. Das Spiel bleibt auf `/`, die Landingpage liegt unter `/welcome`.
 - **Texte schreibt der Agent**, Tobias bespricht sie mit dem Team (eventuell kommen ein dritter oder vierter Block dazu). → [019 · Landingpage: Texte für Gruß und Satire-Blöcke](../open/019-landingpage-texte-fuer-gruss-und-satire.md)
-- **Erst ein super einfacher Prototyp**, um die Mechanik kennenzulernen, dann die richtige Seite. → [020 · Landingpage: Scroll-Prototyp](../open/020-landingpage-scroll-prototyp.md)
+- **Erst ein super einfacher Prototyp**, um die Mechanik kennenzulernen, dann die richtige Seite. → [020 · Landingpage: Scroll-Prototyp](020-landingpage-scroll-prototyp.md)

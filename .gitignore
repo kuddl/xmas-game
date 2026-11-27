@@ -3,3 +3,10 @@ dist/
 three-docs/
 .DS_Store
 *.log
+
+# local online leaderboard (SQLite) and secrets
+.data/
+.dev.vars
+.env*
+.vercel
+.wrangler/

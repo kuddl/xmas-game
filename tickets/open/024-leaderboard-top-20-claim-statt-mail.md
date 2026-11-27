@@ -7,7 +7,7 @@
 | **Zugewiesen** | — |
 | **Erstellt** | 2026-11-27 |
 | **Erledigt** | — |
-| **Hängt zusammen mit** | [004 · Backend-Leaderboard statt localStorage](004-backend-leaderboard-statt-localstorage.md), [022 · Spiel-Modi: freies und getracktes Spiel](022-spiel-modi-freies-und-getracktes-spiel.md) (dieser Vorschlag würde die UUID-pro-E-Mail-Idee aus 022 ersetzen), [008 · Training- vs. Highscore-Modus](008-training-modus-vs-highscore-modus.md) |
+| **Hängt zusammen mit** | [004 · Backend-Leaderboard statt localStorage](004-backend-leaderboard-statt-localstorage.md), [022 · Spiel-Modi: freies und getracktes Spiel](../done/022-spiel-modi-freies-und-getracktes-spiel.md) (dieser Vorschlag würde die UUID-pro-E-Mail-Idee aus 022 ersetzen), [008 · Training- vs. Highscore-Modus](../done/008-training-modus-vs-highscore-modus.md) |
 
 ## Frage ans Team
 
@@ -38,7 +38,7 @@
 - **Gleichstand:** Wer liegt bei gleichem Score vorn, der frühere oder der spätere Lauf?
 - **Score-Vertrauen:** Der Score kommt aus dem Browser. Intern reicht vermutlich eine einfache Plausibilitätsprüfung (z. B. Score passend zur Laufzeit).
 - **Datenschutz:** Wir speichern E-Mail-Adressen. Wo, wie lange (z. B. Löschung nach der Weihnachtsaktion), und wer hat Zugriff?
-- **Technik:** Backend-Leaderboard aus [004](004-backend-leaderboard-statt-localstorage.md), z. B. Cloudflare Worker + D1/KV, weil die Seite dort schon läuft. Das Routing `/game/<UUID>` aus [022](022-spiel-modi-freies-und-getracktes-spiel.md) wäre damit nicht mehr nötig.
+- **Technik:** Backend-Leaderboard aus [004](004-backend-leaderboard-statt-localstorage.md), z. B. Cloudflare Worker + D1/KV, weil die Seite dort schon läuft. Das Routing `/game/<UUID>` aus [022](../done/022-spiel-modi-freies-und-getracktes-spiel.md) wäre damit nicht mehr nötig.
 - **Verhältnis zu 022:** Wird 022 durch diesen Vorschlag ersetzt, also freies Spiel für alle und Claim nur für die Top 20? Dann würden 022 und 008 hier aufgehen.
 
 ## Verlauf
@@ -72,7 +72,53 @@ Recherche: [docs/research/leaderboard-storage.md](../../docs/research/leaderboar
 - **Q17 Löschen:** Die E-Mail-Adressen werden **bis zum 31. Januar manuell vom Team gelöscht**. Es gibt **keinen automatischen Löschjob im Code**, auf der Seite steht nur ein Hinweistext. Danach bleiben nur Nickname und Score.
   - Anleitung, je Datenbank (Cloudflare- und Vercel-DB):
     ```sql
-    UPDATE claims SET email = NULL;   -- Spaltennamen werden bei der Umsetzung festgelegt
-    DELETE FROM runs;                 -- Checkpoints / Protokoll gleich mit
+    -- siehe docs/leaderboard-setup.md (email ist Primärschlüssel -> Platzhalter statt NULL)
+    UPDATE claims SET email = 'deleted-' || run_id;
+    DELETE FROM runs;
+    DELETE FROM rejections;
     ```
   - **Offen:** Wer im Team ist verantwortlich, und wo steht die Erinnerung (Kalender)?
+
+### 2026-11-27 · Umsetzung (Agent, ohne Runde 3 – Details selbst entschieden)
+
+**Gebaut:**
+- `server/api.js`: gemeinsame API mit Schema-Anlage, Top 20, Run-Token, Checkpoints und Claim, alles in einer Transaktion.
+- `src/online/protocol.js`: Score-Formel, Obergrenzen, E-Mail- und Nickname-Regeln, Wortfilter, HMAC. Gilt gemeinsam für Spiel und Server.
+- Adapter:
+  - `worker/index.js` + `wrangler.jsonc` (`main`, `run_worker_first: ["/api/*"]`)
+  - `api/index.js` + `vercel.json` (Rewrite `/api/:path*`)
+  - Vite-Plugin in `vite.config.js` (lokal `.data/dev.db`)
+- **Seed:** `src/rng.js` (mulberry32). Hindernisse, Münzen, Plattformen, Power-ups und Pilze nutzen den Seed des Laufs, offline einen zufälligen.
+- **Spiel:**
+  - `src/online/client.js` holt den nächsten Lauf vorab (kein Warten beim Start) und sendet Start, Checkpoints alle 10 s und das Finale.
+  - Fällt die API aus, läuft alles offline weiter wie bisher.
+- **Game Over:**
+  - Claim-Formular nur für Top-20-Läufe: „TOP 20! YOU ARE #n“, Nickname + Firmen-E-Mail, 60-s-Countdown, Datenschutz-Hinweis.
+  - Fehlermeldungen laufen über `role="status"`.
+  - Beim Tippen reagiert das Spiel nicht mehr auf die Tasten.
+- **Leaderboard:** online die echten Top 20 (Überschrift „TOP 20“, eigener Eintrag gold), offline wie bisher „LOCAL TOP 20“. Nicknames werden HTML-escaped.
+- **Doku:** [docs/leaderboard-setup.md](../../docs/leaderboard-setup.md) mit Turso-DBs, Secrets, Auswertung und Lösch-SQL.
+
+**Getestet:**
+- `npm run test:leaderboard`: 22/22 grün. Geprüft werden:
+  - ehrlicher Lauf und Claim, Single-Use, nur Nickname sichtbar
+  - schlechterer und besserer Lauf mit derselben Adresse, Domains, Emoji und Wortfilter
+  - 60-s-Fenster, 6.000 m nach 10 s, gefälschte Signatur
+  - volle Top 20, Protokoll, Offline-Modus
+- Browser lokal:
+  - Ein echter Lauf (415 PTS) zeigt das Formular. Eine falsche Domain zeigt eine Fehlermeldung, Leerzeichen im Nickname gehen.
+  - Der Claim landet auf #1 im HUD und im Leaderboard.
+  - Ein Konsolen-Betrug (`distanceMeters = 5000`) wird als `IMPLAUSIBLE` abgelehnt, es erscheint kein Formular.
+- `wrangler dev`: Seiten werden ausgeliefert, `/api/leaderboard` meldet ohne Secrets 503 OFFLINE.
+- Vercel ist nicht lokal getestet, kein Projekt bzw. CLI-Login vorhanden.
+
+**Selbst entschieden (Runde 3 war offen):**
+- Geclaimt wird nur auf dem Game-Over-Screen.
+- Die Landingpage zeigt (noch) kein Leaderboard.
+- Offline gibt es keinen Claim.
+
+**Offen / To-do für das Team:**
+1. Turso-DBs anlegen und Secrets auf Cloudflare und Vercel setzen (Anleitung in `docs/leaderboard-setup.md`). Bis dahin läuft alles offline.
+2. Verantwortliche Person für das Löschen bis 31. Januar festlegen.
+3. Vercel-Deployment nach dem Setzen der Secrets einmal prüfen (`/api/leaderboard`).
+4. Optional (Runde 3): Leaderboard auf der Landingpage, Text für die Einladungsmail.

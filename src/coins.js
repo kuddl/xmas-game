@@ -1,5 +1,6 @@
 import { Container, Sprite } from 'pixi.js';
 import { GAME_CONFIG } from './config.js';
+import { rng } from './rng.js';
 
 /**
  * Story Points: spinning gold coins laid out in readable patterns
@@ -124,19 +125,19 @@ export class CoinManager {
   /** Hook: an obstacle was spawned and the next gap is known */
   onObstacle(obstacle, gapPx) {
     if (obstacle.kind === 'flyer') {
-      if (Math.random() < GAME_CONFIG.COIN_UNDER_FLYER_CHANCE) this.rowUnderFlyer(obstacle.x);
+      if (rng() < GAME_CONFIG.COIN_UNDER_FLYER_CHANCE) this.rowUnderFlyer(obstacle.x);
       return;
     }
-    if (Math.random() < GAME_CONFIG.COIN_ARC_CHANCE) {
+    if (rng() < GAME_CONFIG.COIN_ARC_CHANCE) {
       this.arcOver(obstacle.x);
-    } else if (gapPx >= 240 && Math.random() < GAME_CONFIG.COIN_GAP_ROW_CHANCE) {
+    } else if (gapPx >= 240 && rng() < GAME_CONFIG.COIN_GAP_ROW_CHANCE) {
       this.rowInGap(obstacle.x, gapPx);
     }
   }
 
   /** Hook: a platform was created */
   onPlatform(left, width, top) {
-    if (Math.random() < GAME_CONFIG.COIN_PLATFORM_ROW_CHANCE) this.rowOnPlatform(left, width, top);
+    if (rng() < GAME_CONFIG.COIN_PLATFORM_ROW_CHANCE) this.rowOnPlatform(left, width, top);
   }
 
   update(dt, scrollSpeed) {

@@ -42,6 +42,11 @@ Hinweise für Coding-Agents (und Menschen), die an diesem Repo arbeiten.
 
 ## Projekt-Kurzinfo
 - **Seiten:** `/` = Landingpage (`index.html`, Quellen in `welcome/`, Texte in `welcome/content.js`), `/game/` = Spiel (`game/index.html`, Quellen in `src/`), Info-Seite unter `/game/?info`. Beide Seiten baut Vite (`vite.config.js` → `build.rollupOptions.input`).
+- **Online-Leaderboard (Ticket 024):**
+  - `server/api.js` ist die gemeinsame API für alle drei Umgebungen: `worker/index.js` (Cloudflare), `api/index.js` + `vercel.json` (Vercel) und das Vite-Plugin in `vite.config.js` (lokal, `.data/dev.db`).
+  - Gemeinsame Regeln für Spiel und Server stehen in `src/online/protocol.js`, die Werte in `GAME_CONFIG.ONLINE`.
+  - Test: `npm run test:leaderboard`. Setup und Löschen: `docs/leaderboard-setup.md`.
+  - Spielrelevanter Zufall läuft über `src/rng.js` (Seed pro Lauf), **nicht** über `Math.random()`.
 - **Engine:** PixiJS v8. Vor jedem PixiJS-Code den Skill `.agents/skills/pixijs/SKILL.md` lesen.
 - **Dev:** `npm run dev`, **Build:** `npm run build`, **Assets neu erzeugen:** `npm run generate-assets`
 - **Tuning-Werte:** `src/config.js`. **Assets:** `public/assets/spritesheet.json` (Designer-Austausch ohne Code-Änderung)

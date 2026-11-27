@@ -7,13 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "generate-assets": "node scripts/generate-assets.mjs"
+    "generate-assets": "node scripts/generate-assets.mjs",
+    "test:leaderboard": "node scripts/test-leaderboard.mjs"
   },
   "devDependencies": {
     "vite": "^6.2.0",
     "wrangler": "^4.168.0"
   },
   "dependencies": {
+    "@libsql/client": "0.18.0",
     "pixi.js": "8.23.0"
   }
 }

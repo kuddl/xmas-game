@@ -45,4 +45,4 @@ Lokal: `npm run dev` → http://localhost:5173/welcome/ (im Build als `dist/welc
 - **Scrollrichtung umdrehen:** Die Seite startet jetzt **unten** und läuft beim Hochscrollen nach vorn (Finger bzw. Trackpad nach unten). Umsetzung über `animation-direction: reverse`, die JS-Ersatzlösung rechnet `1 - p`. Einstellbar in `welcome/content.js` → `layout.scrollDirection` (`'reverse'` | `'normal'`).
 - **Geschenk erst nach allen Kisten:** Das Finale ist gesperrt mit „SMASH ALL BLOCKS TO UNWRAP YOUR GIFT · x / 4 SMASHED“. Nach der letzten Kiste springt es mit Konfetti auf. Texte in `content.js` (`lockedTitle`, `lockedProgress`).
 - **URLs getauscht:** Die **Landingpage liegt auf `/`**, das **Spiel auf `/game/`** (`game/index.html`). Die Info-Seite des Spiels liegt jetzt unter `/game/?info`, weil ein eigener Pfad auf Cloudflare zur Landingpage zurückfallen würde.
-- Daraus neu: [022 · Spiel-Modi: freies Spiel und getracktes Spiel](../open/022-spiel-modi-freies-und-getracktes-spiel.md)
+- Daraus neu: [022 · Spiel-Modi: freies Spiel und getracktes Spiel](../done/022-spiel-modi-freies-und-getracktes-spiel.md)

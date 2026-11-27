@@ -1,5 +1,6 @@
 import { Container, Graphics, Sprite, Text } from 'pixi.js';
 import { GAME_CONFIG } from './config.js';
+import { rng } from './rng.js';
 
 const LABEL_STYLE = {
   fontFamily: '"Press Start 2P", "Courier New", monospace',
@@ -13,7 +14,7 @@ const LABEL_CHAR_W = 6; // Press Start 2P is monospace: 1em per glyph
 function shuffled(list) {
   const bag = [...list];
   for (let i = bag.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rng() * (i + 1));
     [bag[i], bag[j]] = [bag[j], bag[i]];
   }
   return bag;
@@ -68,7 +69,7 @@ export class ObstacleManager {
     if (distanceMeters < GAME_CONFIG.FLYER_START_METERS) return 'ground';
     // Never two flyers in a row: keeps the rhythm readable
     if (this.lastKind === 'flyer') return 'ground';
-    return Math.random() < GAME_CONFIG.FLYER_CHANCE ? 'flyer' : 'ground';
+    return rng() < GAME_CONFIG.FLYER_CHANCE ? 'flyer' : 'ground';
   }
 
   /** Compact retro label board: dark border, snow interior, red top accent */
@@ -184,7 +185,7 @@ export class ObstacleManager {
       },
       visualRight: envW / 2 + ropeLen + bannerW,
       hitInMvp: false,
-      t: Math.random() * 6,
+      t: rng() * 6,
     };
   }
 
@@ -230,7 +231,7 @@ export class ObstacleManager {
       const maxGap = GAME_CONFIG.OBSTACLE_MAX_GAP_TIME * prodFactor;
       // Flyers are long: give the player a beat to stand up again
       const flyerBonus = kind === 'flyer' ? 0.35 : 0;
-      this.spawnTimer = minGap + flyerBonus + Math.random() * (maxGap - minGap);
+      this.spawnTimer = minGap + flyerBonus + rng() * (maxGap - minGap);
       this.onGap?.(spawnX, this.spawnTimer * scrollSpeed, spawned);
     }
   }

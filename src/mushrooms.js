@@ -1,5 +1,6 @@
 import { BlurFilter, ColorMatrixFilter, Container, Sprite } from 'pixi.js';
 import { GAME_CONFIG } from './config.js';
+import { rng } from './rng.js';
 
 /**
  * Creative-mode mushrooms (#14): a harmless ground pickup that only appears in
@@ -24,7 +25,7 @@ export class MushroomManager {
 
   resetCooldown() {
     const cfg = GAME_CONFIG.CREATIVE_MODE;
-    this.cooldown = cfg.minInterval + Math.random() * (cfg.maxInterval - cfg.minInterval);
+    this.cooldown = cfg.minInterval + rng() * (cfg.maxInterval - cfg.minInterval);
   }
 
   /**
@@ -50,7 +51,7 @@ export class MushroomManager {
     sprite.height = size;
     sprite.position.set(x, GAME_CONFIG.GROUND_Y);
     this.container.addChild(sprite);
-    const m = { sprite, x, t: Math.random() * 6 };
+    const m = { sprite, x, t: rng() * 6 };
     this.mushrooms.push(m);
     return m;
   }
