@@ -55,3 +55,24 @@
 - **Q8 Schummelschutz:** **mehr als Klartext-JSON.** Die Spieler sind Webentwickler. Mindestens ein serverseitiges Token pro Spiel mit Zeit-Plausibilität (Zeit → maximal mögliche Meter). Gewünscht ist mehr, z. B. ein Seed pro Spiel und eine signierte Rückmeldung. → Runde 2
 - **Q9 Datenschutz:** Die Adressen bleiben im Klartext gespeichert, damit wir z. B. den **Sieger benachrichtigen** können. Angezeigt werden sie nie. Zugriff nur fürs Projektteam, ein kurzer Hinweis auf der Seite. Das Löschdatum steht noch aus.
 - **Q10 Technik:** **Nicht nur Cloudflare.** Die GitHub-Version (`origin`) läuft auf Cloudflare Workers, die GitLab-Version (`merkle`) läuft auf **Vercel**. Das sind zwei Spiele mit zwei getrennten Leaderboards. Gewünscht ist **eine Speicherlösung, die auf beiden Plattformen läuft**. Im Gespräch: Redis, oder eine Abstraktion wie **unstorage** mit Adaptern. → Recherche
+
+### 2026-11-27 · Grilling Runde 2: Entscheidungen
+
+Recherche: [docs/research/leaderboard-storage.md](../../docs/research/leaderboard-storage.md)
+
+- **Q11 Speicher:** **libSQL/Turso**, zwei Datenbanken: GitHub → Cloudflare und GitLab → Vercel. Lokal liegt die SQLite-Datei `dev.db` mit demselben Client (nicht im Repo). Region **EU (Frankfurt)**. unstorage wird **nicht** verwendet, weil es keine atomaren Operationen bietet und parallele Claims verloren gingen.
+- **Q12 Server-Teil:** gemeinsames Modul `server/api.js`, auf Cloudflare als Worker für `/api/*` (`run_worker_first`), auf Vercel als Function in `api/`, lokal als Vite-Plugin-Middleware. Secrets (DB-Zugang, HMAC-Schlüssel) liegen als Plattform-Secrets vor, nie im Repo.
+- **Q13 Schummelschutz, Kern:** Der Server beobachtet den Lauf.
+  1. **Start:** `POST /api/run` liefert eine Run-ID mit Seed, per HMAC signiert. Der Server speichert die Startzeit.
+  2. **Checkpoints:** etwa alle 10 s Distanz und SP, monoton steigend und innerhalb der Obergrenzen, geprüft gegen die **Server-Uhr**.
+  3. **Claim:** einmalig, höchstens 60 s nach dem letzten Checkpoint, der Score muss zum letzten Checkpoint passen.
+- **Q14 Zweite Schicht:** Jede Meldung wird mit einem aus dem Seed abgeleiteten Schlüssel signiert. Das ist bewusst nur **Verschleierung**, ein einfacher `curl` reicht damit aber nicht mehr. Der Seed steuert außerdem den Zufall von Hindernissen und Münzen.
+- **Q15 Obergrenzen:** aus `src/config.js` abgeleitet. Meter: 410 px/s × 1,32 ≈ **18 m/s**, SP: ≈ **4 SP/s**, jeweils +15 % Toleranz. Die Werte stehen in der Config.
+- **Q16 Fehlgeschlagene Prüfung:** neutrale Meldung „CLAIM REJECTED“, der Lauf wird fürs Team protokolliert. Niemand wird gesperrt oder öffentlich angeprangert.
+- **Q17 Löschen:** Die E-Mail-Adressen werden **bis zum 31. Januar manuell vom Team gelöscht**. Es gibt **keinen automatischen Löschjob im Code**, auf der Seite steht nur ein Hinweistext. Danach bleiben nur Nickname und Score.
+  - Anleitung, je Datenbank (Cloudflare- und Vercel-DB):
+    ```sql
+    UPDATE claims SET email = NULL;   -- Spaltennamen werden bei der Umsetzung festgelegt
+    DELETE FROM runs;                 -- Checkpoints / Protokoll gleich mit
+    ```
+  - **Offen:** Wer im Team ist verantwortlich, und wo steht die Erinnerung (Kalender)?
