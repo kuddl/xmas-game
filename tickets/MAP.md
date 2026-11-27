@@ -42,7 +42,7 @@ Ein spielbares, witziges **Corporate-Satire-Run-Game** als interner Weihnachtsgr
 
 ## Backlog
 
-Spätere Features, als Tickets in `open/` (Typ `backlog`): [#4](open/004-backend-leaderboard-statt-localstorage.md) Backend-Leaderboard · [#5](open/005-audio-musik-soundeffekte.md) Audio · [#6](open/006-designer-assets-ueber-figma-austauschen-pixelart.md) Designer-Assets (über Figma) · [#7](open/007-hintergrund-welten-mvp-vs-production-look.md) Hintergrund-Welten · [#8](open/008-training-modus-vs-highscore-modus.md) Training- vs. Highscore-Modus · [#9](open/009-hindernisse-auch-auf-plattformen.md) Hindernisse auf Plattformen · [#10](open/010-arc-logo-als-hintergrund-element.md) Arc-Logo im Hintergrund · [#11](open/011-ci-github-actions-auf-node-24.md) CI auf Node 24 · [#22](open/022-spiel-modi-freies-und-getracktes-spiel.md) Spiel-Modi (frei / getrackt)
+Spätere Features, als Tickets in `open/` (Typ `backlog`): [#4](open/004-backend-leaderboard-statt-localstorage.md) Backend-Leaderboard · [#5](open/005-audio-musik-soundeffekte.md) Audio · [#6](open/006-designer-assets-ueber-figma-austauschen-pixelart.md) Designer-Assets (über Figma) · [#7](open/007-hintergrund-welten-mvp-vs-production-look.md) Hintergrund-Welten · [#8](open/008-training-modus-vs-highscore-modus.md) Training- vs. Highscore-Modus · [#9](open/009-hindernisse-auch-auf-plattformen.md) Hindernisse auf Plattformen · [#10](open/010-arc-logo-als-hintergrund-element.md) Arc-Logo im Hintergrund · [#11](open/011-ci-github-actions-auf-node-24.md) CI auf Node 24 · [#22](open/022-spiel-modi-freies-und-getracktes-spiel.md) Spiel-Modi (frei / getrackt) · [#24](open/024-leaderboard-top-20-claim-statt-mail.md) Leaderboard-Claim Top 20
 
 ## Out of scope
 

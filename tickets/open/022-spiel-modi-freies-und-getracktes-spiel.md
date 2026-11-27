@@ -28,3 +28,7 @@ Das Spiel bekommt **zwei Modi**. Wie genau funktionieren sie, und was braucht es
 - **Landingpage:** Führt „PRESS START“ immer ins freie Spiel, oder bei persönlichem Link ins getrackte?
 
 ## Verlauf
+
+### 2026-11-27 · Gegenvorschlag
+
+Tobias und Thomas schlagen vor, auf E-Mail-Versand und persönliche UUID-Links zu verzichten. Alle spielen frei, und nur wer in die Top 20 kommt, claimt seinen Platz mit Merkle-Adresse und Nickname. Details und offene Punkte: [024 · Leaderboard: Top 20 per Claim statt E-Mail-Versand](024-leaderboard-top-20-claim-statt-mail.md). Wird 024 angenommen, geht 022 darin auf.
