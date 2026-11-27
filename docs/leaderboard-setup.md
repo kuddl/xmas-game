@@ -18,17 +18,16 @@ Endpunkte: `GET /api/leaderboard`, `POST /api/run`, `POST /api/run/start`, `POST
 
 ### 1. Zwei Turso-Datenbanken anlegen (Region EU / Frankfurt)
 
-Mit der [Turso CLI](https://docs.turso.tech/cli/introduction) oder im Dashboard:
+Bei Turso hängt die Region an der **Gruppe**. Die Gruppe `default` liegt bereits in Frankfurt (`aws-eu-central-1`), prüfen mit `turso group list`. Die alten Kurzcodes wie `fra` gibt es nicht mehr, gültige IDs listet `turso db locations`.
 
 ```sh
 turso auth login
-turso db create xmas-game-cloudflare --location fra   # für die GitHub/Cloudflare-Version
-turso db create xmas-game-vercel --location fra       # für die GitLab/Vercel-Version
+turso db create xmas-game-cloudflare                  # für die GitHub/Cloudflare-Version (Gruppe default = Frankfurt)
+turso db create xmas-game-vercel                      # für die GitLab/Vercel-Version
 turso db show xmas-game-cloudflare --url              # -> TURSO_DATABASE_URL (libsql://…)
 turso db tokens create xmas-game-cloudflare           # -> TURSO_AUTH_TOKEN
+# dasselbe für xmas-game-vercel
 ```
-
-(Die Region-Kennung bitte im Dashboard prüfen, falls `fra` nicht angeboten wird.)
 
 ### 2. Signier-Schlüssel erzeugen (je Plattform ein eigener)
 
