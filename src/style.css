@@ -56,6 +56,22 @@ body {
   display: none !important;
 }
 
+.audio-toggle {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 60;
+  color: var(--snow);
+}
+
+.audio-toggle svg[hidden] {
+  display: none;
+}
+
+.audio-toggle.is-muted {
+  color: var(--red);
+}
+
 /* HUD */
 #hud {
   position: absolute;
@@ -980,6 +996,21 @@ body.is-fullscreen .btn-fullscreen .fs-exit {
   color: var(--snow);
 }
 
+.music-credit {
+  display: block;
+  margin-top: 14px;
+  color: var(--ice-light);
+  font-size: 7px;
+  line-height: 1.7;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.music-credit:hover {
+  color: var(--snow);
+  opacity: 1;
+}
+
 /* ===== Portrait phones: ask to rotate ===== */
 .rotate-hint {
   display: none;
@@ -1062,8 +1093,18 @@ body.is-fullscreen .btn-fullscreen .fs-exit {
     border-width: 2px;
   }
 
+  .audio-toggle {
+    top: 10px;
+    right: 10px;
+  }
+
   .fullscreen-link {
     margin-top: 8px;
+  }
+
+  .music-credit {
+    margin-top: 8px;
+    font-size: 6px;
   }
 
   /* Game over: scores and highscores side by side so everything fits */

@@ -12,6 +12,7 @@ import { TutorialDirector } from './tutorial.js';
 import { UIManager } from './ui.js';
 import { OnlineLeaderboard } from './online/client.js';
 import { seedRng } from './rng.js';
+import { AudioManager } from './audio.js';
 
 /** typing into the claim form must not jump, pause or start a run */
 const isTyping = (e) => e.target instanceof HTMLElement && (e.target.matches('input, textarea, select') || e.target.isContentEditable);
@@ -36,6 +37,7 @@ export class Game {
     this.app = null;
     this.worldContainer = null;
     this.viewWidth = 640;
+    this.audio = new AudioManager();
   }
 
   async init() {
@@ -272,8 +274,10 @@ export class Game {
   setPaused(paused) {
     if (paused && this.state === 'PLAYING') {
       this.state = 'PAUSED';
+      this.audio.pause();
     } else if (!paused && this.state === 'PAUSED') {
       this.state = 'PLAYING';
+      this.audio.resume();
     } else {
       return;
     }
@@ -313,6 +317,7 @@ export class Game {
     this.shakeTime = 0;
     this.worldContainer.position.set(0, 0);
     this.ui.showPlayingHUD();
+    this.audio.start();
     this.ui.updateHUD({
       distanceMeters: 0,
       elapsedTime: 0,
@@ -422,6 +427,7 @@ export class Game {
     // PLAYING state
     const { inProduction, moveDir, speedMultiplier, scrollSpeed } =
       this.getSpeedInfo();
+    if (inProduction && !this.inProduction) this.audio.play('levelEnd');
     this.inProduction = inProduction;
 
     this.elapsedTime += dt;
@@ -447,6 +453,8 @@ export class Game {
       downHeld: this.keys.down,
       platforms: this.platforms.getSurfaces(),
     });
+
+    if (this.player.justJumped) this.audio.play('jump');
 
     if (this.player.justAirJumped) {
       this.effects.burst(
@@ -483,6 +491,7 @@ export class Game {
     if (collected) {
       const def = GAME_CONFIG.POWERUPS[collected.type];
       this.powerups.activate(collected.type);
+      if (collected.type === 'doubleJump') this.audio.play('arcPickup');
       this.effects.burst(collected.x, collected.y, def.color, 24, 190);
       this.ui.showToast(`${def.label}! ${def.hint}`, def.cssColor);
       // Arc double jump: a coin cloud high up, only reachable with the second jump
@@ -501,6 +510,7 @@ export class Game {
       this.storyPoints += coinsHit.length;
       for (const c of coinsHit) this.effects.burst(c.x, c.y, 0xf5b82e, 6, 90);
       this.ui.updateStoryPoints(this.storyPoints);
+      this.audio.play('coin');
     }
 
     // Creative-mode mushroom: harmless, only changes the look (also during Breakthrough)
@@ -518,6 +528,7 @@ export class Game {
         // MERKLE BREAKTHROUGH: smash right through the buzzword block
         const pos = this.obstacles.smash(hitObstacle);
         if (pos) {
+          this.audio.play('destroy');
           this.effects.debris(pos.x, pos.y);
           this.effects.burst(pos.x, pos.y, GAME_CONFIG.POWERUPS.breakthrough.color, 12, 150);
           this.shakeTime = 0.18;

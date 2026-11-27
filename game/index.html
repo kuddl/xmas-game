@@ -21,6 +21,15 @@
     <div id="game-shell">
       <div id="canvas-container" class="blurred"></div>
 
+      <button id="btn-mute" class="icon-btn audio-toggle" type="button" aria-label="Mute sound" aria-pressed="false">
+        <svg class="audio-on" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true">
+          <path d="M0 3h2l2-2v6L2 5H0zM5 2h1v4H5zM7 1h1v6H7z" />
+        </svg>
+        <svg class="audio-off" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true" hidden>
+          <path d="M0 3h2l2-2v6L2 5H0zM5 2h1v1h1V2h1v2H7v1h1v2H7V6H6v1H5V5h1V4H5z" />
+        </svg>
+      </button>
+
       <!-- Playing HUD -->
       <div id="hud" class="hidden">
         <div class="hud-top">
@@ -124,6 +133,9 @@
             <span class="fs-enter">&#9634; PLAY IN FULLSCREEN</span>
             <span class="fs-exit">&#9634; EXIT FULLSCREEN</span>
           </button>
+          <a class="music-credit" href="https://ende.app/de/song/13983-pixel-christmas" target="_blank" rel="noopener noreferrer">
+            MUSIC: PIXEL CHRISTMAS — SASCHA ENDE · CC BY 4.0
+          </a>
         </div>
       </div>
 

@@ -64,6 +64,7 @@ export class Player {
     this.jumpBufferTimer = 0;
     this.flashTimer = 0;
     this.airJumpsUsed = 0;
+    this.justJumped = false;
     this.justAirJumped = false;
     this.powerTint = null;
     this.shadowY = GAME_CONFIG.GROUND_Y;
@@ -144,6 +145,7 @@ export class Player {
       this.coyoteTimer = Math.max(0, this.coyoteTimer - dt);
     }
 
+    this.justJumped = false;
     this.justAirJumped = false;
     if (this.jumpBufferTimer > 0) {
       this.jumpBufferTimer = Math.max(0, this.jumpBufferTimer - dt);
@@ -153,11 +155,13 @@ export class Player {
         this.surface = null;
         this.coyoteTimer = 0;
         this.jumpBufferTimer = 0;
+        this.justJumped = true;
       } else if (canAirJump && this.airJumpsUsed < 1) {
         // ARC Double Jump: one extra jump in mid-air
         this.vy = GAME_CONFIG.DOUBLE_JUMP_VELOCITY;
         this.airJumpsUsed += 1;
         this.jumpBufferTimer = 0;
+        this.justJumped = true;
         this.justAirJumped = true;
       }
     }
