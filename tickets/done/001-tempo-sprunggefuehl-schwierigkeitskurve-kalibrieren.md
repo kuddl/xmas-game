@@ -13,7 +13,7 @@
 
 Welches Tempo, welche Sprunghöhe und welche Schwierigkeitskurve fühlen sich **spielbar und spaßig** an, für eine Session von 20 Sekunden bis 2 Minuten?
 
-Das lässt sich nur durch Spielen beantworten. Grundlage ist der aktuelle Stand auf https://christmas.familiesailer.com.
+Das lässt sich nur durch Spielen beantworten. Grundlage ist der damals aktuelle Live-Stand.
 
 ## Aktueller Stand (`src/config.js`)
 

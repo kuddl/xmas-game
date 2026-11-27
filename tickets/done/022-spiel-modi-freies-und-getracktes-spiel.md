@@ -20,9 +20,9 @@ Das Spiel bekommt **zwei Modi**. Wie genau funktionieren sie, und was braucht es
 
 - **Woher kommt die UUID?** Vorab erzeugt und per Mail verschickt, oder holt man sich den Link selbst mit E-Mail und Nickname? Wer legt den Nickname fest?
 - **Was zählt als „einmal“?** Beim Start verbraucht, oder erst beim Game Over? Was passiert bei Abbruch, Reload oder Tab-Wechsel?
-- **Backend & Speicher:** zusammen mit [004](../open/004-backend-leaderboard-statt-localstorage.md). Zum Beispiel Cloudflare Workers + D1/KV, weil die Seite dort schon läuft.
+- **Backend & Speicher:** zusammen mit [004](../open/004-backend-leaderboard-statt-localstorage.md). Zum Beispiel eine Serverless-Datenbank beim Hosting-Anbieter.
 - **Schummelschutz:** Wie weit vertrauen wir dem Score aus dem Browser (intern, also eher leicht)?
-- **Routing (technischer Fakt):** `wrangler.jsonc` nutzt `not_found_handling: single-page-application`. Unbekannte Pfade wie `/game/<UUID>` liefern heute die **Landingpage** (Root-`index.html`) aus, nicht das Spiel. Dafür braucht es eine Weiterleitung im Worker oder eine `_redirects`-Regel.
+- **Routing:** Pfade wie `/game/<UUID>` sind keine Dateien im Build. Dafür bräuchte es eine Rewrite-Regel beim Hosting.
 - **Datenschutz:** E-Mail-Adressen von Merkle-Mitarbeitern. Wer sieht was, wie lange wird gespeichert?
 - **UI:** Wie erkennt man im Spiel den getrackten Modus? Was zeigt Game Over, und was das Leaderboard (globale Top 20 statt lokal)?
 - **Landingpage:** Führt „PRESS START“ immer ins freie Spiel, oder bei persönlichem Link ins getrackte?

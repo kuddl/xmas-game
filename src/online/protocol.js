@@ -1,6 +1,6 @@
 /**
  * Online leaderboard protocol (ticket 024), shared by the game (browser) and the server
- * (Cloudflare Worker, Vercel Function, local Vite middleware). Pure ESM + WebCrypto only.
+ * (Vercel Function, local Vite middleware). Pure ESM + WebCrypto only.
  */
 import { GAME_CONFIG } from '../config.js';
 

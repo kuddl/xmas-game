@@ -8,12 +8,11 @@
       "command": "npx",
       "description": "Chrome DevTools Protocol for browser control, debugging, and automation"
     },
-    "cloudflare": {
-      "url": "https://mcp.cloudflare.com/mcp"
-    },
     "FigmaMCP": {
       "url": "https://mcp.figma.com/mcp",
-      "oauth": { "clientName": "Claude Code" }
+      "oauth": {
+        "clientName": "Claude Code"
+      }
     }
   }
 }

@@ -10,3 +10,8 @@ three-docs/
 .env*
 .vercel
 .wrangler/
+
+# no longer part of the project (hosting: GitLab -> Vercel); kept locally only
+wrangler.jsonc
+worker/
+.github/workflows/deploy.yml

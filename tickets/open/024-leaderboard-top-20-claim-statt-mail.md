@@ -38,7 +38,7 @@
 - **Gleichstand:** Wer liegt bei gleichem Score vorn, der frühere oder der spätere Lauf?
 - **Score-Vertrauen:** Der Score kommt aus dem Browser. Intern reicht vermutlich eine einfache Plausibilitätsprüfung (z. B. Score passend zur Laufzeit).
 - **Datenschutz:** Wir speichern E-Mail-Adressen. Wo, wie lange (z. B. Löschung nach der Weihnachtsaktion), und wer hat Zugriff?
-- **Technik:** Backend-Leaderboard aus [004](004-backend-leaderboard-statt-localstorage.md), z. B. Cloudflare Worker + D1/KV, weil die Seite dort schon läuft. Das Routing `/game/<UUID>` aus [022](../done/022-spiel-modi-freies-und-getracktes-spiel.md) wäre damit nicht mehr nötig.
+- **Technik:** Backend-Leaderboard aus [004](004-backend-leaderboard-statt-localstorage.md), mit einer Serverless-Datenbank beim Hosting. Das Routing `/game/<UUID>` aus [022](../done/022-spiel-modi-freies-und-getracktes-spiel.md) wäre damit nicht mehr nötig.
 - **Verhältnis zu 022:** Wird 022 durch diesen Vorschlag ersetzt, also freies Spiel für alle und Claim nur für die Top 20? Dann würden 022 und 008 hier aufgehen.
 
 ## Verlauf
@@ -54,14 +54,14 @@
 - **Q7 Gleichstand:** Der frühere Claim liegt vorn.
 - **Q8 Schummelschutz:** **mehr als Klartext-JSON.** Die Spieler sind Webentwickler. Mindestens ein serverseitiges Token pro Spiel mit Zeit-Plausibilität (Zeit → maximal mögliche Meter). Gewünscht ist mehr, z. B. ein Seed pro Spiel und eine signierte Rückmeldung. → Runde 2
 - **Q9 Datenschutz:** Die Adressen bleiben im Klartext gespeichert, damit wir z. B. den **Sieger benachrichtigen** können. Angezeigt werden sie nie. Zugriff nur fürs Projektteam, ein kurzer Hinweis auf der Seite. Das Löschdatum steht noch aus.
-- **Q10 Technik:** **Nicht nur Cloudflare.** Die GitHub-Version (`origin`) läuft auf Cloudflare Workers, die GitLab-Version (`merkle`) läuft auf **Vercel**. Das sind zwei Spiele mit zwei getrennten Leaderboards. Gewünscht ist **eine Speicherlösung, die auf beiden Plattformen läuft**. Im Gespräch: Redis, oder eine Abstraktion wie **unstorage** mit Adaptern. → Recherche
+- **Q10 Technik:** Gehostet wird auf **Vercel** (aus dem GitLab-Repo). Lokal soll es ohne Setup laufen, z. B. mit SQLite. Im Gespräch: Redis oder eine Abstraktion wie **unstorage** mit Adaptern. → Recherche
 
 ### 2026-11-27 · Grilling Runde 2: Entscheidungen
 
 Recherche: [docs/research/leaderboard-storage.md](../../docs/research/leaderboard-storage.md)
 
-- **Q11 Speicher:** **libSQL/Turso**, zwei Datenbanken: GitHub → Cloudflare und GitLab → Vercel. Lokal liegt die SQLite-Datei `dev.db` mit demselben Client (nicht im Repo). Region **EU (Frankfurt)**. unstorage wird **nicht** verwendet, weil es keine atomaren Operationen bietet und parallele Claims verloren gingen.
-- **Q12 Server-Teil:** gemeinsames Modul `server/api.js`, auf Cloudflare als Worker für `/api/*` (`run_worker_first`), auf Vercel als Function in `api/`, lokal als Vite-Plugin-Middleware. Secrets (DB-Zugang, HMAC-Schlüssel) liegen als Plattform-Secrets vor, nie im Repo.
+- **Q11 Speicher:** **libSQL/Turso**, Datenbank `xmas-game-vercel`. Lokal liegt die SQLite-Datei `dev.db` mit demselben Client (nicht im Repo). Region **EU (Frankfurt)**. unstorage wird **nicht** verwendet, weil es keine atomaren Operationen bietet und parallele Claims verloren gingen.
+- **Q12 Server-Teil:** Modul `server/api.js`, auf Vercel als Function in `api/`, lokal als Vite-Plugin-Middleware. Secrets (DB-Zugang, HMAC-Schlüssel) liegen als Plattform-Secrets vor, nie im Repo.
 - **Q13 Schummelschutz, Kern:** Der Server beobachtet den Lauf.
   1. **Start:** `POST /api/run` liefert eine Run-ID mit Seed, per HMAC signiert. Der Server speichert die Startzeit.
   2. **Checkpoints:** etwa alle 10 s Distanz und SP, monoton steigend und innerhalb der Obergrenzen, geprüft gegen die **Server-Uhr**.
@@ -70,7 +70,7 @@ Recherche: [docs/research/leaderboard-storage.md](../../docs/research/leaderboar
 - **Q15 Obergrenzen:** aus `src/config.js` abgeleitet. Meter: 410 px/s × 1,32 ≈ **18 m/s**, SP: ≈ **4 SP/s**, jeweils +15 % Toleranz. Die Werte stehen in der Config.
 - **Q16 Fehlgeschlagene Prüfung:** neutrale Meldung „CLAIM REJECTED“, der Lauf wird fürs Team protokolliert. Niemand wird gesperrt oder öffentlich angeprangert.
 - **Q17 Löschen:** Die E-Mail-Adressen werden **bis zum 31. Januar manuell vom Team gelöscht**. Es gibt **keinen automatischen Löschjob im Code**, auf der Seite steht nur ein Hinweistext. Danach bleiben nur Nickname und Score.
-  - Anleitung, je Datenbank (Cloudflare- und Vercel-DB):
+  - Anleitung:
     ```sql
     -- siehe docs/leaderboard-setup.md (email ist Primärschlüssel -> Platzhalter statt NULL)
     UPDATE claims SET email = 'deleted-' || run_id;
@@ -85,7 +85,6 @@ Recherche: [docs/research/leaderboard-storage.md](../../docs/research/leaderboar
 - `server/api.js`: gemeinsame API mit Schema-Anlage, Top 20, Run-Token, Checkpoints und Claim, alles in einer Transaktion.
 - `src/online/protocol.js`: Score-Formel, Obergrenzen, E-Mail- und Nickname-Regeln, Wortfilter, HMAC. Gilt gemeinsam für Spiel und Server.
 - Adapter:
-  - `worker/index.js` + `wrangler.jsonc` (`main`, `run_worker_first: ["/api/*"]`)
   - `api/index.js` + `vercel.json` (Rewrite `/api/:path*`)
   - Vite-Plugin in `vite.config.js` (lokal `.data/dev.db`)
 - **Seed:** `src/rng.js` (mulberry32). Hindernisse, Münzen, Plattformen, Power-ups und Pilze nutzen den Seed des Laufs, offline einen zufälligen.
@@ -109,7 +108,6 @@ Recherche: [docs/research/leaderboard-storage.md](../../docs/research/leaderboar
   - Ein echter Lauf (415 PTS) zeigt das Formular. Eine falsche Domain zeigt eine Fehlermeldung, Leerzeichen im Nickname gehen.
   - Der Claim landet auf #1 im HUD und im Leaderboard.
   - Ein Konsolen-Betrug (`distanceMeters = 5000`) wird als `IMPLAUSIBLE` abgelehnt, es erscheint kein Formular.
-- `wrangler dev`: Seiten werden ausgeliefert, `/api/leaderboard` meldet ohne Secrets 503 OFFLINE.
 - Vercel ist nicht lokal getestet, kein Projekt bzw. CLI-Login vorhanden.
 
 **Selbst entschieden (Runde 3 war offen):**
@@ -118,14 +116,19 @@ Recherche: [docs/research/leaderboard-storage.md](../../docs/research/leaderboar
 - Offline gibt es keinen Claim.
 
 **Offen / To-do für das Team:**
-1. Turso-DBs anlegen und Secrets auf Cloudflare und Vercel setzen (Anleitung in `docs/leaderboard-setup.md`). Bis dahin läuft alles offline.
+1. Turso-DB anlegen und die Umgebungsvariablen in Vercel setzen (Anleitung in `docs/leaderboard-setup.md`). Bis dahin läuft alles offline.
 2. Verantwortliche Person für das Löschen bis 31. Januar festlegen.
 3. Vercel-Deployment nach dem Setzen der Secrets einmal prüfen (`/api/leaderboard`).
 4. Optional (Runde 3): Leaderboard auf der Landingpage, Text für die Einladungsmail.
 
-### 2026-11-27 · Cloudflare live
+### 2026-11-27 · Datenbank & erster Live-Test
 
-- Turso-Datenbanken `xmas-game-cloudflare` und `xmas-game-vercel` angelegt, Gruppe `default` = `aws-eu-central-1` (Frankfurt).
-- Wrangler-Secrets gesetzt: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` (neu erzeugt, der erste Token wurde mit 401 abgelehnt), `LEADERBOARD_SECRET`.
-- https://christmas.familiesailer.com/api/leaderboard liefert `ok`, `/api/run` legt Läufe an. Tobias hat es im Browser bestätigt.
-- **Offen:** Vercel-Umgebungsvariablen für `xmas-game-vercel` setzen und prüfen. Verantwortliche Person für das Löschen bis 31. Januar festlegen.
+- Turso-Datenbank `xmas-game-vercel` liegt in Gruppe `default` = `aws-eu-central-1` (Frankfurt).
+- Die API ist mit Turso erfolgreich live getestet: `/api/leaderboard` liefert `ok`, `/api/run` legt Läufe an. Tobias hat es im Browser bestätigt.
+- Lehre: Ein falsch eingefügter Token führt zu HTTP 401 bei Turso bzw. `SERVER_ERROR` in der API. Werte direkt aus der Turso-CLI übernehmen.
+
+### 2026-11-27 · Hosting nur noch Vercel
+
+Die frühere zweite Hosting-Variante wurde aus dem Projekt entfernt, gehostet wird nur noch auf Vercel aus dem GitLab-Repo.
+
+- **Offen:** Umgebungsvariablen für `xmas-game-vercel` in Vercel setzen und `/api/leaderboard` prüfen. Verantwortliche Person für das Löschen bis 31. Januar festlegen.

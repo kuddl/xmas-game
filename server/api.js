@@ -1,6 +1,6 @@
 /**
  * Leaderboard API (ticket 024), platform-independent (Fetch API only).
- * Used by worker/index.js (Cloudflare), api/index.js (Vercel) and the Vite dev middleware.
+ * Used by api/index.js (Vercel Function) and the Vite dev middleware (local).
  *
  *   GET  /api/leaderboard        -> top 20 (nickname + score only)
  *   POST /api/run                -> new run: { runId, seed, key }
@@ -88,7 +88,6 @@ const fail = (reason, status = 400, extra = {}) => json({ ok: false, reason, ...
 function clientIp(request) {
   const h = request.headers;
   return (
-    h.get('cf-connecting-ip') ||
     h.get('x-real-ip') ||
     (h.get('x-forwarded-for') || '').split(',')[0].trim() ||
     'local'

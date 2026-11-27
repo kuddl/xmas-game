@@ -8,8 +8,8 @@ Eine abgestimmte **Spezifikation der Landingpage** dieses Repos (seit 020: auf `
 
 ## Notes
 
-- **Repo & Deploy:** gleiche Codebasis wie das Spiel (Vite, `npm run build`). Deploy per Push nach `origin` → Cloudflare Workers (https://christmas.familiesailer.com).
-- **Technischer Fakt:** Vite baut zwei Seiten (`build.rollupOptions.input`): `index.html` (Landingpage, Quellen in `welcome/`) und `game/index.html` (Spiel). `wrangler.jsonc` nutzt `not_found_handling: single-page-application`, unbekannte Pfade liefern also die Landingpage aus.
+- **Repo & Deploy:** gleiche Codebasis wie das Spiel (Vite, `npm run build`). Deploy über Vercel aus dem GitLab-Repo.
+- **Technischer Fakt:** Vite baut zwei Seiten (`build.rollupOptions.input`): `index.html` (Landingpage, Quellen in `welcome/`) und `game/index.html` (Spiel). Beide sind echte Dateien im Build, deshalb liegt die Info-Seite des Spiels unter `/game/?info` statt unter einem eigenen Pfad.
 - **Look & Assets:** Pixel-Look des Spiels („Press Start 2P“, Farben aus `src/style.css`), Sprites aus `public/assets/` und Figma ([ABX Game Assets](https://www.figma.com/design/HgKfwks85tYE0fOjVqWkTy/ABX-Game-Assets?node-id=26-2)).
 - **Für HTML/CSS** den Skill `modern-web-guidance` konsultieren.
 - **Sprache:** Diskussion und Tickets auf Deutsch. Die Sprache der Seitentexte ist Teil der Entscheidungen.
@@ -22,7 +22,7 @@ Eine abgestimmte **Spezifikation der Landingpage** dieses Repos (seit 020: auf `
 
 ## Not yet specified
 
-- Zugriffsschutz: Die Seite ist intern, liegt aber öffentlich auf christmas.familiesailer.com. Reicht „wer den Link hat“, oder braucht es einen Schutz? Dazu Tracking und Analytics.
+- Zugriffsschutz: Die Seite ist intern, liegt aber öffentlich im Netz. Reicht „wer den Link hat“, oder braucht es einen Schutz? Dazu Tracking und Analytics.
 - Verhältnis zum Backend-Leaderboard ([#4](open/004-backend-leaderboard-statt-localstorage.md)), falls die Seite Highscores zeigen soll
 
 ## Out of scope

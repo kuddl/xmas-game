@@ -2,54 +2,46 @@
 
 Bezug: [Ticket 024](../tickets/open/024-leaderboard-top-20-claim-statt-mail.md) · Recherche: [research/leaderboard-storage.md](research/leaderboard-storage.md)
 
-Ohne Konfiguration antwortet die API mit `503 OFFLINE`, und das Spiel nutzt wie bisher das **lokale** Leaderboard. Nichts geht kaputt, solange die Secrets fehlen.
+Ohne Konfiguration antwortet die API mit `503 OFFLINE`, und das Spiel nutzt wie bisher das **lokale** Leaderboard. Nichts geht kaputt, solange die Umgebungsvariablen fehlen.
 
 ## Überblick
 
-| | GitHub → Cloudflare Workers | GitLab → Vercel | lokal (`npm run dev`) |
-|---|---|---|---|
-| Einstieg | `worker/index.js` (`main` in `wrangler.jsonc`, `run_worker_first: ["/api/*"]`) | `api/index.js` + Rewrite in `vercel.json` | Vite-Plugin in `vite.config.js` |
-| Logik | `server/api.js` (gemeinsam) | `server/api.js` (gemeinsam) | `server/api.js` (gemeinsam) |
-| Datenbank | Turso (libSQL), **eigene DB** | Turso (libSQL), **eigene DB** | SQLite-Datei `.data/dev.db` (nicht im Repo) |
+| | Vercel (aus GitLab) | lokal (`npm run dev`) |
+|---|---|---|
+| Einstieg | `api/index.js` + Rewrite `/api/:path*` in `vercel.json` | Vite-Plugin in `vite.config.js` |
+| Logik | `server/api.js` | `server/api.js` |
+| Datenbank | Turso (libSQL) `xmas-game-vercel` | SQLite-Datei `.data/dev.db` (nicht im Repo) |
 
 Endpunkte: `GET /api/leaderboard`, `POST /api/run`, `POST /api/run/start`, `POST /api/run/checkpoint`, `POST /api/claim`. Das Schema legt der Server beim ersten Aufruf selbst an (`CREATE TABLE IF NOT EXISTS`).
 
 ## Einmalig einrichten
 
-### 1. Zwei Turso-Datenbanken anlegen (Region EU / Frankfurt)
+### 1. Turso-Datenbank (Region EU / Frankfurt)
 
-Bei Turso hängt die Region an der **Gruppe**. Die Gruppe `default` liegt bereits in Frankfurt (`aws-eu-central-1`), prüfen mit `turso group list`. Die alten Kurzcodes wie `fra` gibt es nicht mehr, gültige IDs listet `turso db locations`.
+Bei Turso hängt die Region an der **Gruppe**. Die Gruppe `default` liegt in Frankfurt (`aws-eu-central-1`), prüfen mit `turso group list`. Gültige Regionen listet `turso db locations`.
 
 ```sh
 turso auth login
-turso db create xmas-game-cloudflare                  # für die GitHub/Cloudflare-Version (Gruppe default = Frankfurt)
-turso db create xmas-game-vercel                      # für die GitLab/Vercel-Version
-turso db show xmas-game-cloudflare --url              # -> TURSO_DATABASE_URL (libsql://…)
-turso db tokens create xmas-game-cloudflare           # -> TURSO_AUTH_TOKEN
-# dasselbe für xmas-game-vercel
+turso db create xmas-game-vercel              # falls noch nicht vorhanden
+turso db show xmas-game-vercel --url          # -> TURSO_DATABASE_URL (libsql://…)
+turso db tokens create xmas-game-vercel       # -> TURSO_AUTH_TOKEN
 ```
 
-### 2. Signier-Schlüssel erzeugen (je Plattform ein eigener)
+### 2. Signier-Schlüssel erzeugen
 
 ```sh
 openssl rand -hex 32   # -> LEADERBOARD_SECRET
 ```
 
-### 3. Secrets setzen
+### 3. Umgebungsvariablen in Vercel
 
-**Cloudflare** (GitHub-Deployment):
+Project → Settings → Environment Variables (Production): `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `LEADERBOARD_SECRET`. Danach neu deployen.
 
-```sh
-npx wrangler secret put TURSO_DATABASE_URL
-npx wrangler secret put TURSO_AUTH_TOKEN
-npx wrangler secret put LEADERBOARD_SECRET
-```
-
-**Vercel** (GitLab-Deployment): Project → Settings → Environment Variables (Production): `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `LEADERBOARD_SECRET`. Danach neu deployen.
+Tipp gegen Copy-and-Paste-Fehler (ein falscher Token führt zu HTTP 401 bei Turso bzw. `SERVER_ERROR` in der API): Werte direkt aus der CLI übernehmen, z. B. `turso db tokens create xmas-game-vercel | pbcopy`.
 
 ### 4. Prüfen
 
-`https://<domain>/api/leaderboard` → `{"ok":true,"size":20,"entries":[]}`
+`https://<vercel-domain>/api/leaderboard` → `{"ok":true,"size":20,"entries":[]}`
 
 ## Lokal
 
@@ -76,11 +68,11 @@ FROM claims ORDER BY score DESC, claimed_at ASC LIMIT 20;
 SELECT reason, detail, ip, datetime(at / 1000, 'unixepoch') AS at FROM rejections ORDER BY at DESC;
 ```
 
-(`turso db shell xmas-game-cloudflare` bzw. `xmas-game-vercel`)
+(`turso db shell xmas-game-vercel`)
 
 ## Löschen bis 31. Januar (manuell, kein automatischer Job)
 
-In **beiden** Datenbanken ausführen, nachdem der Sieger benachrichtigt ist:
+Ausführen, nachdem der Sieger benachrichtigt ist:
 
 ```sql
 UPDATE claims SET email = 'deleted-' || run_id;  -- Adressen entfernen, Nickname + Score bleiben

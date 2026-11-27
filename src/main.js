@@ -3,7 +3,7 @@ import { AssetLoader } from './assetLoader.js';
 import { Game } from './game.js';
 
 async function bootstrap() {
-  // /game/?info (a separate path would fall back to the landing page on Cloudflare)
+  // /game/?info (a separate path would not exist as a file and fall back to the landing page)
   if (new URLSearchParams(window.location.search).has('info')) {
     renderInfoRoute();
     return;
@@ -65,7 +65,7 @@ function renderInfoRoute() {
           </div>
           <div class="info-row">
             <span class="info-label">ENVIRONMENT</span>
-            <span class="info-value">Cloudflare Workers</span>
+            <span class="info-value">Vercel</span>
           </div>
         </div>
 

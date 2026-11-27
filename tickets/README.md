@@ -1,6 +1,6 @@
 # Tickets
 
-Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLab (`merkle`) gleichermaßen, den Fortschritt sieht man in der Git-History. Die GitHub Issues von `kuddl/xmas-game` sind nur noch Archiv. Jedes Ticket verlinkt sein Original unter „Herkunft“.
+Unser Ticket-Tracker liegt **im Repo**. Er liegt im GitLab-Repo, den Fortschritt sieht man in der Git-History. Die GitHub Issues von `kuddl/xmas-game` sind nur noch Archiv. Jedes Ticket verlinkt sein Original unter „Herkunft“.
 
 - **[MAP.md](MAP.md):** Wayfinder-Map für das Spiel mit Ziel, Notizen, „Decisions so far“ und Backlog
 - **[MAP-landingpage.md](MAP-landingpage.md):** Wayfinder-Map für die Landingpage
@@ -20,7 +20,6 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 007 | [Hintergrund-Welten: MVP- vs. Production-Look](open/007-hintergrund-welten-mvp-vs-production-look.md) | enhancement, backlog | — |
 | 009 | [Hindernisse auch auf Plattformen](open/009-hindernisse-auch-auf-plattformen.md) | enhancement, backlog | — |
 | 010 | [Arc-Logo als Hintergrund-Element](open/010-arc-logo-als-hintergrund-element.md) | enhancement, backlog | — |
-| 011 | [CI: GitHub Actions auf Node 24 aktualisieren](open/011-ci-github-actions-auf-node-24.md) | chore | — |
 | 019 | [Landingpage: Texte für Gruß und Satire-Blöcke](open/019-landingpage-texte-fuer-gruss-und-satire.md) · Map Landingpage | wayfinder:grilling | — |
 | 021 | [Konami-Code: Power-up (doppelte Größe & Durchlaufen)](open/021-konami-code-power-up.md) | enhancement, backlog | — |
 | 023 | [Landingpage: Feinschliff und Fliegende Buzzwords](open/023-landingpage-feinschliff-und-fliegende-buzzwords.md) · Map Landingpage | enhancement | Agent (Review: tsailer) |
@@ -45,6 +44,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 | 020 | [Landingpage: Scroll-Prototyp](done/020-landingpage-scroll-prototyp.md) · Map Landingpage | wayfinder:prototype | 2026-11-26 |
 | 008 | [Training-Modus vs. Highscore-Modus](done/008-training-modus-vs-highscore-modus.md) | enhancement, backlog | 2026-11-27 |
 | 022 | [Spiel-Modi: freies Spiel (/game) und getracktes Spiel (/game/UUID)](done/022-spiel-modi-freies-und-getracktes-spiel.md) | wayfinder:grilling | 2026-11-27 |
+| 011 | [CI: GitHub Actions auf Node 24 aktualisieren](done/011-ci-github-actions-auf-node-24.md) (hinfällig) | chore | 2026-11-27 |
 
 ## Arbeitsweise
 
@@ -54,7 +54,7 @@ Unser Ticket-Tracker liegt **im Repo**. Er gilt für GitHub (`origin`) und GitLa
 3. Eine Zeile in die Tabelle „Offen“ oben eintragen. Committen, z. B. `tickets: add 018 …`
 
 **Claimen**
-- Bei „Zugewiesen“ den eigenen Namen eintragen (Datei und Tabelle), committen und pushen, **bevor** die Arbeit beginnt. So sieht der andere sofort, wer woran sitzt.
+- Bei „Zugewiesen“ den eigenen Namen eintragen (Datei und Tabelle) und das committen und pushen, **bevor** die Arbeit beginnt (Agents stagen nur, der Mensch committet und pusht, siehe `AGENTS.md`). So sieht der andere sofort, wer woran sitzt.
 
 **Erledigen**
 1. Unter `## Verlauf` notieren, was entschieden bzw. umgesetzt wurde, mit Commit-Hash.
