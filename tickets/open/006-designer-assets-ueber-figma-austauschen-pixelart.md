@@ -60,3 +60,4 @@ Der Designer hat in Figma die Seite **„xmas-game · Game Assets V2“** angele
   - Die Karte von `postal-sky` ist als „bgTreesNear“ bzw. „bg“ beschriftet.
   - Beim Block liegt das Bild in einer Kind-Ebene der alten `@1x`-Ebene.
   - Für die nächste Runde reicht es, die Bilder in V2 zu ersetzen, ich hole sie wieder per MCP.
+- **Nachjustiert:** Die im Code gezeichneten Eiszapfen unter den Plattformen (`src/platforms.js`, 22-px-Raster) sind entfernt. Die neue Plattform-Kachel bringt eigene Eiszapfen und Lichter mit, die Code-Zapfen saßen versetzt daneben. Die Endkappen haben jetzt die Umrissfarbe der Kachel (`#080d30`).

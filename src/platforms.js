@@ -66,16 +66,13 @@ export class PlatformManager {
     ice.tileScale.set(2, 2);
     c.addChild(ice);
 
-    // Dark pixel end caps + hanging icicles
+    // Dark pixel end caps in the tile's outline colour. The icicles are part of the
+    // designer's platform tile (one per tile), so no extra ones are drawn here.
     const deco = new Graphics()
       .rect(0, 0, 2, height)
-      .fill(0x1a3a63)
+      .fill(0x080d30)
       .rect(width - 2, 0, 2, height)
-      .fill(0x1a3a63);
-    for (let x = 10; x < width - 8; x += 22) {
-      const len = 6 + ((x * 7) % 9);
-      deco.poly([x, height, x + 6, height, x + 3, height + len]).fill(0xd7eeff);
-    }
+      .fill(0x080d30);
     c.addChild(deco);
 
     this.container.addChild(c);
