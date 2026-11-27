@@ -46,3 +46,4 @@ Die Landingpage vor dem Versand an alle Merkle-Mitarbeiter fertig machen. Entsch
   - Einfrieren inklusive Klick-Sperre, Tab-Navigation, Freischalten des Geschenks, das Spiel unter `/game/` startet weiter
   - keine Konsolenfehler
 - **Figma:** neue Gruppe „Landing Page“ mit `santaSleigh`, `tinsel` und `favicon` auf der Asset-Seite (ABX Game Assets).
+- **Nachjustiert:** Das Schwanken der Szene beim Treffer auf einen Flieger hat jetzt die halbe Amplitude (Drehung max. 0,7° statt 1,4°, Zoom 0,5 % statt 1 %).

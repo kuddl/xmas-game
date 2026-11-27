@@ -72,9 +72,9 @@ body {
 }
 
 @keyframes wobble {
-  20% { rotate: -1.4deg; scale: 1.01; }
-  45% { rotate: 1.2deg; }
-  70% { rotate: -0.6deg; }
+  20% { rotate: -0.7deg; scale: 1.005; }
+  45% { rotate: 0.6deg; }
+  70% { rotate: -0.3deg; }
   100% { rotate: 0deg; scale: 1; }
 }
 
