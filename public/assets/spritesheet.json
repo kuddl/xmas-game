@@ -132,6 +132,16 @@
       "path": "/assets/sprites/favicon.png",
       "width": 16,
       "height": 16
+    },
+    "bgSky": {
+      "path": "/assets/sprites/postal-sky.png",
+      "width": 256,
+      "height": 200
+    },
+    "merkleArcLockup": {
+      "path": "/assets/sprites/merkle-arc-lockup.png",
+      "width": 96,
+      "height": 32
     }
   }
 }

@@ -76,6 +76,21 @@ export class World {
   }
 
   buildSky() {
+    // Night sky painted by the designer (postal-sky.png): tiles horizontally, fills the full height
+    const skyTex = this.assetLoader.getTexture('bgSky');
+    if (skyTex) {
+      const scale = GAME_CONFIG.VIRTUAL_HEIGHT / skyTex.height;
+      this.sky = new TilingSprite({
+        texture: skyTex,
+        width: this.viewWidth,
+        height: GAME_CONFIG.VIRTUAL_HEIGHT,
+      });
+      this.sky.tileScale.set(scale, scale);
+      this.backdrop.addChild(this.sky);
+      return;
+    }
+
+    // Fallback: the original day gradient
     this.skyGradient = new FillGradient({
       type: 'linear',
       start: { x: 0, y: 0 },
@@ -208,10 +223,14 @@ export class World {
 
   resize(newViewWidth) {
     this.viewWidth = newViewWidth;
-    this.sky
-      .clear()
-      .rect(0, 0, newViewWidth, GAME_CONFIG.VIRTUAL_HEIGHT)
-      .fill(this.skyGradient);
+    if (this.sky instanceof TilingSprite) {
+      this.sky.width = newViewWidth;
+    } else {
+      this.sky
+        .clear()
+        .rect(0, 0, newViewWidth, GAME_CONFIG.VIRTUAL_HEIGHT)
+        .fill(this.skyGradient);
+    }
 
     for (const layer of this.parallaxLayers) {
       layer.sprite.width = newViewWidth;

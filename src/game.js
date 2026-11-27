@@ -37,7 +37,7 @@ export class Game {
     this.app = new Application();
     await this.app.init({
       resizeTo: this.container,
-      background: '#3a8ad6',
+      background: '#0b1630', // night sky behind the canvas (postal-sky.png)
       antialias: false,
       roundPixels: true,
       autoDensity: true,

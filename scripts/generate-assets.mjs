@@ -5,6 +5,10 @@ import zlib from 'node:zlib';
 const SPRITES_DIR = path.resolve('public/assets/sprites');
 fs.mkdirSync(SPRITES_DIR, { recursive: true });
 
+// The sprites are now drawn by the designer in Figma (ticket 006). This script only fills in
+// missing files; pass --force to overwrite existing PNGs with the procedural placeholders.
+const FORCE = process.argv.includes('--force');
+
 // Minimal pure-Node RGBA PNG encoder
 function crc32(buf) {
   let c = 0xffffffff;
@@ -90,8 +94,13 @@ function createCanvas(width, height) {
       }
     },
     save(filename) {
+      const target = path.join(SPRITES_DIR, filename);
+      if (!FORCE && fs.existsSync(target)) {
+        console.log(`Kept ${filename} (designer asset; --force to regenerate)`);
+        return;
+      }
       const png = encodePNG(width, height, buf);
-      fs.writeFileSync(path.join(SPRITES_DIR, filename), png);
+      fs.writeFileSync(target, png);
       console.log(`Generated ${filename} (${width}x${height})`);
     },
   };
@@ -914,6 +923,17 @@ const spritesheet = {
       path: '/assets/sprites/favicon.png',
       width: 16,
       height: 16,
+    },
+    // designer-only assets (no procedural placeholder)
+    bgSky: {
+      path: '/assets/sprites/postal-sky.png',
+      width: 256,
+      height: 200,
+    },
+    merkleArcLockup: {
+      path: '/assets/sprites/merkle-arc-lockup.png',
+      width: 96,
+      height: 32,
     },
   },
 };

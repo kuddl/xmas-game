@@ -39,3 +39,24 @@ Die Assets sind nach Figma gepusht: https://www.figma.com/design/HgKfwks85tYE0fO
 ### 2026-11-26 · kuddl
 
 Zwei neue Sprites sind dazugekommen und auch in Figma angelegt: `mushroom` ([#14](../done/014-pilze-hindernis-mit-rosa-blur-effekt.md)) und `coinCloud` ([#17](../done/017-coin-wolke-in-der-luft-waehrend.md)). Damit sind es jetzt 14 Assets.
+
+### 2026-11-27 · Designer-Assets V2 übernommen
+
+Der Designer hat in Figma die Seite **„xmas-game · Game Assets V2“** angelegt (Node `50:2`), dazu die Vorschau „Alpine-Post-Preview“: eine **Nacht-Alpenwelt**.
+
+- **Übernommen:** alle 17 Sprites als **bytegenaue Originale**. Die SHA-1 jeder Datei stimmt mit dem Figma-Image-Hash überein, geholt über `getBytesAsync()` bzw. `download_assets`. Alle Maße passen zu `spritesheet.json`, deshalb braucht es dafür keine Code-Änderung.
+  - Spielfigur = Weihnachtsmann, Block = Warnschild-Kiste, Münzen = Christbaumkugeln, Invite neu, Boden = Steinbrücke
+  - Berge mit rosa Gipfeln, Bäume mit MERKLE-Haus, Schlitten = Rentiere mit Elf
+  - Wolke, Pilz, Power-ups, Lametta und Favicon ebenfalls neu
+- **Neu:**
+  - `postal-sky.png` (256×200, Nachthimmel) → `bgSky`. Das Spiel ersetzt damit den Farbverlauf (`TilingSprite`, volle Höhe, alter Verlauf als Fallback), die Landingpage nutzt ihn per CSS.
+  - `merkle-arc-lockup.png` (96×32) → `merkleArcLockup`, oben links auf der Landingpage.
+- **Code:**
+  - Landingpage: Das Buzzword-Schild sitzt jetzt wie im Spiel oben auf der Kiste, damit das Warnschild sichtbar bleibt. Theme-Farbe und Canvas-Hintergrund sind dunkel.
+  - Vorschaubild `og-image.png` neu erzeugt.
+- **Schutz:** `npm run generate-assets` überschreibt vorhandene PNGs nicht mehr, sondern nur noch mit `--force`. Es ergänzt nur fehlende Dateien und schreibt `spritesheet.json`.
+- **Hinweise an den Designer:**
+  - In V2 heißen die Ebenen jetzt nach Dateiname statt `<key> @1x`.
+  - Die Karte von `postal-sky` ist als „bgTreesNear“ bzw. „bg“ beschriftet.
+  - Beim Block liegt das Bild in einer Kind-Ebene der alten `@1x`-Ebene.
+  - Für die nächste Runde reicht es, die Bilder in V2 zu ersetzen, ich hole sie wieder per MCP.

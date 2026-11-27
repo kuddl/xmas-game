@@ -85,10 +85,24 @@ body {
 
 /* ---------- scenery ---------- */
 
+/* night sky painted by the designer: tiles horizontally, fills the full height */
 .sky {
   position: absolute;
   inset: 0;
-  background: linear-gradient(#3a8ad6 0%, #7bc4f7 45%, #c7e8ff 85%, #eaf6ff 100%);
+  background: #0b1630 url('/assets/sprites/postal-sky.png') repeat-x left top / auto 100%;
+  image-rendering: pixelated;
+}
+
+/* Merkle ARC lockup, top left */
+.lockup {
+  position: absolute;
+  left: clamp(12px, 2.4vw, 32px);
+  top: clamp(12px, 2.4vw, 32px);
+  width: calc(96 * 0.95 * var(--px));
+  height: auto;
+  image-rendering: pixelated;
+  z-index: 6;
+  pointer-events: none;
 }
 
 .layer {
@@ -338,14 +352,19 @@ body {
   cursor: pointer;
 }
 
+/* buzzword sign resting on top of the block, like in the game (keeps the warning sign visible) */
 .block-word {
   position: absolute;
-  top: 50%;
-  translate: 0 -50%;
+  left: 50%;
+  bottom: calc(100% - 3 * var(--px));
+  translate: -50% 0;
+  white-space: nowrap;
+  padding: calc(2.4 * var(--px)) calc(4 * var(--px)) calc(1.6 * var(--px));
   font-size: max(7px, calc(6 * var(--px)));
-  letter-spacing: -0.04em;
-  color: var(--snow);
-  text-shadow: 2px 0 #071224, -2px 0 #071224, 0 2px #071224, 0 -2px #071224;
+  color: #b81d2c;
+  background: var(--snow);
+  border: calc(1 * var(--px)) solid #12223a;
+  border-top: calc(2 * var(--px)) solid var(--red);
 }
 
 .block:focus-visible,
@@ -372,7 +391,7 @@ body {
 .smash-hint {
   position: absolute;
   left: 50%;
-  bottom: calc(100% + 10 * var(--px));
+  bottom: calc(100% + 22 * var(--px));
   translate: -50% 0;
   white-space: nowrap;
   font-size: clamp(8px, 1.1vw, 11px);
