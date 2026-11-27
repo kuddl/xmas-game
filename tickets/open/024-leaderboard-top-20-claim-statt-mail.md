@@ -122,3 +122,10 @@ Recherche: [docs/research/leaderboard-storage.md](../../docs/research/leaderboar
 2. Verantwortliche Person für das Löschen bis 31. Januar festlegen.
 3. Vercel-Deployment nach dem Setzen der Secrets einmal prüfen (`/api/leaderboard`).
 4. Optional (Runde 3): Leaderboard auf der Landingpage, Text für die Einladungsmail.
+
+### 2026-11-27 · Cloudflare live
+
+- Turso-Datenbanken `xmas-game-cloudflare` und `xmas-game-vercel` angelegt, Gruppe `default` = `aws-eu-central-1` (Frankfurt).
+- Wrangler-Secrets gesetzt: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` (neu erzeugt, der erste Token wurde mit 401 abgelehnt), `LEADERBOARD_SECRET`.
+- https://christmas.familiesailer.com/api/leaderboard liefert `ok`, `/api/run` legt Läufe an. Tobias hat es im Browser bestätigt.
+- **Offen:** Vercel-Umgebungsvariablen für `xmas-game-vercel` setzen und prüfen. Verantwortliche Person für das Löschen bis 31. Januar festlegen.
