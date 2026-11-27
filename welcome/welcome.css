@@ -33,6 +33,11 @@ html::-webkit-scrollbar {
   display: none;
 }
 
+/* frozen after hitting a flying invite: the run stops for a moment */
+html.is-frozen {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
 }

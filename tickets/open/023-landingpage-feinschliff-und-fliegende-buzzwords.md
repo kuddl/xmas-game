@@ -48,3 +48,4 @@ Die Landingpage vor dem Versand an alle Merkle-Mitarbeiter fertig machen. Entsch
 - **Figma:** neue Gruppe „Landing Page“ mit `santaSleigh`, `tinsel` und `favicon` auf der Asset-Seite (ABX Game Assets).
 - **Nachjustiert:** Das Schwanken der Szene beim Treffer auf einen Flieger hat jetzt die halbe Amplitude (Drehung max. 0,7° statt 1,4°, Zoom 0,5 % statt 1 %).
 - **Nachjustiert:** Das Wackeln der Figur im Dizzy-Zustand ist gedrittelt (±3° statt ±9°). Das Schwanken der Szene bleibt auf der halben Amplitude.
+- **Nachjustiert:** Während des Einfrierens (2 s) ist auch das Scrollen gesperrt: `overflow: hidden` auf `html` (die Position bleibt erhalten), Mausrad/Trackpad und Scroll-Tasten werden abgefangen, die Tab-Navigation scrollt in der Zeit nicht. Von Tobias im Browser getestet.

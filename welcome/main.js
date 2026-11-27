@@ -215,7 +215,7 @@ if (!nativeScrollTimeline) {
 
 /* Keyboard: bring the focused block / flyer / button into view */
 track.addEventListener('focusin', (e) => {
-  if (!travel) return;
+  if (!travel || isFrozen()) return;
   const r = e.target.getBoundingClientRect();
   const trackLeft = track.getBoundingClientRect().left;
   const centerInTrack = r.left + r.width / 2 - trackLeft;
@@ -494,9 +494,26 @@ function freeze(flyer) {
   showToast(flyer.message);
   runner.classList.add('is-dizzy');
   runner.classList.remove('is-running', 'is-jumping');
+  root.classList.add('is-frozen'); // no scrolling while dizzy
   if (!reducedMotion.matches) replay(shakeEl, 'is-wobbling');
-  setTimeout(() => runner.classList.remove('is-dizzy'), WELCOME.effects.freezeSeconds * 1000);
+  setTimeout(() => {
+    runner.classList.remove('is-dizzy');
+    root.classList.remove('is-frozen');
+  }, WELCOME.effects.freezeSeconds * 1000);
 }
+
+// While frozen, block wheel / trackpad and scroll keys too (overflow: hidden covers the scrollbar)
+addEventListener(
+  'wheel',
+  (e) => {
+    if (isFrozen()) e.preventDefault();
+  },
+  { passive: false }
+);
+const SCROLL_KEYS = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Spacebar']);
+addEventListener('keydown', (e) => {
+  if (isFrozen() && SCROLL_KEYS.has(e.key)) e.preventDefault();
+});
 
 function checkFlyerHit(cx, cy, size) {
   if (performance.now() < immuneUntil) return;
